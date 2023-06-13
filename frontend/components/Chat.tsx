@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import SockJS from 'sockjs-client';
 import { Client, IMessage } from '@stomp/stompjs';
 
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
 const colors = [
   'bg-blue-500', 'bg-green-500', 'bg-cyan-500', 'bg-red-500',
   'bg-yellow-500', 'bg-pink-500', 'bg-orange-500', 'bg-teal-500'
@@ -40,7 +42,7 @@ export default function Chat() {
   const connect = (event: React.FormEvent) => {
     event.preventDefault();
     if (username.trim()) {
-      const socket = new SockJS('https://streetfinder.fly.dev/ws');
+      const socket = new SockJS(`${backendUrl}/ws`);
       stompClient.current = new Client({
         webSocketFactory: () => socket,
         onConnect: onConnected,
