@@ -37,7 +37,7 @@ export default function Page() {
                 {data ? (
                     <p className="text-center mt-4">{data.message}</p>
                 ) : (
-                    <p className="text-center mt-4">Data를 Fetch 하려면 버튼을 누르세요.</p>
+                    <p className="text-center mt-4">버튼을 눌러서 Fetch</p>
                 )}
         </div>
     );
