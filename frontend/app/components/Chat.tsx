@@ -40,7 +40,7 @@ export default function Chat() {
   const connect = (event: React.FormEvent) => {
     event.preventDefault();
     if (username.trim()) {
-      const socket = new SockJS('http://localhost:8080/ws');
+      const socket = new SockJS('https://streetfinder.fly.dev/ws');
       stompClient.current = new Client({
         webSocketFactory: () => socket,
         onConnect: onConnected,
