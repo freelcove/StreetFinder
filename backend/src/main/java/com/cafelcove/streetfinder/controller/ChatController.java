@@ -1,17 +1,32 @@
 package com.cafelcove.streetfinder.controller;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.stereotype.Controller;
 
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
-@RestController
+import com.cafelcove.streetfinder.model.ChatMessage;
+
+@Controller
 public class ChatController {
 
-    @MessageMapping("/chat")
-    @SendTo("/topic/messages")
-    public String sendMessage(String message) {
-        return message;
+    @MessageMapping("/chat.sendMessage")
+    @SendTo("/topic/public")
+    public ChatMessage sendMessage(
+            @Payload ChatMessage chatMessage
+    ) {
+        return chatMessage;
+    }
+
+    @MessageMapping("/chat.addUser")
+    @SendTo("/topic/public")
+    public ChatMessage addUser(
+            @Payload ChatMessage chatMessage,
+            SimpMessageHeaderAccessor headerAccessor
+    ) {
+        // Add username in web socket session
+        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
+        return chatMessage;
     }
 }
