@@ -17,14 +17,17 @@ public class CsvParser {
 
     public ArrayList<TotalDTO> readCSV(){
         ArrayList<TotalDTO> csvList = new ArrayList<TotalDTO>();
-        
-        File csv = new File("D:\\project\\WepGameProject\\streetfinder\\src\\main\\resources\\csv\\testtotal.CSV");
+
+        String dir = System.getProperty("user.dir");
+        dir+="\\src\\main\\resources\\csv\\";
+        String fileName = "testtotal.CSV";
+        dir+=fileName;
+        File csv = new File(dir);
         BufferedReader br = null;
         String line = "";
         
         try {
             br = new BufferedReader(new FileReader(csv,Charset.forName("UTF-8")));
-        
             Boolean checkFirst=true;
             while((line = br.readLine()) !=null){
                 if (checkFirst) {
