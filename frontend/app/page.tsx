@@ -29,8 +29,8 @@ export default function Home() {
             <Link href="/chat">
               <p className="text-gray-800 hover:text-indigo-600">Chat</p>
             </Link>
-            <Link href="/menu3">
-              <p className="text-gray-800 hover:text-indigo-600">Menu 3</p>
+            <Link href="/maptest">
+              <p className="text-gray-800 hover:text-indigo-600">Map Test</p>
             </Link>
             <Link href="/menu4">
               <p className="text-gray-800 hover:text-indigo-600">Menu 4</p>
