@@ -7,6 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cafelcove.streetfinder.dto.CategoryDTO;
+import com.cafelcove.streetfinder.dto.CitiesDTO;
+import com.cafelcove.streetfinder.dto.PlacesDTO;
+import com.cafelcove.streetfinder.dto.SubcategoryDTO;
 import com.cafelcove.streetfinder.dto.TotalDTO;
 import com.cafelcove.streetfinder.csv.CsvParser;
 import com.cafelcove.streetfinder.dao.MysqlDAO;
@@ -37,15 +41,39 @@ public class TestController {
 	    @GetMapping(value = "/dbconnect")
     public String dbtest(){
         MysqlDAO mysql = new MysqlDAO();
-        return mysql.read();
+        ArrayList<PlacesDTO> data = new CsvParser().readPlacesCSV();
+        mysql.writePlaces(data);
+        return "0";
     }
-    @GetMapping(value = "/testCSVRead")
-    public String csvTest(){
+    @GetMapping(value = "/testCSVRead/{variable}")
+    public String csvTest(@PathVariable String variable){
         CsvParser csvparser = new CsvParser();
-        ArrayList<TotalDTO> data = csvparser.readCSV();
         String result ="";
-        for (TotalDTO item : data) {
-            result+=item.toString();
+        if(variable.equals("total")){
+            ArrayList<TotalDTO> data = csvparser.readTotalCSV();
+            for (TotalDTO item : data) {
+                result+=item.toString();
+            }
+        } else if(variable.equals("category")){
+            ArrayList<CategoryDTO> data = csvparser.readCategoryCSV();
+            for (CategoryDTO item : data) {
+                result+=item.toString();
+            }
+        } else if(variable.equals("cities")){
+            ArrayList<CitiesDTO> data = csvparser.readCitiesCSV();
+            for (CitiesDTO item : data) {
+                result+=item.toString();
+            }
+        } else if(variable.equals("places")){
+            ArrayList<PlacesDTO> data = csvparser.readPlacesCSV();
+            for (PlacesDTO item : data) {
+                result+=item.toString();
+            }
+        } else if(variable.equals("subcategory")){
+            ArrayList<SubcategoryDTO> data = csvparser.readSubcategoryCSV();
+            for (SubcategoryDTO item : data) {
+                result+=item.toString();
+            }
         }
         return result;
     }
