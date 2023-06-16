@@ -34,49 +34,54 @@ public class TestController {
         }
     }
 
+        @GetMapping("/")
+    public String home() {
+        return "Welcome to the home page!";
+    }
+    
     @GetMapping("/hello")
     public Greeting hello() {
         return new Greeting("Hello from backend");
     }
 
-    @GetMapping(value = "/dbconnect")
-    public String dbtest() {
-        MysqlDAO mysql = new MysqlDAO();
-        ArrayList<PlacesDTO> data = new CsvParser().readPlacesCSV();
-        mysql.writePlaces(data);
-        return "0";
-    }
+    // @GetMapping(value = "/dbconnect")
+    // public String dbtest() {
+    //     MysqlDAO mysql = new MysqlDAO();
+    //     ArrayList<PlacesDTO> data = new CsvParser().readPlacesCSV();
+    //     mysql.writePlaces(data);
+    //     return "0";
+    // }
 
-    @GetMapping(value = "/testCSVRead/{variable}")
-    public String csvTest(@PathVariable String variable) {
-        CsvParser csvparser = new CsvParser();
-        String result = "";
-        if (variable.equals("total")) {
-            ArrayList<TotalDTO> data = csvparser.readTotalCSV();
-            for (TotalDTO item : data) {
-                result += item.toString();
-            }
-        } else if (variable.equals("category")) {
-            ArrayList<CategoryDTO> data = csvparser.readCategoryCSV();
-            for (CategoryDTO item : data) {
-                result += item.toString();
-            }
-        } else if (variable.equals("cities")) {
-            ArrayList<CitiesDTO> data = csvparser.readCitiesCSV();
-            for (CitiesDTO item : data) {
-                result += item.toString();
-            }
-        } else if (variable.equals("places")) {
-            ArrayList<PlacesDTO> data = csvparser.readPlacesCSV();
-            for (PlacesDTO item : data) {
-                result += item.toString();
-            }
-        } else if (variable.equals("subcategory")) {
-            ArrayList<SubcategoryDTO> data = csvparser.readSubcategoryCSV();
-            for (SubcategoryDTO item : data) {
-                result += item.toString();
-            }
-        }
-        return result;
-    }
+    // @GetMapping(value = "/testCSVRead/{variable}")
+    // public String csvTest(@PathVariable String variable) {
+    //     CsvParser csvparser = new CsvParser();
+    //     String result = "";
+    //     if (variable.equals("total")) {
+    //         ArrayList<TotalDTO> data = csvparser.readTotalCSV();
+    //         for (TotalDTO item : data) {
+    //             result += item.toString();
+    //         }
+    //     } else if (variable.equals("category")) {
+    //         ArrayList<CategoryDTO> data = csvparser.readCategoryCSV();
+    //         for (CategoryDTO item : data) {
+    //             result += item.toString();
+    //         }
+    //     } else if (variable.equals("cities")) {
+    //         ArrayList<CitiesDTO> data = csvparser.readCitiesCSV();
+    //         for (CitiesDTO item : data) {
+    //             result += item.toString();
+    //         }
+    //     } else if (variable.equals("places")) {
+    //         ArrayList<PlacesDTO> data = csvparser.readPlacesCSV();
+    //         for (PlacesDTO item : data) {
+    //             result += item.toString();
+    //         }
+    //     } else if (variable.equals("subcategory")) {
+    //         ArrayList<SubcategoryDTO> data = csvparser.readSubcategoryCSV();
+    //         for (SubcategoryDTO item : data) {
+    //             result += item.toString();
+    //         }
+    //     }
+    //     return result;
+    // }
 }

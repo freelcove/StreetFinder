@@ -3,10 +3,10 @@ package com.cafelcove.streetfinder.dao;
 import java.sql.*;
 import java.util.ArrayList;
 
+import org.springframework.beans.factory.annotation.Value;
+
 import com.cafelcove.streetfinder.dto.TotalDTO;
 
-    
-    
 public class MysqlDAO {
 
     private Connection conn = null;
@@ -14,22 +14,30 @@ public class MysqlDAO {
     private PreparedStatement pstmt = null;
     private ResultSet rs = null;
 
-    public void write(ArrayList<TotalDTO> data){
+    
+    @Value("${spring.datasource.url}")
+    private String springDatasourceUrl;
+    @Value("${spring.datasource.username}")
+    private String springDatasourceUsername;
+    @Value("${spring.datasource.password}")
+    private String springDatasourcePassword;
+
+    public void write(ArrayList<TotalDTO> data) {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(
-                  "jdbc:mysql://aws.connect.psdb.cloud/streetfinder?sslMode=VERIFY_IDENTITY",
-                  "1lp3b3onr14l1nlmnojc",
-                  "pscale_pw_b4BW3mCETVdgrUvMQpBn1Es2ZhfFjRGbs323uz9Ybew");
+                    springDatasourceUrl,
+                    springDatasourceUsername,
+                    springDatasourcePassword);
             String sql = "insert into place";
-            sql="insert into ";
+            sql = "insert into ";
             pstmt = conn.prepareStatement(sql);
         } catch (Exception e) {
             // TODO: handle exception
             e.printStackTrace();
         } finally {
             try {
-                
+
             } catch (Exception e2) {
                 // TODO: handle exception
                 e2.printStackTrace();
@@ -37,23 +45,22 @@ public class MysqlDAO {
         }
     }
 
-
-    public String read(){
-        String result="";
+    public String read() {
+        String result = "";
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(
-                  "jdbc:mysql://aws.connect.psdb.cloud/streetfinder?sslMode=VERIFY_IDENTITY",
-                  "1lp3b3onr14l1nlmnojc",
-                  "pscale_pw_b4BW3mCETVdgrUvMQpBn1Es2ZhfFjRGbs323uz9Ybew");
+                    springDatasourceUrl,
+                    springDatasourceUsername,
+                    springDatasourcePassword);
             stmt = conn.createStatement();
             rs = stmt.executeQuery("select * from testdata");
             rs.next();
-            result+= rs.getString("name");
-            result+= " | " + rs.getString("gender");
-            } catch (Exception e) {
+            result += rs.getString("name");
+            result += " | " + rs.getString("gender");
+        } catch (Exception e) {
             e.printStackTrace();
-        } finally { 
+        } finally {
             try {
                 conn.close();
                 stmt.close();
