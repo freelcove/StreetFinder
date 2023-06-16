@@ -1,6 +1,6 @@
 package com.cafelcove.streetfinder.config;
 
-import com.cafelcove.streetfinder.model.ChatMessage;
+import com.cafelcove.streetfinder.entity.ChatMessage;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.cafelcove.streetfinder.model;
+package com.cafelcove.streetfinder.entity;
 
 import lombok.*;
 
