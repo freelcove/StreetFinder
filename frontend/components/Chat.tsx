@@ -2,6 +2,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import SockJS from 'sockjs-client';
 import { Client, IMessage } from '@stomp/stompjs';
+import { useSession } from 'next-auth/react';
+
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -19,7 +21,8 @@ interface ChatMessage {
 }
 
 export default function Chat() {
-  const [username, setUsername] = useState<string>('');
+  const { data: session } = useSession();
+  const username = session?.user?.name || '';
   const [connected, setConnected] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -41,8 +44,23 @@ export default function Chat() {
 
   const connect = (event: React.FormEvent) => {
     event.preventDefault();
+
     if (username.trim()) {
-      const socket = new SockJS(`${backendUrl}/ws`);
+      // Extract the token from the session
+      const token = session?.accessToken;
+
+      if (!token) {
+        console.error("No token available");
+        return;
+      }
+
+      // Include the token in the headers when establishing the SockJS connection
+      const socket = new SockJS(`${backendUrl}/ws`, {}, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
       stompClient.current = new Client({
         webSocketFactory: () => socket,
         onConnect: onConnected,
@@ -50,9 +68,10 @@ export default function Chat() {
           setError('Could not connect to WebSocket server. Please refresh this page to try again!');
         },
       });
+
       stompClient.current.activate();
     } else {
-      setError("Username cannot be empty");
+      setError("error");
     }
   };
 
@@ -110,15 +129,7 @@ export default function Chat() {
     <div className="p-4">
       {!connected ? (
         <div>
-          <h1 className="text-xl">Type your username to enter the Chatroom</h1>
           <form onSubmit={connect} className="flex space-x-2 mt-4">
-            <input
-              type="text"
-              placeholder="Username"
-              className="p-2 border border-gray-300 rounded"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
             <button type="submit" className="p-2 bg-blue-500 text-white rounded">
               Start Chatting
             </button>
@@ -141,8 +152,8 @@ export default function Chat() {
                   {message.type === 'JOIN'
                     ? `${message.sender} joined!`
                     : message.type === 'LEAVE'
-                    ? `${message.sender} left!`
-                    : message.content}
+                      ? `${message.sender} left!`
+                      : message.content}
                 </p>
               </li>
             ))}
