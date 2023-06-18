@@ -26,6 +26,9 @@ const handler = NextAuth({
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!
         }),
     ],
+    pages: {
+        signIn: '/auth/signin', // Tell NextAuth.js to use your custom sign-in page
+      },
     events: {
         async signIn(message) {
             if (message?.user?.id) {

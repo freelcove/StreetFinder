@@ -19,28 +19,28 @@ export default function MyComponent() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-gradient-to-r from-indigo-500 to-blue-500 text-white">
       {/* Navbar */}
-      <nav className="bg-white shadow-md">
+      <nav className="bg-transparent shadow-md">
         <div className="container mx-auto px-6 py-3 flex justify-between items-center">
-          <div className="text-2xl font-semibold text-gray-700">
+          <div className="text-3xl font-bold">
             Street Finder
           </div>
-          <div className="flex justify-between items-center gap-5">
+          <div className="flex justify-between items-center gap-5 text-lg">
             <Link href="/apitest">
-              <p className="text-gray-800 hover:text-indigo-600">API Test</p>
+              <p className="hover:text-indigo-200 cursor-pointer">API Test</p>
             </Link>
             <Link href="/chat">
-              <p className="text-gray-800 hover:text-indigo-600">Chat</p>
+              <p className="hover:text-indigo-200 cursor-pointer">Chat</p>
             </Link>
             <Link href="/maptest">
-              <p className="text-gray-800 hover:text-indigo-600">Map Test</p>
+              <p className="hover:text-indigo-200 cursor-pointer">Map Test</p>
             </Link>
             <Link href="/menu4">
-              <p className="text-gray-800 hover:text-indigo-600">Menu 4</p>
+              <p className="hover:text-indigo-200 cursor-pointer">Menu 4</p>
             </Link>
-            <Link href="/menu5">
-              <p className="text-gray-800 hover:text-indigo-600">Menu 5</p>
+            <Link href="/auth">
+              <p className="hover:text-indigo-200 cursor-pointer">Auth</p>
             </Link>
           </div>
         </div>
@@ -48,22 +48,24 @@ export default function MyComponent() {
 
       {/* Main Content */}
       <main className="flex-grow">
-        <div className="container mx-auto px-6 py-8">
-          <h2 className="text-3xl font-semibold text-gray-800 mb-6">Welcome to Street Finder!</h2>
-          <div className="grid grid-cols-3 gap-6">
-            {/* Content */}
-            <div className="col-span-2 bg-white p-6 rounded-lg shadow-md">
-              <p className="text-gray-700">
-                Content goes here. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </p>
+        <div className="container mx-auto px-6 py-20">
+          <div className="text-center">
+            <h1 className="text-5xl font-bold mb-4">Welcome to Street Finder!</h1>
+            <p className="text-2xl">Discover the streets like never before</p>
+          </div>
+          <div className="grid grid-cols-3 gap-6 mt-16">
+            {/* Cards */}
+            <div className="col-span-1 bg-white p-6 rounded-lg shadow-md text-black">
+              <h3 className="text-lg font-semibold mb-4">Explore Streets</h3>
+              <p>Find streets with ease and learn about different pathways and alleys.</p>
             </div>
-
-            {/* Sidebar */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Sidebar</h3>
-              <p className="text-gray-700">
-                Additional content goes here. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.
-              </p>
+            <div className="col-span-1 bg-white p-6 rounded-lg shadow-md text-black">
+              <h3 className="text-lg font-semibold mb-4">Community Chat</h3>
+              <p>Join the community chat and engage with other street explorers.</p>
+            </div>
+            <div className="col-span-1 bg-white p-6 rounded-lg shadow-md text-black">
+              <h3 className="text-lg font-semibold mb-4">Custom Maps</h3>
+              <p>Create your custom maps and share your street adventures.</p>
             </div>
           </div>
         </div>
