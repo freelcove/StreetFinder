@@ -2,16 +2,19 @@ import NextAuth from "next-auth"
 import NaverProvider from "next-auth/providers/naver";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/prisma/prisma"
 import jwt from "jsonwebtoken";
 
-const prisma = new PrismaClient();
+
 const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET is not defined');
+  }
 
 const handler = NextAuth({
     secret: process.env.NEXTAUTH_SECRET,
     adapter: PrismaAdapter(prisma),
-    secret: process.env.NEXTAUTH_SECRET,
     database: process.env.DATABASE_URL,
     providers: [
         NaverProvider({
@@ -50,7 +53,7 @@ const handler = NextAuth({
         strategy: "jwt"
     },
     callbacks: {
-        async jwt({ token, user, account, profile, isNewUser }) {
+        async jwt({ token, user, account }) {
             const jwtPayload = {
                 id: user?.id || token.id,
                 email: user?.email || token.email,
@@ -74,7 +77,7 @@ const handler = NextAuth({
             // Decode the accessToken to check its expiration
             const decodedAccessToken = jwt.decode(token.accessToken);
 
-            if (decodedAccessToken && typeof decodedAccessToken.exp === 'number' && currentTime >= decodedAccessToken.exp) {
+            if (decodedAccessToken && currentTime >= decodedAccessToken.exp) {
                 console.log('Refreshing token');
 
                 const jwtPayload = {
