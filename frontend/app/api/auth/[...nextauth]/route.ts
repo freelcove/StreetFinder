@@ -51,25 +51,43 @@ const handler = NextAuth({
     },
     callbacks: {
         async jwt({ token, user, account, profile, isNewUser }) {
-            if (account) { // This block runs when the user logs in
-                const userRole = 'ROLE_USER'
-                const jwtPayload = {
-                    id: user.id,
-                    email: user.email,
-                    role: userRole,
-                    // You can add more user info here
-                };
+            const jwtPayload = {
+                id: user?.id || token.id,
+                email: user?.email || token.email,
+                role: 'ROLE_USER',
+            };
 
+            if (account) {
+                // This block runs when the user logs in
                 const jwtToken = jwt.sign(jwtPayload, JWT_SECRET, {
-                    expiresIn: '1h'
+                    expiresIn: '1h' 
                 });
-
                 return { ...token, accessToken: jwtToken };
             }
 
             return token;
-        },
+        }
+        ,
         async session({ session, token, user }) {
+            const currentTime = Math.floor(Date.now() / 1000);
+
+            // Decode the accessToken to check its expiration
+            const decodedAccessToken = jwt.decode(token.accessToken);
+
+            if (decodedAccessToken && typeof decodedAccessToken.exp === 'number' && currentTime >= decodedAccessToken.exp) {
+                console.log('Refreshing token');
+
+                const jwtPayload = {
+                    id: token.id,
+                    email: token.email,
+                    role: 'ROLE_USER'
+                };
+
+                const refreshedToken = jwt.sign(jwtPayload, JWT_SECRET, { expiresIn: '1h' });
+                token.accessToken = refreshedToken;
+            }
+
+
             session.accessToken = token.accessToken;
             return session;
         }

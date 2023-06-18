@@ -2,16 +2,20 @@
 
 import Link from 'next/link';
 import {useEffect} from 'react';
+import { useSession, getSession } from "next-auth/react";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-export default function Home() {
-
+export default function MyComponent() {
+  const { data: session } = useSession();
 
   useEffect(() => {
-    fetch(`${backendUrl}/warmup`, {
-      method: 'GET',
-    });
+    const interval = setInterval(() => {
+      // Manually update session
+      getSession().then(session => console.log("session refreshed"));
+    }, 60000); // Check every minute
+
+    return () => clearInterval(interval); // Clean up on component unmount
   }, []);
 
   return (

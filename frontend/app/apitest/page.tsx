@@ -28,9 +28,6 @@ export default function Page() {
                 console.error("No token available");
                 return;
             }
-            else if (token) {
-                console.log("token available:")                
-            }
             
             const response = await fetch(`${backendUrl}/hello`, {
                 method: "GET",

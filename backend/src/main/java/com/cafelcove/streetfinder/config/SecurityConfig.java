@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.cafelcove.streetfinder.security.JwtAuthenticationFilter;
+import com.cafelcove.streetfinder.security.AuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -23,8 +23,8 @@ public class SecurityConfig {
     };
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
+    public AuthenticationFilter AuthenticationFilter() {
+        return new AuthenticationFilter();
     }
 
     @Bean
@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .requestMatchers(WHITE_LIST).permitAll() // Allow WebSocket connections
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(AuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

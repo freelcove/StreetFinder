@@ -1,6 +1,7 @@
 package com.cafelcove.streetfinder.util;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,10 +22,15 @@ public class JwtUtil {
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(JWT_SECRET.getBytes()).parseClaimsJws(token);
+            System.out.println("Token is valid");
             return true;
+        } catch (ExpiredJwtException e) {
+            System.out.println("Token has expired");
         } catch (Exception e) {
-            return false;
+            System.out.println("An error occurred while validating token");
+            //e.printStackTrace();
         }
+        return false;
     }
 
 }

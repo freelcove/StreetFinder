@@ -47,7 +47,7 @@ export default function Chat() {
 
     if (username.trim()) {
       // Extract the token from the session
-      const token = session?.accessToken;
+      const token = (session as any)?.accessToken;
 
       if (!token) {
         console.error("No token available");
@@ -55,14 +55,13 @@ export default function Chat() {
       }
 
       // Include the token in the headers when establishing the SockJS connection
-      const socket = new SockJS(`${backendUrl}/ws`, {}, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
 
+      console.log(`Token being sent: ${token}`);
       stompClient.current = new Client({
-        webSocketFactory: () => socket,
+        webSocketFactory: () => new SockJS(`${backendUrl}/ws`),
+        connectHeaders: {
+          Authorization: `Bearer ${token}`,
+        },
         onConnect: onConnected,
         onStompError: (frame) => {
           setError('Could not connect to WebSocket server. Please refresh this page to try again!');

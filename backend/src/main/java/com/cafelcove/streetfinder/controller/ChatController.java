@@ -6,7 +6,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
-import com.cafelcove.streetfinder.model.ChatMessage;
+import com.cafelcove.streetfinder.entity.ChatMessage;
 
 @Controller
 public class ChatController {
