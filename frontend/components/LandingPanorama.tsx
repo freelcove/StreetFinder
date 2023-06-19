@@ -11,17 +11,17 @@ declare global {
 const clientID = process.env.NEXT_PUBLIC_NAVER_MAPS_API_CLIENT_ID;
 const scriptUrlWithSubmodule = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientID}&submodules=panorama`;
 
-const PanoComponent: React.FC = () => {
+const LandingPanorama: React.FC = () => {
     const panoRef = useRef<HTMLDivElement>(null);
 
     const initPano = () => {
 
         if (window.naver && window.naver.maps.Panorama) {
             const panoOptions = {
-                position: new window.naver.maps.LatLng(37.3599605, 127.1058814),
+                position: new window.naver.maps.LatLng(35.876436, 128.625559),
                 pov: {
-                    pan: -135,
-                    tilt: 29,
+                    pan: 16,
+                    tilt: 17,
                     fov: 100,
                 },
                 flightSpot: false,
@@ -81,4 +81,4 @@ const PanoComponent: React.FC = () => {
     )
 };
 
-export default PanoComponent;
+export default LandingPanorama;

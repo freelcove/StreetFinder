@@ -1,64 +1,10 @@
 "use client";
-
 import * as THREE from 'three';
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
-import Link from 'next/link';
 
-function Background() {
-    const aerialTexture = useLoader(THREE.TextureLoader, '/image/aerialview1.jpg');
-    aerialTexture.minFilter = THREE.LinearFilter;
-    return (
-      <mesh position={[0, 0, -40]} scale={[150, 140, 1]}>
-        <planeGeometry />
-        <meshBasicMaterial map={aerialTexture} depthTest={false} />
-      </mesh>
-    );
-  }
 
-  
-function ThickClouds() {
-    // Load the cloud texture
-    const cloudTexture = useLoader(THREE.TextureLoader, '/image/cloud1.png');
-    const cloudRefs = useRef([]);
-
-    useFrame(() => {
-        // Move clouds forward in every frame
-        cloudRefs.current.forEach((cloud) => {
-            cloud.position.z += 0.005;
-            // When cloud passes camera, reset position to the back
-            if (cloud.position.z > 10) {
-                cloud.position.set(Math.random() * 60 - 30, Math.random() * 30 - 15, -50);
-            }
-        });
-    });
-
-    // Create clouds using useMemo for performance optimization
-    const clouds = useMemo(() => new Array(40).fill(null).map((_, index) => {
-        // Random scale for each cloud
-        const scale = Math.random() * 15 + 10;
-        return (
-            <mesh
-                ref={(ref) => (cloudRefs.current[index] = ref)}
-                key={index}
-                // Random initial position for each cloud
-                position={[Math.random() * 60 - 30, Math.random() * 30 - 15, Math.random() * -50]}
-                // Set the scale for each cloud
-                scale={[scale, scale, 1]}
-                // Random rotation for natural look
-                rotation={[0, 0, Math.random() * Math.PI]}
-            >
-                <planeGeometry />
-                // Set cloud material, opacity and color
-                <meshStandardMaterial map={cloudTexture} transparent opacity={0.5} color={0xa0b0c0} />
-            </mesh>
-        );
-    }), []);
-
-    return <>{clouds}</>;
-}
-
-function MovingClouds() {
+function MovingClouds({ isZooming }) {
     // Load the cloud texture
     const cloudTexture = useLoader(THREE.TextureLoader, '/image/cloud1.png');
     const cloudRefs = useRef([]);
@@ -66,57 +12,47 @@ function MovingClouds() {
     useFrame(() => {
         // Move clouds forward in every frame
         cloudRefs.current.forEach((cloud, index) => {
-            cloud.position.z += 0.001 + index * 0.001;
-            // When cloud passes camera, reset position to the back
-            if (cloud.position.z > 10) {
-                cloud.position.set(Math.random() * 20 - 10, Math.random() * 10 - 5, -30);
+            const speed = isZooming ? 0.3 + index * 0.01 : 0.001 + index * 0.001;
+            cloud.position.z += speed;
+            if (!isZooming && cloud.position.z > 10) {
+                cloud.position.set(Math.random() * 20 - 10, Math.random() * 10 - 5, Math.random() * -50);
             }
         });
     });
 
     // Create clouds using useMemo for performance optimization
-    const clouds = useMemo(() => new Array(20).fill(null).map((_, index) => {
-        // Random scale for each cloud, minimum size is bigger
-        const scale = Math.random() * 10 + 4;
-        return (
-            <mesh
-                ref={(ref) => (cloudRefs.current[index] = ref)}
-                key={index}
-                // Random initial position for each cloud
-                position={[Math.random() * 20 - 10, Math.random() * 10 - 5, Math.random() * -30]}
-                // Set the scale for each cloud
-                scale={[scale, scale, 1]}
-                // Random rotation for natural look
-                rotation={[0, 0, Math.random() * Math.PI]}
-            >
-                <planeGeometry />
-                // Set cloud material, opacity and color
-                <meshStandardMaterial map={cloudTexture} transparent opacity={0.9} color={0xffffff} />
-            </mesh>
-        );
-    }), []);
+    const clouds = useMemo(() => {
+        const cloudsArray = new Array(40).fill(null).map((_, index) => {
+            const scale = index < 10 ? Math.random() * 25 + 25 : Math.random() * 10 + 15;
+            const opacity = index < 10 ? 0.5 : 0.9;
+            return (
+                <mesh
+                    ref={(ref) => (cloudRefs.current[index] = ref)}
+                    key={index}
+                    position={[Math.random() * 60 - 30, Math.random() * 30 - 15, Math.random() * -70]}
+                    scale={[scale, scale, 1]}
+                    rotation={[0, 0, Math.random() * Math.PI]}
+                >
+                    <planeGeometry />
+                    <meshStandardMaterial map={cloudTexture} transparent opacity={opacity} color={0xFFFFFF} />
+                </mesh>
+            );
+        });
+        return cloudsArray;
+    }, []);
 
     return <>{clouds}</>;
 }
 
-export default function SkyDivingCanvas() {
-    return (
-        <div className="w-screen h-screen relative">
+export default function SkyDivingCanvas({ isZooming, showCanvas }) {
+    return showCanvas ? (
+        <div className="w-screen h-screen absolute top-0 left-0 z-2">
             <Canvas className="w-full h-full" antialias>
                 <fog attach="fog" args={[0xE0F7FF, 10, 60]} />
                 <ambientLight />
-                <Background />
-                <ThickClouds />
-                <MovingClouds />
+                <MovingClouds isZooming={isZooming} />
             </Canvas>
-            <Link href="/">
 
-            <div
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-4xl font-semibold text-gray-800 hover:text-white transition-colors duration-600"
-            >
-                STREET FINDER
-            </div>
-            </Link>
         </div>
-    );
+    ) : null;
 }
