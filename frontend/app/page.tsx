@@ -36,8 +36,8 @@ export default function MyComponent() {
             <Link href="/maptest">
               <p className="hover:text-indigo-200 cursor-pointer">Map Test</p>
             </Link>
-            <Link href="/menu4">
-              <p className="hover:text-indigo-200 cursor-pointer">Menu 4</p>
+            <Link href="/test">
+              <p className="hover:text-indigo-200 cursor-pointer">Test</p>
             </Link>
             <Link href="/auth">
               <p className="hover:text-indigo-200 cursor-pointer">Auth</p>
