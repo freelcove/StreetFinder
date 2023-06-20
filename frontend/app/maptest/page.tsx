@@ -15,10 +15,10 @@ export default function page() {
                     <p className="text-gray-800 hover:text-indigo-600">3. 파노라마 + 맵 </p>
                 </Link>
                 <Link href="/maptest/4">
-                    <p className="text-gray-800 hover:text-indigo-600">4. 위성 + 줌인</p>
+                    <p className="text-gray-800 hover:text-indigo-600">4. 마커</p>
                 </Link>
                 <Link href="/maptest/5">
-                    <p className="text-gray-800 hover:text-indigo-600">Test 5</p>
+                    <p className="text-gray-800 hover:text-indigo-600">5. 위성 + 줌인</p>
                 </Link>
             </div>
 
