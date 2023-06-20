@@ -1,4 +1,4 @@
-package com.cafelcove.streetfinder.dao;
+package com.cafelcove.streetfinder.repository;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -15,7 +15,7 @@ import com.cafelcove.streetfinder.dto.ApiInfo;
 import com.cafelcove.streetfinder.dto.PositionDTO;
 
 @Component
-public class GeoDAO {
+public class GeoDao {
 
     private String clientId = ApiInfo.naver_id;
     private String clientSecret = ApiInfo.naver_pw;
@@ -38,26 +38,21 @@ public class GeoDAO {
 
     public PositionDTO setPlacesLatitudeLongitude(String address){
         PositionDTO positionDTO = new PositionDTO();
+        String addr = null;
+        URL url = null;
+        HttpURLConnection con = null;
         if(checkValue()){
             return positionDTO;
         }
         try {
-            String addr = URLEncoder.encode(address, "UTF-8");
-
+            System.out.println(address);
+            addr = URLEncoder.encode(address, "UTF-8");
             apiURL += addr;
-
-            System.out.println(apiURL);
-            System.out.println(clientId);
-            System.out.println(clientSecret);
-            
-            URL url = new URL(apiURL);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            url = new URL(apiURL);
+            con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
-
             con.setRequestProperty("X-NCP-APIGW-API-KEY-ID", clientId);
             con.setRequestProperty("X-NCP-APIGW-API-KEY", clientSecret);
-
-
             int responseCode = con.getResponseCode();
 
             BufferedReader br;
@@ -80,24 +75,26 @@ public class GeoDAO {
 
             JSONTokener tokener = new JSONTokener(response.toString());
             JSONObject object = new JSONObject(tokener);
+            System.out.println(object);
 			JSONArray arr = object.getJSONArray("addresses");
-			
-            for (Object object2 : arr) {
-                System.out.println(object2);
-            }
 
             for (int i = 0; i < arr.length(); i++) {
 			    JSONObject temp = (JSONObject) arr.get(i);
                 String latitude = (String) temp.get("x");
                 String longiutde = (String) temp.get("y");
-                System.out.println(latitude + " | " + longiutde);
                 if(i==0){
                 positionDTO.setLatitude(Float.parseFloat(latitude));
                 positionDTO.setLongitude(Float.parseFloat(longiutde));
                 }
 			}
+            con.disconnect();
+            tokener=null;
+            object=null;
+            arr=null;
         } catch (Exception e) {
             System.out.println(e);
+        } finally {
+
         }
         return positionDTO;
     }

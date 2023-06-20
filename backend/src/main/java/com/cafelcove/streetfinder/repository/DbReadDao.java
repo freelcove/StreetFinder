@@ -1,4 +1,4 @@
-package com.cafelcove.streetfinder.dao;
+package com.cafelcove.streetfinder.repository;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -6,14 +6,14 @@ import java.util.ArrayList;
 import org.springframework.stereotype.Component;
 
 import com.cafelcove.streetfinder.dto.ApiInfo;
-import com.cafelcove.streetfinder.model.Category;
-import com.cafelcove.streetfinder.model.Cities;
-import com.cafelcove.streetfinder.model.Places;
-import com.cafelcove.streetfinder.model.Subcategory;
+import com.cafelcove.streetfinder.entity.Category;
+import com.cafelcove.streetfinder.entity.City;
+import com.cafelcove.streetfinder.entity.Place;
+import com.cafelcove.streetfinder.entity.Subcategory;
 
     
 @Component
-public class DbReadDAO {
+public class DbReadDao {
 
     private Connection conn = null;
     private Statement stmt = null;
@@ -40,8 +40,8 @@ public class DbReadDAO {
     }
 
     //places 데이터베이스 Read
-    public ArrayList<Places> readPlaces(){
-        ArrayList<Places> arr = new ArrayList<Places>();
+    public ArrayList<Place> readPlace(){
+        ArrayList<Place> arr = new ArrayList<Place>();
         if(checkValue()){
             return arr;
         }
@@ -49,17 +49,59 @@ public class DbReadDAO {
             Class.forName("com.mysql.cj.jdbc.Driver");
             Connection conn = DriverManager.getConnection(dbConnectionPage, dbConnectionId, dbConnectionPw);
             stmt = conn.createStatement();
-            String sql = "select * from places;";
+            String sql = "select * from Place;";
             rs = stmt.executeQuery(sql);
             while(rs.next()){
-                Places data = new Places(rs.getString(0),rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getString(9));
+                Place data = new Place(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getString(9),rs.getString(10));
                 arr.add(data);
             }
         } catch (Exception e3) {
             e3.printStackTrace();
         } finally {
             try {
-                conn.close();
+                if(conn!=null){
+                    conn.close();
+                }
+                if(stmt!=null){
+                    stmt.close();
+                }
+                if(rs!=null){
+                    rs.close();
+                }
+            } catch (Exception e4) {
+                e4.printStackTrace();
+            }
+        }
+        return arr;
+    }
+
+    public Place readEachPlace(int id){
+        Place arr = new Place();
+        if(checkValue()){
+            return arr;
+        }
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection conn = DriverManager.getConnection(dbConnectionPage, dbConnectionId, dbConnectionPw);
+            stmt = conn.createStatement();
+            String sql = "select * from Place where id="+id+";";
+            rs = stmt.executeQuery(sql);
+            rs.next();
+            arr = new Place(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getString(9),rs.getString(10));
+            System.out.println(arr.toString());
+        } catch (Exception e3) {
+            e3.printStackTrace();
+        } finally {
+            try {
+                if(conn!=null){
+                    conn.close();
+                }
+                if(stmt!=null){
+                    stmt.close();
+                }
+                if(rs!=null){
+                    rs.close();
+                }
             } catch (Exception e4) {
                 e4.printStackTrace();
             }
@@ -77,18 +119,24 @@ public class DbReadDAO {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(dbConnectionPage, dbConnectionId, dbConnectionPw);
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("select * from places");
+            rs = stmt.executeQuery("select * from Category");
             while(rs.next()){
-                Category data = new Category(rs.getString(0), rs.getString(1));
+                Category data = new Category(rs.getString(1), rs.getString(2));
                 arr.add(data);
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally { 
             try {
-                conn.close();
-                stmt.close();
-                rs.close();
+                if(conn!=null){
+                    conn.close();
+                }
+                if(stmt!=null){
+                    stmt.close();
+                }
+                if(rs!=null){
+                    rs.close();
+                }
             } catch (Exception e2) {
                 e2.printStackTrace();
             }
@@ -106,18 +154,24 @@ public class DbReadDAO {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(dbConnectionPage, dbConnectionId, dbConnectionPw);
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("select * from places");
+            rs = stmt.executeQuery("select * from Subcategory");
             while(rs.next()){
-                Subcategory data = new Subcategory(rs.getString(0), rs.getString(1), rs.getString(2));
+                Subcategory data = new Subcategory(rs.getString(1), rs.getString(2), rs.getString(3));
                 arr.add(data);
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally { 
             try {
-                conn.close();
-                stmt.close();
-                rs.close();
+                if(conn!=null){
+                    conn.close();
+                }
+                if(stmt!=null){
+                    stmt.close();
+                }
+                if(rs!=null){
+                    rs.close();
+                }
             } catch (Exception e2) {
                 e2.printStackTrace();
             }
@@ -126,8 +180,8 @@ public class DbReadDAO {
     }
 
     //Cities 데이터베이스 Read
-    public ArrayList<Cities> readSCities(){
-        ArrayList<Cities> arr = new ArrayList<Cities>();
+    public ArrayList<City> readCity(){
+        ArrayList<City> arr = new ArrayList<City>();
         if(checkValue()){
             return arr;
         }
@@ -135,18 +189,24 @@ public class DbReadDAO {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conn = DriverManager.getConnection(dbConnectionPage, dbConnectionId, dbConnectionPw);
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("select * from places");
+            rs = stmt.executeQuery("select * from City");
             while(rs.next()){
-                Cities data = new Cities(rs.getString(0), rs.getString(1));
+                City data = new City(rs.getString(1), rs.getString(2));
                 arr.add(data);
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally { 
             try {
-                conn.close();
-                stmt.close();
-                rs.close();
+                if(conn!=null){
+                    conn.close();
+                }
+                if(stmt!=null){
+                    stmt.close();
+                }
+                if(rs!=null){
+                    rs.close();
+                }
             } catch (Exception e2) {
                 e2.printStackTrace();
             }
