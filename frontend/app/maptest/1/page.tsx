@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 
 declare global {
   interface Window {
@@ -26,7 +26,7 @@ const MapComponent: React.FC = () => {
 
   // Function to load the Naver Maps script
   const loadScript = (callback: () => void) => {
-    const script = document.createElement('script');
+    const script = document.createElement("script");
     script.src = scriptUrl;
     script.async = true;
     document.body.appendChild(script);
