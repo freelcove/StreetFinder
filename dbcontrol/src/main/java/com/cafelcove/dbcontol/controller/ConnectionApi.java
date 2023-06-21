@@ -15,8 +15,6 @@ import com.cafelcove.dbcontol.dto.PositionDTO;
 import com.cafelcove.dbcontol.entity.Place;
 import com.cafelcove.dbcontol.repository.DbReadDao;
 
-import io.swagger.v3.core.util.Json;
-
 @RestController
 @RequestMapping("/streetfinder")
 public class ConnectionApi {

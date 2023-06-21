@@ -13,8 +13,6 @@ import com.cafelcove.streetfinder.dto.PositionDTO;
 import com.cafelcove.streetfinder.dto.PositionDataDTO;
 import com.cafelcove.streetfinder.repository.GetPositionDAO;
 
-import jakarta.websocket.server.PathParam;
-
 @RestController
 @RequestMapping("/api")
 public class ApiConnection {

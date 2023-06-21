@@ -1,10 +1,6 @@
 package com.cafelcove.streetfinder.repository;
 
 import java.sql.*;
-import java.util.ArrayList;
-
-import org.springframework.stereotype.Component;
-
 import com.cafelcove.streetfinder.dto.PositionDTO;
 
 public class GetPositionDAO {

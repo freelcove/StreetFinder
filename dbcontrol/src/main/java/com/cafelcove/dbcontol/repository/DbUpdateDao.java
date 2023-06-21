@@ -7,10 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.cafelcove.dbcontol.dto.ApiInfo;
 import com.cafelcove.dbcontol.dto.PositionDTO;
-import com.cafelcove.dbcontol.entity.Category;
-import com.cafelcove.dbcontol.entity.City;
 import com.cafelcove.dbcontol.entity.Place;
-import com.cafelcove.dbcontol.entity.Subcategory;
 
 @Component
 public class DbUpdateDao {

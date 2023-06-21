@@ -20,8 +20,6 @@ import com.cafelcove.dbcontol.repository.DbReadDao;
 import com.cafelcove.dbcontol.repository.DbUpdateDao;
 import com.cafelcove.dbcontol.repository.GeoDao;
 
-import jakarta.websocket.server.PathParam;
-
 @RestController
 @RequestMapping("/com/v1/controll")
 public class TestController {
