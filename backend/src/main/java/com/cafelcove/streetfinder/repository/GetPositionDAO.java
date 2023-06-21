@@ -46,6 +46,7 @@ public class GetPositionDAO {
                 count++;
                 if(rs.next()){
                     data.setPlace_id(id);
+                    data.setPlace_name(rs.getString(2));
                     data.setLatitude(Float.parseFloat(rs.getString(3)));
                     data.setLongitude(Float.parseFloat(rs.getString(4)));
                     notSucess=false;

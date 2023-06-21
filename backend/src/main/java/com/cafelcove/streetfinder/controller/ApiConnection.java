@@ -28,6 +28,7 @@ public class ApiConnection {
 
     @GetMapping(value = "/position/each")
     public PositionDataDTO eachPosition() {
+        System.out.println("Catch the connection try");
         List<PositionDTO> data = new ArrayList<PositionDTO>();
         PositionDataDTO result = new PositionDataDTO();
         GetPositionDAO dao = new GetPositionDAO();
@@ -36,11 +37,13 @@ public class ApiConnection {
             result.setResult("Sucess");
             result.setData(data);
         }
+        System.out.println(result);
         return result;
     }
 
     @GetMapping(value = "/position/multiple/{variable}")
     public PositionDataDTO multiplePosition(@PathVariable String variable){
+        System.out.println("Catch the connection try");
         List<PositionDTO> data = new ArrayList<PositionDTO>();
         PositionDataDTO result = new PositionDataDTO();
         GetPositionDAO dao = new GetPositionDAO();
@@ -58,6 +61,7 @@ public class ApiConnection {
             result.setResult("Sucess");
             result.setData(data);
         }
+        System.out.println(result);
         return result;
     }
 
