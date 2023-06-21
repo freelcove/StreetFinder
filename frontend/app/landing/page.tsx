@@ -18,7 +18,7 @@ const Home = () => {
     setIsZooming(true);
     if (map) {
       const targetZoom = 22;
-      const zoomStep = 1;
+      const zoomStep = 5;
       let currentZoom = map.getZoom();
       
       const intervalId = setInterval(() => {
@@ -32,7 +32,7 @@ const Home = () => {
         } else {
           map.setZoom(currentZoom, true);
         }
-      }, 500);
+      }, 1500);
     }
   }, [map]);
 
