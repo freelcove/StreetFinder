@@ -1,7 +1,7 @@
 "use client";
 
-import Link from 'next/link';
-import {useEffect} from 'react';
+import Link from "next/link";
+import { useEffect } from "react";
 import { useSession, getSession } from "next-auth/react";
 
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -12,7 +12,7 @@ export default function MyComponent() {
   useEffect(() => {
     const interval = setInterval(() => {
       // Manually update session
-      getSession().then(session => console.log("session refreshed"));
+      getSession().then((session) => console.log("session refreshed"));
     }, 60000); // Check every minute
 
     return () => clearInterval(interval); // Clean up on component unmount
@@ -23,10 +23,11 @@ export default function MyComponent() {
       {/* Navbar */}
       <nav className="bg-transparent shadow-md">
         <div className="container mx-auto px-6 py-3 flex justify-between items-center">
-          <div className="text-3xl font-bold">
-            Street Finder
-          </div>
+          <div className="text-3xl font-bold">Street Finder</div>
           <div className="flex justify-between items-center gap-5 text-lg">
+            <Link href="/practice">
+              <p className="hover:text-indigo-200 cursor-pointer">Practice Game</p>
+            </Link>
             <Link href="/apitest">
               <p className="hover:text-indigo-200 cursor-pointer">API Test</p>
             </Link>
@@ -36,8 +37,8 @@ export default function MyComponent() {
             <Link href="/maptest">
               <p className="hover:text-indigo-200 cursor-pointer">Map Test</p>
             </Link>
-            <Link href="/menu4">
-              <p className="hover:text-indigo-200 cursor-pointer">Menu 4</p>
+            <Link href="/landing">
+              <p className="hover:text-indigo-200 cursor-pointer">Landing Page Test</p>
             </Link>
             <Link href="/auth">
               <p className="hover:text-indigo-200 cursor-pointer">Auth</p>
@@ -75,9 +76,7 @@ export default function MyComponent() {
       <footer className="bg-white shadow-md">
         <div className="container mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
-            <div className="text-gray-700">
-              &copy; 2023 Street Finder, Inc.
-            </div>
+            <div className="text-gray-700">&copy; 2023 Street Finder, Inc.</div>
             <div className="flex justify-between items-center gap-5 text-gray-700">
               <Link href="/privacy">
                 <p>Privacy Policy</p>
