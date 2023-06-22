@@ -20,6 +20,9 @@ export default function page() {
                 <Link href="/maptest/5">
                     <p className="text-gray-800 hover:text-indigo-600">5. 위성 + 줌인</p>
                 </Link>
+		<Link href="/maptest/6">
+                    <p className="text-gray-800 hover:text-indigo-600">6. 파노라마 + 맵(backend 연동 테스트) </p>
+                </Link>
             </div>
 
         </div>
