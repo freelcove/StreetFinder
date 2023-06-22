@@ -9,6 +9,7 @@ export default function Map() {
   const mapInstanceRef = useRef(null);
   const userMarkerRef = useRef(null);
   const actualMarkerRef = useRef(null);
+  const polylineRef = useRef(null);
   const { userCoordinates, coordinates, gameStatus, setUserCoordinates } = useContext(GameContext);
 
   const initMap = () => {
@@ -32,12 +33,16 @@ export default function Map() {
   useEffect(() => {
 
     initMap();
-
-
-
+    polylineRef.current = new window.naver.maps.Polyline({
+      map: mapInstanceRef.current,
+      path: [],
+      strokeColor: '#5347AA',
+      strokeWeight: 2
+    });
 
     window.naver.maps.Event.addListener(mapInstanceRef.current, "click", function (e: any) {
       if (!userMarkerRef.current) {
+        console.log("no marker")
         userMarkerRef.current = new window.naver.maps.Marker({
           position: e.coord,
           map: mapInstanceRef.current,
@@ -46,25 +51,40 @@ export default function Map() {
       else {
         userMarkerRef.current.setPosition(e.coord);
       }
-      
+
       setUserCoordinates({
         lat: e.coord.lat(),
         lng: e.coord.lng(),
       })
     });
-    
+
 
   }, []);
 
 
   useEffect(() => {
+
     if (gameStatus === 'results' && coordinates) {
       actualMarkerRef.current = new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(coordinates.lat, coordinates.lng),
         map: mapInstanceRef.current,
       });
+
+      mapInstanceRef.current.setCenter(userCoordinates)
+      
+      polylineRef.current.setPath([userCoordinates, coordinates]);
+      polylineRef.current.setMap(mapInstanceRef.current);
+
+      //TODO: set zoom according to the polyline distance
+      let polylineDistance = polylineRef.current.getDistance()
+      if (polylineDistance > 1000)
+      {
+        mapInstanceRef.current.setZoom(11, true);
+      }
+     
+
     }
-  
+
     if (gameStatus === 'playing') {
       if (userMarkerRef.current) {
         userMarkerRef.current.setMap(null);
@@ -74,9 +94,15 @@ export default function Map() {
         actualMarkerRef.current.setMap(null);
         actualMarkerRef.current = null;
       }
+      if (polylineRef.current) {
+        polylineRef.current.setMap(null);
+        polylineRef.current.setPath([]);
+        
+
+      }
     }
-  
-  }, [gameStatus, coordinates]);
+
+  }, [gameStatus, coordinates,]);
 
 
   return (

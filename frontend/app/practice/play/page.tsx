@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import Panorama from "@/app/practice/play/components/Panorama";
 import Map from "@/app/practice/play/components/Map";
 import { GameContext } from './context/GameContext';
+import Link from 'next/link';
 
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
     var R = 6371; // km (change this constant to get miles)
@@ -21,8 +22,8 @@ export default function PracticePlayPage() {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const { data: session, status } = useSession();
     const [gameStatus, setGameStatus] = useState('playing');
-    const [coordinates, setCoordinates] = useState<{ latitude: number; longitude: number; } | null>(null);
-    const [userCoordinates, setUserCoordinates] = useState<{ latitude: number; longitude: number; } | null>(null);
+    const [coordinates, setCoordinates] = useState<{ lat: number; lng: number; } | null>(null);
+    const [userCoordinates, setUserCoordinates] = useState<{ lat: number; lng: number; } | null>(null);
     const [distance, setDistance] = useState<number | null>(null);
 
     const fetchAndSetCoordinates = async () => {
@@ -36,8 +37,8 @@ export default function PracticePlayPage() {
                 });
                 const data = await response.json();
                 setCoordinates({
-                    lat: data.latitude,
-                    lng: data.longitude
+                    lat: data.lat,
+                    lng: data.lng
                 });
 
             } catch (error) {
@@ -53,18 +54,19 @@ export default function PracticePlayPage() {
     // Handle Guess/Next game button click
     const handleButtonClick = () => {
         if (gameStatus === 'playing' && userCoordinates && coordinates) {
-            // const dist = calculateDistance(
-            //     userCoordinates.latitude,
-            //     userCoordinates.longitude,
-            //     coordinates.latitude,
-            //     coordinates.longitude
-            // );
-            // setDistance(dist);
+            const dist = calculateDistance(
+                userCoordinates.lat,
+                userCoordinates.lng,
+                coordinates.lat,
+                coordinates.lng
+            );
+            setDistance(dist);
+            console.log(dist);
             setGameStatus('results');
         } else {
             fetchAndSetCoordinates();
             setUserCoordinates(null);
-           // setDistance(null);
+           setDistance(null);
             setGameStatus('playing');
         }
     };
@@ -79,10 +81,23 @@ export default function PracticePlayPage() {
                         </div>
                         <div className="absolute bottom-5 right-5 w-[20%] aspect-[4/3] bg-white opacity-40 hover:w-[30%] origin-bottom-right hover:opacity-100 transition-all duration-200 z-10">
                             <Map />
+                            {distance && gameStatus === 'results' && (
+                                <div 
+                                    className={`absolute top-2 left-1/2 transform -translate-x-1/2 z-20 px-4 py-2 rounded 
+                                                ${distance <= 0.5 ? 'bg-green-500' : 'bg-red-500'} text-white`}
+                                >
+                                    {distance.toFixed(2)} km
+                                </div>
+                            )}
                             <button onClick={handleButtonClick} className="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-20 bg-blue-500 text-white px-4 py-2 rounded">
                                 {gameStatus === 'playing' ? 'Guess' : 'Next Game'}
                             </button>
                         </div>
+                        <Link href="/">
+                        <button className="absolute bottom-5 left-5 z-20 bg-blue-500 text-white px-4 py-2 rounded">
+                            Home
+                        </button>
+                        </Link>
                     </>
                 )}
 

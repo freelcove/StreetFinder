@@ -13,10 +13,10 @@ public class TestController2 {
     public Map<String, Double> getCoordinates() {
         Map<String, Double> coordinates = new HashMap<>();
     
-        double latitude = generateRandomCoordinate(35.77, 35.98, 7);
-        double longitude = generateRandomCoordinate(128.43, 128.77, 7); 
-        coordinates.put("latitude", latitude);
-        coordinates.put("longitude", longitude);
+        double lat = generateRandomCoordinate(35.77, 35.98, 7);
+        double lng = generateRandomCoordinate(128.43, 128.77, 7); 
+        coordinates.put("lat", lat);
+        coordinates.put("lng", lng);
     
          return coordinates;
     }
