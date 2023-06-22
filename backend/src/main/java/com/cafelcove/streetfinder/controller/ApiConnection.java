@@ -35,7 +35,7 @@ public class ApiConnection {
             result.setResult("Sucess");
             result.setData(data);
         }
-        System.out.println(result);
+        System.out.println(result.getData().get(0).getPlace_name());
         return result;
     }
 

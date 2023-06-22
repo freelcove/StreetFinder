@@ -19,13 +19,13 @@ export default function MapPanoTest() {
     }, 2000);
     
     let lat;
-    let lon;
+    let lng;
 
 
     const initMapPano = () => {
 
         lat=position.data[0].latitude;
-        lon=position.data[0].longitude;
+        lng=position.data[0].longitude;
 
 
         if (!window.naver.maps.Panorama) {
@@ -42,7 +42,7 @@ export default function MapPanoTest() {
 
         // initialize panorama
         const panoOptions = {
-            position: new window.naver.maps.LatLng(lon, lat),
+            position: new window.naver.maps.LatLng(lng, lat),
             pov: {
                 pan: -135,
                 tilt: 29,
@@ -68,11 +68,6 @@ export default function MapPanoTest() {
     };
 
 
-    // useEffect(() => {
-    //     initMapPano();
-    //     console.log(position);
-        
-    // }, [position]);
 
     return (
         <div className="w-screen h-screen">

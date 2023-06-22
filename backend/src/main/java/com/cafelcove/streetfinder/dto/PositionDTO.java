@@ -10,12 +10,13 @@ public class PositionDTO {
     private String place_name;
     private Float latitude;
     private Float longitude;
+    private int visits;
 
 
     @Override
     public String toString() {
         String result = "";
-        result += "{place_id: "+ this.place_id + ", place_name: " + this.place_name + ", latitude: " + this.latitude + ", longitude: " + this.longitude + "}";
+        result += "{place_id: "+ this.place_id + ", place_name: " + this.place_name + ", latitude: " + this.latitude + ", longitude: " + this.longitude + ", visits: " + this.visits +  "}";
         return result;
     }
 }
