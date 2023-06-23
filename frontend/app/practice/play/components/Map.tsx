@@ -12,6 +12,9 @@ export default function Map() {
   const polylineRef = useRef(null);
   const { userCoordinates, coordinates, gameStatus, setUserCoordinates } = useContext(GameContext);
 
+  const gameStatusRef = useRef(gameStatus);
+
+
   const initMap = () => {
     if (!window.naver) {
       console.error('Naver Maps script is not loaded.');
@@ -25,13 +28,12 @@ export default function Map() {
       scaleControl: false,
       mapDataControl: false,
       logoControl: false,
-
     };
+
     mapInstanceRef.current = new window.naver.maps.Map(mapRef.current, mapOptions);
   };
 
   useEffect(() => {
-
     initMap();
     polylineRef.current = new window.naver.maps.Polyline({
       map: mapInstanceRef.current,
@@ -41,23 +43,24 @@ export default function Map() {
     });
 
     window.naver.maps.Event.addListener(mapInstanceRef.current, "click", function (e: any) {
-      if (!userMarkerRef.current) {
-        console.log("no marker")
-        userMarkerRef.current = new window.naver.maps.Marker({
-          position: e.coord,
-          map: mapInstanceRef.current,
-        });
+      if (gameStatusRef.current === 'playing') {
+        if (!userMarkerRef.current) {
+          console.log("no marker")
+          userMarkerRef.current = new window.naver.maps.Marker({
+            position: e.coord,
+            map: mapInstanceRef.current,
+          });
+        }
+        else {
+          userMarkerRef.current.setPosition(e.coord);
+        }
+        setUserCoordinates({
+          lat: e.coord.lat(),
+          lng: e.coord.lng(),
+        })
       }
-      else {
-        userMarkerRef.current.setPosition(e.coord);
-      }
-
-      setUserCoordinates({
-        lat: e.coord.lat(),
-        lng: e.coord.lng(),
-      })
-    });
-
+    }
+    );
 
   }, []);
 
@@ -71,17 +74,16 @@ export default function Map() {
       });
 
       mapInstanceRef.current.setCenter(userCoordinates)
-      
+
       polylineRef.current.setPath([userCoordinates, coordinates]);
       polylineRef.current.setMap(mapInstanceRef.current);
 
       //TODO: set zoom according to the polyline distance
       let polylineDistance = polylineRef.current.getDistance()
-      if (polylineDistance > 1000)
-      {
+      if (polylineDistance > 1000) {
         mapInstanceRef.current.setZoom(11, true);
       }
-     
+
 
     }
 
@@ -97,13 +99,25 @@ export default function Map() {
       if (polylineRef.current) {
         polylineRef.current.setMap(null);
         polylineRef.current.setPath([]);
-        
+
 
       }
     }
 
   }, [gameStatus, coordinates,]);
 
+  useEffect(() => {
+    gameStatusRef.current = gameStatus;
+  }, [gameStatus]);
+
+  useEffect(() => {
+    return () => {
+      // Clean up on unmount
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.destroy();
+      }
+    };
+  }, []);
 
   return (
     <div ref={mapRef} className="w-full h-full" />

@@ -32,7 +32,7 @@ public class ApiConnection {
         GetPositionDAO dao = new GetPositionDAO();
         data.add(dao.getPosition(dbUrl, dbId, dbPw));
         if (data != null) {
-            result.setResult("Sucess");
+            result.setResult("Success");
             result.setData(data);
         }
         System.out.println(result.getData().get(0).getPlace_name());

@@ -43,8 +43,8 @@ public class GetPositionDAO {
                 if(rs.next()){
                     data.setPlace_id(id);
                     data.setPlace_name(rs.getString(2));
-                    data.setLatitude(Float.parseFloat(rs.getString(3)));
-                    data.setLongitude(Float.parseFloat(rs.getString(4)));
+                    data.setLat(Float.parseFloat(rs.getString(3)));
+                    data.setLng(Float.parseFloat(rs.getString(4)));
                     notSucess=false;
                 }
                 rs.close();

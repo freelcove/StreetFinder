@@ -1,3 +1,4 @@
+
 "use client";
 import * as THREE from 'three';
 import { useRef, useMemo, useState, useEffect } from 'react';
@@ -5,7 +6,6 @@ import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 
 
 function MovingClouds({ isZooming }) {
-    // Load the cloud texture
     const cloudTexture = useLoader(THREE.TextureLoader, '/image/cloud1.png');
     const cloudRefs = useRef([]);
 
@@ -14,7 +14,7 @@ function MovingClouds({ isZooming }) {
         cloudRefs.current.forEach((cloud, index) => {
             const speed = isZooming ? 0.3 + index * 0.01 : 0.001 + index * 0.001;
             cloud.position.z += speed;
-            if (!isZooming && cloud.position.z > 10) {
+            if (!isZooming && cloud.position.z > 5) {
                 cloud.position.set(Math.random() * 20 - 10, Math.random() * 10 - 5, Math.random() * -50);
             }
         });
@@ -22,7 +22,7 @@ function MovingClouds({ isZooming }) {
 
     // Create clouds using useMemo for performance optimization
     const clouds = useMemo(() => {
-        const cloudsArray = new Array(40).fill(null).map((_, index) => {
+        const cloudsArray = new Array(15).fill(null).map((_, index) => {
             const scale = index < 10 ? Math.random() * 25 + 25 : Math.random() * 10 + 15;
             const opacity = index < 10 ? 0.5 : 0.9;
             return (

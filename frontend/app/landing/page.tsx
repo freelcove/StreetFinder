@@ -17,8 +17,8 @@ const Home = () => {
   const handleZoomClick = useCallback(() => {
     setIsZooming(true);
     if (map) {
-      const targetZoom = 22;
-      const zoomStep = 5;
+      const targetZoom = 13;
+      const zoomStep = 1;
       let currentZoom = map.getZoom();
       
       const intervalId = setInterval(() => {
@@ -27,12 +27,12 @@ const Home = () => {
           map.setZoom(targetZoom, true);
           clearInterval(intervalId);
           setIsZooming(false); // Reset isZooming to false when zoom is complete
-          setShowCanvas(false);
-          setShowMap(false);
+          //setShowCanvas(false);
+          //setShowMap(false);
         } else {
           map.setZoom(currentZoom, true);
         }
-      }, 1500);
+      }, 1000);
     }
   }, [map]);
 

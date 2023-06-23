@@ -17,10 +17,17 @@ export default function Panorama() {
             position: new window.naver.maps.LatLng(coordinates.lat, coordinates.lng),
             pov: {
                 pan: -135,
-                tilt: 29,
+                tilt: 25,
                 fov: 100,
             },
             flightSpot: false,
+            logoControl: false,
+            zoomControl: false,
+            aroundControl: false,
+
+
+
+
         };
         setPanorama(new window.naver.maps.Panorama(panoRef.current, panoOptions));
     };
@@ -49,9 +56,18 @@ export default function Panorama() {
         };
     }, [panorama]);
 
+    useEffect(() => {
+        return () => {
+            // Clean up on unmount
+            if (panorama) {
+                panorama.destroy();
+            }
+        };
+    }, [panorama]);
+
 
 
     return (
-        <div ref={panoRef} className="w-full h-full" />
+        <div ref={panoRef} className="w-full h-full z-0" />
     );
 };
