@@ -34,7 +34,7 @@ public class SecurityConfig {
                 .cors().and()
                 .csrf().disable()
                 .authorizeRequests()
-                .requestMatchers(WHITE_LIST).permitAll() // Allow WebSocket connections
+                .requestMatchers(WHITE_LIST).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(AuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -43,4 +43,3 @@ public class SecurityConfig {
     }
 }
 
-// @PreAuthorize("hasRole('ROLE_USER')")

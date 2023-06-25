@@ -1,10 +1,10 @@
 "use client";
 
-import SkyDivingCanvas from '@/components/SkyDivingCanvas';
-import SatelliteMap from '@/components/SatelliteMap';
-import LandingPageController from '@/components/LandingPageController';
+import SkyDivingCanvas from '@/app/components/SkyDivingCanvas';
+import SatelliteMap from '@/app/components/SatelliteMap';
+import LandingPageController from '@/app/components/LandingPageController';
 import { useState, useCallback } from 'react';
-import LandingPanorama from '@/components/LandingPanorama';
+import LandingPanorama from '@/app/components/LandingPanorama';
 import Link from 'next/link';
 
 // Home.js

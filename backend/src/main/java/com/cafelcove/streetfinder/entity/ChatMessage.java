@@ -15,9 +15,12 @@ public class ChatMessage {
 
     public enum MessageType {
 
-    CHAT,
-    JOIN,
-    LEAVE
-}
+        CHAT,
+        JOIN,
+        LEAVE,
+        CONNECT,
+        DISCONNECT,
+        WIN
+    }
 
 }

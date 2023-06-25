@@ -27,8 +27,11 @@ export default function MyComponent() {
             Street Finder
           </div>
           <div className="flex justify-between items-center gap-5 text-lg">
-            <Link href="/practice">
-              <p className="hover:text-indigo-200 cursor-pointer">Practice Game</p>
+            <Link href="/singleplayer">
+              <p className="hover:text-indigo-200 cursor-pointer">SINGLEPLAYER</p>
+            </Link>
+            <Link href="/multiplayer">
+              <p className="hover:text-indigo-200 cursor-pointer">MULTIPLAYER</p>
             </Link>
             <Link href="/apitest">
               <p className="hover:text-indigo-200 cursor-pointer">API Test</p>

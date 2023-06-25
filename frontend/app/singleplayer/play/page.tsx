@@ -4,9 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import Panorama from "@/app/practice/play/components/Panorama";
 import Map from "@/app/practice/play/components/Map";
-import { GameContext } from './context/GameContext';
+import { GameContext } from '../context/GameContext';
 import Link from 'next/link';
-import { calculateDistance } from '@/utils/calculateDistance';
+import { calculateDistance } from '@/app/utils/calculateDistance';
 
 
 export default function PracticePlayPage() {

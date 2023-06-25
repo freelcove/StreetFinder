@@ -59,6 +59,7 @@ const handler = NextAuth({
         async jwt({ token, user, account }) {
             const jwtPayload = {
                 id: user?.id || token.id,
+                username: user?.name || token.username,
                 email: user?.email || token.email,
                 role: 'ROLE_USER',
             };
@@ -89,7 +90,7 @@ const handler = NextAuth({
                     role: 'ROLE_USER'
                 };
 
-                const refreshedToken = jwt.sign(jwtPayload, JWT_SECRET, { expiresIn: '1h' });
+                const refreshedToken = jwt.sign(jwtPayload, JWT_SECRET, { expiresIn: '24h' });
                 token.accessToken = refreshedToken;
             }
 

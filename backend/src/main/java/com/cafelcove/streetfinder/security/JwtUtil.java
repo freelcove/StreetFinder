@@ -1,4 +1,4 @@
-package com.cafelcove.streetfinder.util;
+package com.cafelcove.streetfinder.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

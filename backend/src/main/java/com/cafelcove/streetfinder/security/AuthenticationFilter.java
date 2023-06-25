@@ -1,6 +1,5 @@
 package com.cafelcove.streetfinder.security;
 
-import com.cafelcove.streetfinder.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,7 +32,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                 String userId = claims.get("id", String.class);
                 String role = claims.get("role", String.class);
                 GrantedAuthority authority = new SimpleGrantedAuthority(role);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId, null, Collections.singleton(authority));
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId,
+                        null, Collections.singleton(authority));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {
                 SecurityContextHolder.clearContext();
