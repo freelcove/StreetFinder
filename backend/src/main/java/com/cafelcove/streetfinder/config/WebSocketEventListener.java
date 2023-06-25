@@ -8,7 +8,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
-import com.cafelcove.streetfinder.entity.ChatMessage;
+import com.cafelcove.streetfinder.entity.Message;
 import com.cafelcove.streetfinder.entity.User;
 import com.cafelcove.streetfinder.service.GameService;
 import lombok.RequiredArgsConstructor;
@@ -27,41 +27,25 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        UsernamePasswordAuthenticationToken user = (UsernamePasswordAuthenticationToken) headerAccessor.getUser();
-        User userPrincipal = (User) user.getPrincipal();
-        String userId = userPrincipal.getUserId();
-        String username = userPrincipal.getUsername();
-        String role = userPrincipal.getRole();
+                if (headerAccessor.getUser() != null) {
+        UsernamePasswordAuthenticationToken userToken = (UsernamePasswordAuthenticationToken) headerAccessor.getUser();
+        User user = (User) userToken.getPrincipal();
+        gameService.addUser(user);
+        } else {
+            System.out.println("headerAccessor.getUser() is null");
+        }
 
-        gameService.addUser(username);
-        String gameState = gameService.getGameState();
-        messagingTemplate.convertAndSendToUser(userId, "/queue/game", gameState);
-
-        // construct chat message for connection
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setType(ChatMessage.MessageType.CONNECT);
-        chatMessage.setSender(username);
-        // send chat message
-        messagingTemplate.convertAndSend("/topic/public", chatMessage);
     }
 
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         if (headerAccessor.getUser() != null) {
-            UsernamePasswordAuthenticationToken user = (UsernamePasswordAuthenticationToken) headerAccessor.getUser();
-            User userPrincipal = (User) user.getPrincipal();
-            String userId = userPrincipal.getUserId();
-            String username = userPrincipal.getUsername();
-            String role = userPrincipal.getRole();
+        UsernamePasswordAuthenticationToken userToken = (UsernamePasswordAuthenticationToken) headerAccessor.getUser();
+        User user = (User) userToken.getPrincipal();
+ 
+            gameService.removeUser(user);
 
-            gameService.removeUser(username);
-            // construct chat message
-            ChatMessage chatMessage = new ChatMessage();
-            chatMessage.setType(ChatMessage.MessageType.DISCONNECT);
-            chatMessage.setSender(username);
-            // send chat message
-            messagingTemplate.convertAndSend("/topic/public", chatMessage);
         } else {
             System.out.println("headerAccessor.getUser() is null");
         }

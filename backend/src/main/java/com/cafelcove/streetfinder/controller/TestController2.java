@@ -12,13 +12,13 @@ public class TestController2 {
     @GetMapping("/coordinates")
     public Map<String, Double> getCoordinates() {
         Map<String, Double> coordinates = new HashMap<>();
-    
+
         double lat = generateRandomCoordinate(35.77, 35.98, 7);
-        double lng = generateRandomCoordinate(128.43, 128.77, 7); 
+        double lng = generateRandomCoordinate(128.43, 128.77, 7);
         coordinates.put("lat", lat);
         coordinates.put("lng", lng);
-    
-         return coordinates;
+
+        return coordinates;
     }
 
     private double generateRandomCoordinate(double min, double max, int decimalPoint) {
@@ -29,5 +29,4 @@ public class TestController2 {
         return Math.round(value * scale) / scale;
     }
 
-   
 }
