@@ -2,14 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
-import Panorama from "@/app/practice/play/components/Panorama";
-import Map from "@/app/practice/play/components/Map";
+import Panorama from "@/app/singleplayer/components/Panorama";
+import Map from "@/app/singleplayer/components/Map";
 import { GameContext } from '../context/GameContext';
 import Link from 'next/link';
 import { calculateDistance } from '@/app/utils/calculateDistance';
 
 
-export default function PracticePlayPage() {
+export default function SingleplayerPlayPage() {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const { data: session, status } = useSession();
     const [gameStatus, setGameStatus] = useState('playing');

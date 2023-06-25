@@ -17,6 +17,7 @@ export default function GameComponent() {
     const { data: session } = useSession();
     const [gameState, setGameState] = useState('');
     const [userState, setUserState] = useState('PLAYING');
+    const [photodate, setPhotodate] = useState('');
     const username = session?.user?.name || '';
     const userId = session?.user?.id || '';
     const [connected, setConnected] = useState<boolean>(false);
@@ -122,22 +123,23 @@ export default function GameComponent() {
     };
 
     return (
-        <MultiplayerGameContext.Provider value={{ stompClient, gameState, users, connected, coordinates, userCoordinates, setUserCoordinates, userState, setUserState }}>
+        <MultiplayerGameContext.Provider value={{ stompClient, gameState, users, connected, coordinates, userCoordinates, setUserCoordinates, userState, setUserState, photodate, setPhotodate }}>
             <div className="relative w-full h-full overflow-hidden z-0">
                 {coordinates && (
                     <>
-                        <Panorama />
+                       
                         <div className="absolute top-5 right-5 w-[20%] aspect-[4/3] z-10">
                             <MultiplayerChat />
 
                         </div>
-                        <div className="absolute bottom-5 right-5 w-[20%] aspect-[4/3] bg-white opacity-40 hover:w-[30%] origin-bottom-right hover:opacity-100 transition-all duration-200 z-10">
+                        <div className="absolute bottom-5 right-5 w-[20%] aspect-[4/3] bg-white opacity-80 hover:w-[30%] origin-bottom-right hover:opacity-100 transition-all duration-200 z-10">
                             <Map />
                         </div>
-                        <div className="absolute top-5 left-5 w-[10%] aspect-[4/3] z-10">
+                        {/* <div className="absolute top-5 left-5 w-[10%] aspect-[4/3] z-10">
                             <UserList />
 
-                        </div>
+                        </div> */}
+                         <Panorama />
                     </>
                 )}
             </div>

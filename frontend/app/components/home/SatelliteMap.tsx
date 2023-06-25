@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from 'react';
 export default function SatelliteMap() {
   const mapRef = useRef<HTMLDivElement>(null);
 
-  // Function to initialize the Naver map
   const initMap = () => {
     const mapOptions = {
       center: new window.naver.maps.LatLng(35.876436, 128.625559),

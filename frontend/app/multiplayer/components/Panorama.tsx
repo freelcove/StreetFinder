@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, useContext } from 'react';
 
 export default function Panorama() {
     const panoRef = useRef<HTMLDivElement>(null);
-    const {coordinates} = useContext(MultiplayerGameContext);
+    const {coordinates, photodate, setPhotodate} = useContext(MultiplayerGameContext);
     const [panorama, setPanorama] = useState(null);
 
     const initPano = () => {
@@ -23,12 +23,9 @@ export default function Panorama() {
             logoControl: false,
             zoomControl: false,
             aroundControl: false,
-
-
-
-
         };
         setPanorama(new window.naver.maps.Panorama(panoRef.current, panoOptions));
+
     };
 
     useEffect(() => {
@@ -39,6 +36,10 @@ export default function Panorama() {
     useEffect(() => {
         if (panorama && coordinates) {
             const position = new window.naver.maps.LatLng(coordinates.lat, coordinates.lng);
+           //TODO: find a way to get photodate after initPano
+            console.log(panorama.getLocation().photodate)
+
+
             panorama.setPosition(position);
         }
     }, [coordinates]);
@@ -56,6 +57,7 @@ export default function Panorama() {
     }, [panorama]);
 
     useEffect(() => {
+
         return () => {
             // Clean up on unmount
             if (panorama) {

@@ -9,7 +9,7 @@ export default function PracticePage() {
             <p>3. Guess 버튼을 클릭</p>
             <br></br>
             
-            <Link href="/practice/play">
+            <Link href="/singleplayer/play">
                 <p className="text-gray-800 font-bold text-2xl hover:text-indigo-600">Play</p>
             </Link>
         </div>
