@@ -108,9 +108,9 @@ export default function GameComponent() {
                 }, 5000);
             }
         }
-    }, [userCoordinates]    )
+    }, [userCoordinates])
 
-    useEffect(()=> {
+    useEffect(() => {
         console.log(userState);
     }, [userState])
     const handleWin = () => {

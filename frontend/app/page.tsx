@@ -1,100 +1,85 @@
 "use client";
 
+import SkyDivingCanvas from '@/app/components/home/SkyDivingCanvas';
+import SatelliteMap from '@/app/components/home/SatelliteMap';
+import { useState, useCallback } from 'react';
 import Link from 'next/link';
-import { useEffect } from 'react';
-import { useSession, getSession } from "next-auth/react";
+import Image from 'next/image'
 
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+import { HomeContext } from './context/HomeContext';
 
-export default function MyComponent() {
-  const { data: session } = useSession();
+// Home.js
+export default function Home() {
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Manually update session
-      getSession().then(session => console.log("session refreshed"));
-    }, 60000); // Check every minute
+  enum Stage {
+    LANDING,
+    CHOOSE_MODE
+  }
 
-    return () => clearInterval(interval); // Clean up on component unmount
-  }, []);
+  const [map, setMap] = useState(null);
+  const [isZooming, setIsZooming] = useState(false);
+  const [homeState, setHomeState] = useState(Stage.LANDING);
+
+  const handleZoomClick = useCallback(() => {
+    setIsZooming(true);
+    if (map) {
+      const targetZoom = 13;
+      const zoomStep = 1;
+      let currentZoom = map.getZoom();
+
+      const intervalId = setInterval(() => {
+        currentZoom += zoomStep;
+        if (currentZoom >= targetZoom) {
+          map.setZoom(targetZoom, true);
+          clearInterval(intervalId);
+          setIsZooming(false); // Reset isZooming to false when zoom is complete
+
+        } else {
+          map.setZoom(currentZoom, true);
+        }
+      }, 1000);
+    }
+  }, [map]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-r from-indigo-500 to-blue-500 text-white">
-      {/* Navbar */}
-      <nav className="bg-transparent shadow-md">
-        <div className="container mx-auto px-6 py-3 flex justify-between items-center">
-          <div className="text-3xl font-bold">
-            Street Finder
-          </div>
-          <div className="flex justify-between items-center gap-5 text-lg">
+    <HomeContext.Provider value={{ homeState, setHomeState }}>
+      <div className='relative overflow-hidden w-screen h-screen'>
+        <SatelliteMap />
+        <SkyDivingCanvas isZooming={isZooming} />
+        {homeState === Stage.LANDING && (
+          <>
+            <Image
+              src="/image/title1.png"
+              loading="eager"
+              width={380}
+              height={380}
+              alt="STREET FINDER"
+              // onClick={() => setHomeState(Stage.CHOOSE_MODE)}  // set state to CHOOSE_MODE when the image is clicked
+              onClick={handleZoomClick}  // set state to CHOOSE_MODE when the image is clicked
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-in-out hover:scale-105"
+            />
+          </>
+        )}
+        {homeState === Stage.CHOOSE_MODE && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className="flex gap-10">
             <Link href="/singleplayer">
-              <p className="hover:text-indigo-200 cursor-pointer">SINGLEPLAYER</p>
+              <button className="text-xl font-bold" >
+                SINGLEPLAYER
+              </button>
             </Link>
-            <Link href="/multiplayer">
-              <p className="hover:text-indigo-200 cursor-pointer">MULTIPLAYER</p>
+            <Link href="/singleplayer">
+              <button className="text-xl font-bold" >
+                MULTIPLAYER
+              </button>
             </Link>
-            <Link href="/apitest">
-              <p className="hover:text-indigo-200 cursor-pointer">API Test</p>
-            </Link>
-            <Link href="/chat">
-              <p className="hover:text-indigo-200 cursor-pointer">Chat</p>
-            </Link>
-            <Link href="/maptest">
-              <p className="hover:text-indigo-200 cursor-pointer">Map Test</p>
-            </Link>
-            <Link href="/landing">
-              <p className="hover:text-indigo-200 cursor-pointer">Landing Page Test</p>
-            </Link>
-            <Link href="/auth">
-              <p className="hover:text-indigo-200 cursor-pointer">Auth</p>
-            </Link>
+              </div>
           </div>
-        </div>
-      </nav>
+        )}
 
-      {/* Main Content */}
-      <main className="flex-grow">
-        <div className="container mx-auto px-6 py-20">
-          <div className="text-center">
-            <h1 className="text-5xl font-bold mb-4">Welcome to Street Finder!</h1>
-            <p className="text-2xl">Discover the streets like never before</p>
-          </div>
-          <div className="grid grid-cols-3 gap-6 mt-16">
-            {/* Cards */}
-            <div className="col-span-1 bg-white p-6 rounded-lg shadow-md text-black">
-              <h3 className="text-lg font-semibold mb-4">Explore Streets</h3>
-              <p>Find streets with ease and learn about different pathways and alleys.</p>
-            </div>
-            <div className="col-span-1 bg-white p-6 rounded-lg shadow-md text-black">
-              <h3 className="text-lg font-semibold mb-4">Community Chat</h3>
-              <p>Join the community chat and engage with other street explorers.</p>
-            </div>
-            <div className="col-span-1 bg-white p-6 rounded-lg shadow-md text-black">
-              <h3 className="text-lg font-semibold mb-4">Custom Maps</h3>
-              <p>Create your custom maps and share your street adventures.</p>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-white shadow-md">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <div className="text-gray-700">
-              &copy; 2023 Street Finder, Inc.
-            </div>
-            <div className="flex justify-between items-center gap-5 text-gray-700">
-              <Link href="/privacy">
-                <p>Privacy Policy</p>
-              </Link>
-              <Link href="/terms">
-                <p>Terms of Service</p>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
+      </div>
+    </HomeContext.Provider>
   );
-}
+
+};
+
