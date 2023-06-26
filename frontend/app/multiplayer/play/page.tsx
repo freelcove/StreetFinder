@@ -50,20 +50,24 @@ export default function GameComponent() {
                 setConnected(true);
                 console.log("Connected to thet websocket!");
                 stompClient.current?.subscribe('/topic/game', (message) => {
-                    console.log('Received:', message.body);
+                    console.log('Broadcasted Message:', message.body);
                     try {
                         const messageData = JSON.parse(message.body);
-                        setGameState(messageData.gameState);
-                        setUsers(messageData.users);
-                        setCoordinates(messageData.coordinates);
+                        if (messageData.gameState) setGameState(messageData.gameState);
+                        if (messageData.users)setUsers(messageData.users);
+                        if (messageData.coordinates) setCoordinates(messageData.coordinates);
+
                     } catch (error) {
                         console.error("Error parsing message:", error);
                     }
                 });
                 stompClient.current?.subscribe(`/user/${userId}/state`, (message) => {
-                    console.log('This:', message.body);
+                    console.log('Sent to you:', message.body);
                     try {
-
+                        const messageData = JSON.parse(message.body);
+                        if (messageData.gameState) setGameState(messageData.gameState);
+                        if (messageData.users)setUsers(messageData.users);
+                        if (messageData.coordinates) setCoordinates(messageData.coordinates);
 
                     } catch (error) {
                         console.error("Error parsing message:", error);
@@ -73,6 +77,8 @@ export default function GameComponent() {
 
                 stompClient.current?.publish({
                     destination: '/app/game.start',
+                    body: JSON.stringify({ userId: userId, username: username }),
+
                 });
             },
             onStompError: (frame) => {
@@ -104,9 +110,10 @@ export default function GameComponent() {
             }
             else {
                 setUserState("HOLD");
-                setTimeout(() => {
+                const timer = setTimeout(() => {
                     setUserState("PLAYING");
                 }, 5000);
+                return () => clearTimeout(timer);
             }
         }
     }, [userCoordinates])
@@ -114,10 +121,11 @@ export default function GameComponent() {
     useEffect(() => {
         console.log(userState);
     }, [userState])
+
     const handleWin = () => {
         stompClient.current?.publish({
             destination: '/app/game.win',
-            body: JSON.stringify({ sender: username }),
+            body: JSON.stringify({ username: username }),
         });
 
     };
@@ -127,7 +135,7 @@ export default function GameComponent() {
             <div className="relative w-full h-full overflow-hidden z-0">
                 {coordinates && (
                     <>
-                       
+
                         <div className="absolute top-5 right-5 w-[20%] aspect-[4/3] z-10">
                             <MultiplayerChat />
 
@@ -135,11 +143,11 @@ export default function GameComponent() {
                         <div className="absolute bottom-5 right-5 w-[20%] aspect-[4/3] bg-white opacity-80 hover:w-[30%] origin-bottom-right hover:opacity-100 transition-all duration-200 z-10">
                             <Map />
                         </div>
-                        {/* <div className="absolute top-5 left-5 w-[10%] aspect-[4/3] z-10">
+                        <div className="absolute top-5 left-5 w-[10%] aspect-[4/3] z-10">
                             <UserList />
-
-                        </div> */}
-                         <Panorama />
+                            {photodate}
+                        </div>
+                        <Panorama />
                     </>
                 )}
             </div>

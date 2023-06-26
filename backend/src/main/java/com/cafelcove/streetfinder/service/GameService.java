@@ -30,38 +30,6 @@ public class GameService {
     private String gameState = "NOTSET";
     private Map<String, Double> coordinates = new HashMap<>();
 
-    public void addUser(User user) {
-        String userId = user.getUserId();
-        String username = user.getUsername();
-        String role = user.getRole();
-        users.add(username);
-        System.out.println("User added: " + username);
-
-        // construct chat message for connection and send it
-        Message chatMessage = new Message();
-        chatMessage.setType(Message.MessageType.CONNECT);
-        chatMessage.setSender(username);
-
-        messagingTemplate.convertAndSend("/topic/chat", chatMessage);
-    }
-
-    public void removeUser(User user) {
-        String userId = user.getUserId();
-        String username = user.getUsername();
-        String role = user.getRole();
-        users.remove(username);
-        System.out.println("User removed: " + username);
-
-        // construct chat message
-        Message chatMessage = new Message();
-        chatMessage.setType(Message.MessageType.DISCONNECT);
-        chatMessage.setSender(username);
-        // send chat message
-        messagingTemplate.convertAndSend("/topic/chat", chatMessage);
-
-        broadcastGameState();
-    }
-
     public List<String> getUsers() {
         return users;
     }
@@ -74,6 +42,38 @@ public class GameService {
         this.gameState = gameState;
     }
 
+    public void addUser(User user) {
+        String userId = user.getUserId();
+        String username = user.getUsername();
+        String role = user.getRole();
+        users.add(username);
+        System.out.println("User added: " + username);
+
+        // construct chat message for connection and send it
+        Message chatMessage = new Message();
+        chatMessage.setType(Message.MessageType.CONNECT);
+        chatMessage.setUsername(username);
+
+        messagingTemplate.convertAndSend("/topic/chat", chatMessage);
+        
+    }
+
+    public void removeUser(User user) {
+        String userId = user.getUserId();
+        String username = user.getUsername();
+        String role = user.getRole();
+        users.remove(username);
+        System.out.println("User removed: " + username);
+
+        // construct chat message
+        Message chatMessage = new Message();
+        chatMessage.setType(Message.MessageType.DISCONNECT);
+        chatMessage.setUsername(username);
+        // send chat message
+        messagingTemplate.convertAndSend("/topic/chat", chatMessage);
+
+    }
+
     public double generateRandomCoordinate(double min, double max, int decimalPoint) {
         Random random = new Random();
         double value = min + (max - min) * random.nextDouble();
@@ -83,19 +83,21 @@ public class GameService {
 
     public void startNewGame() {
         System.out.println("Starting new game");
+        if (gameState == "NOTSET") broadcastUsers();
         gameState = "IN_PROGRESS";
 
         double lat = generateRandomCoordinate(35.77, 35.98, 7);
         double lng = generateRandomCoordinate(128.43, 128.77, 7);
         coordinates.put("lat", lat);
         coordinates.put("lng", lng);
-
-        broadcastGameState();
+        
+        broadcastGameStateAndCoordinates();
     }
 
-    public void joinPreviousGame() {
+    public void joinPreviousGame(Message message) {
         System.out.println("joinPreviousGame");
-        broadcastGameState();
+        broadcastUsers();
+        broadcastGameStateAndCoordinatesToUser(message);
     }
 
     public void playerWin(Message message) {
@@ -104,7 +106,7 @@ public class GameService {
 
             Message winMessage = new Message();
             winMessage.setType(Message.MessageType.WIN);
-            winMessage.setSender(message.getSender());
+            winMessage.setUsername(message.getUsername());
 
             messagingTemplate.convertAndSend("/topic/chat", winMessage);
             broadcastGameState();
@@ -115,24 +117,19 @@ public class GameService {
         }
     }
 
-    private void broadcastGameStateAndChangeStateToDisplayResults() {
-        gameState = "DISPLAYING_RESULTS";
-        broadcastGameState();
-    }
-
-    private void broadcastGameStateAndChangeStateToInProgress() {
-        startNewGame();
-        broadcastGameState();
-    }
-
-    private void broadcastGameStateToUser(User user) {
-        String message = getGameState();
-        System.out.println("Sending game state to user " + user.getUserId() + ": " + message);
+    private void broadcastGameStateAndCoordinatesToUser(Message message) {
+        String userId = message.getUserId();
+        System.out.println("Sending game state to user " + userId + ": " + message);
         try {
-            messagingTemplate.convertAndSendToUser(user.getUserId(), "/state", message);
-            System.out.println("Game state sent successfully");
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("gameState", gameState);
+            payload.put("coordinates", coordinates);
+            String broadcastedMessage = objectMapper.writeValueAsString(payload);
+            System.out.println("Broadcasted message: " + broadcastedMessage);
+            messagingTemplate.convertAndSendToUser(userId, "/state", broadcastedMessage);
         } catch (Exception e) {
-            System.out.println("Error sending game state: " + e);
+            System.out.println("broadcast error: " + e);
+            // handle the exception
         }
 
     }
@@ -141,14 +138,54 @@ public class GameService {
         try {
             Map<String, Object> payload = new HashMap<>();
             payload.put("gameState", gameState);
-            payload.put("users", users);
-            payload.put("coordinates", coordinates);
-            String message = objectMapper.writeValueAsString(payload);
-            System.out.println("Broadcasted message: " + message);
-            messagingTemplate.convertAndSend("/topic/game", message);
+            String broadcastedMessage = objectMapper.writeValueAsString(payload);
+            System.out.println("Broadcasted message: " + broadcastedMessage);
+            messagingTemplate.convertAndSend("/topic/game", broadcastedMessage);
         } catch (Exception e) {
             System.out.println("broadcast error: " + e);
             // handle the exception
         }
     }
+
+    private void broadcastGameStateAndCoordinates() {
+        try {
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("gameState", gameState);
+            payload.put("coordinates", coordinates);
+            String broadcastedMessage = objectMapper.writeValueAsString(payload);
+            System.out.println("Broadcasted message: " + broadcastedMessage);
+            messagingTemplate.convertAndSend("/topic/game", broadcastedMessage);
+        } catch (Exception e) {
+            System.out.println("broadcast error: " + e);
+            // handle the exception
+        }
+    }
+
+    private void broadcastUsers() {
+        try {
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("users", users);
+            String broadcastedMessage = objectMapper.writeValueAsString(payload);
+            System.out.println("Broadcasted message: " + broadcastedMessage);
+            messagingTemplate.convertAndSend("/topic/game", broadcastedMessage);
+        } catch (Exception e) {
+            System.out.println("broadcast error: " + e);
+            // handle the exception
+        }
+    }
+
+    // the original broadcastGameState with three parameters
+    private void broadcastCoordinates() {
+        try {
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("coordinates", coordinates);
+            String broadcastedMessage = objectMapper.writeValueAsString(payload);
+            System.out.println("Broadcasted message: " + broadcastedMessage);
+            messagingTemplate.convertAndSend("/topic/game", broadcastedMessage);
+        } catch (Exception e) {
+            System.out.println("broadcast error: " + e);
+            // handle the exception
+        }
+    }
+
 }

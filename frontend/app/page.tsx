@@ -40,7 +40,7 @@ export default function Home() {
     initMap();
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1000);  // Set the timeout duration based on your loading time
+    }, 600);  // Set the timeout duration based on your loading time
 
     return () => clearTimeout(timer);
   }, []);
@@ -49,11 +49,12 @@ export default function Home() {
   const handleTitleClick = useCallback(() => {
     setIsZooming(true);
 
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setIsZooming(false);
       setHomeState(Stage.CHOOSE_MODE);
     }, 500);
 
+    return () => clearTimeout(timer);
 
 
   }, [map]);

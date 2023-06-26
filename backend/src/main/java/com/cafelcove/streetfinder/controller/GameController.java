@@ -18,11 +18,11 @@ public class GameController {
     }
 
     @MessageMapping("/game.start")
-    public void startGame() {
+    public void startGame(Message message) {
         if ("NOTSET".equals(gameService.getGameState())) {
             gameService.startNewGame();
         } else {
-            gameService.joinPreviousGame();
+            gameService.joinPreviousGame(message);
         }
     }
 

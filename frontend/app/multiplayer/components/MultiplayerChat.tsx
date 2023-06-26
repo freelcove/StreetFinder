@@ -10,7 +10,9 @@ const colors = [
 ];
 
 interface ChatMessage {
-  sender: string;
+  
+  userId: string;
+  username: string;
   content: string;
   type: 'CHAT' | 'CONNECT' | 'DISCONNECT' | 'WIN';
 }
@@ -56,16 +58,16 @@ export default function MultiplayerChat() {
     switch (systemMessage.type) {
       case 'CONNECT':
         textColor = 'text-green-500';
-        return <span className={textColor}>{systemMessage.sender} joined!</span>;
+        return <span className={textColor}>{systemMessage.username} joined!</span>;
       case 'DISCONNECT':
         textColor = 'text-yellow-500';
-        return <span className={textColor}>{systemMessage.sender} left!</span>;
+        return <span className={textColor}>{systemMessage.username} left!</span>;
       case 'WIN':
         textColor = 'text-red-500';
-        return <span className={textColor}>{systemMessage.sender} won the game!</span>;
+        return <span className={textColor}>{systemMessage.username} won the game!</span>;
       case 'CHAT':
         textColor = 'text-gray-800';
-        return <span className={textColor}>{systemMessage.sender}: {systemMessage.content}</span>;
+        return <span className={textColor}>{systemMessage.username}: {systemMessage.content}</span>;
       default:
         textColor = 'text-gray-800';
         return <span className={textColor}>{systemMessage.content}</span>;
@@ -76,7 +78,7 @@ export default function MultiplayerChat() {
     event.preventDefault();
     if (messageContents.trim() && stompClient.current) {
       const chatMessage = {
-        sender: username,
+        username: username,
         content: messageContents,
         type: 'CHAT'
       };

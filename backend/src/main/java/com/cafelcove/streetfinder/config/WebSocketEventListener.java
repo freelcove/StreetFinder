@@ -27,10 +27,12 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketConnectListener(SessionConnectedEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-                if (headerAccessor.getUser() != null) {
-        UsernamePasswordAuthenticationToken userToken = (UsernamePasswordAuthenticationToken) headerAccessor.getUser();
-        User user = (User) userToken.getPrincipal();
-        gameService.addUser(user);
+        if (headerAccessor.getUser() != null) {
+            UsernamePasswordAuthenticationToken userToken = (UsernamePasswordAuthenticationToken) headerAccessor
+                    .getUser();
+            User user = (User) userToken.getPrincipal();
+            gameService.addUser(user);
+
         } else {
             System.out.println("headerAccessor.getUser() is null");
         }
@@ -41,9 +43,10 @@ public class WebSocketEventListener {
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         if (headerAccessor.getUser() != null) {
-        UsernamePasswordAuthenticationToken userToken = (UsernamePasswordAuthenticationToken) headerAccessor.getUser();
-        User user = (User) userToken.getPrincipal();
- 
+            UsernamePasswordAuthenticationToken userToken = (UsernamePasswordAuthenticationToken) headerAccessor
+                    .getUser();
+            User user = (User) userToken.getPrincipal();
+
             gameService.removeUser(user);
 
         } else {
