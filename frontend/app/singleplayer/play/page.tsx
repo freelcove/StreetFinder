@@ -40,11 +40,11 @@ export default function SingleplayerPlayPage() {
                 console.error("Error fetching coordinates:", error);
             }
         }
-    }, [])
+    }, [backendUrl, session])
 
     useEffect(() => {
         fetchAndSetCoordinates();
-    }, []);
+    }, [fetchAndSetCoordinates]);
 
     // Handle Guess/Next game button click
     const handleButtonClick = () => {

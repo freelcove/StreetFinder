@@ -7,7 +7,7 @@ export default function Panorama() {
   const { coordinates, photodate, setPhotodate } = useContext(
     MultiplayerGameContext,
   );
-  const [panorama, setPanorama] = useState(null);
+  const [panorama, setPanorama] = useState<naver.maps.Panorama | null>(null);
 
   const initPano = () => {
     if (!window.naver.maps.Panorama || !coordinates) {
@@ -28,7 +28,7 @@ export default function Panorama() {
       zoomControl: false,
       aroundControl: false,
     };
-    setPanorama(new window.naver.maps.Panorama(panoRef.current, panoOptions));
+    setPanorama(new window.naver.maps.Panorama(panoRef.current!, panoOptions));
   };
 
   useEffect(() => {

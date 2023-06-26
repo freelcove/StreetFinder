@@ -102,7 +102,7 @@ export default function GameComponent() {
                 setConnected(false);
             }
         }
-    }, []);
+    }, [backendUrl,session,userId,username]);
 
     useEffect(() => {
         if (userCoordinates) {

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { GameContext } from "../context/GameContext";
-
+import Image from "next/image";
 
 export default function Panorama() {
   const panoRef = useRef<HTMLDivElement>(null);
@@ -9,28 +9,29 @@ export default function Panorama() {
   const [panoramaRotation, setPanoramaRotation] = useState(0);
   const [isMouseDown, setIsMouseDown] = useState(false);
 
-  const initPano = () => {
-    if (!window.naver.maps.Panorama || !coordinates) {
-      console.error("Naver Maps Panorama script is not loaded.");
-      return;
-    }
-    const panoOptions = {
-      position: new window.naver.maps.LatLng(coordinates.lat, coordinates.lng),
-      pov: {
-        pan: -135,
-        tilt: 0,
-        fov: 100,
-      },
-      flightSpot: false,
-      logoControl: false,
-      zoomControl: false,
-      aroundControl: false,
-    };
-
-    setPanorama(new window.naver.maps.Panorama(panoRef.current!, panoOptions));
-  };
+ 
 
   useEffect(() => {
+    const initPano = () => {
+      if (!window.naver.maps.Panorama || !coordinates) {
+        console.error("Naver Maps Panorama script is not loaded.");
+        return;
+      }
+      const panoOptions = {
+        position: new window.naver.maps.LatLng(coordinates.lat, coordinates.lng),
+        pov: {
+          pan: -135,
+          tilt: 0,
+          fov: 100,
+        },
+        flightSpot: false,
+        logoControl: false,
+        zoomControl: false,
+        aroundControl: false,
+      };
+  
+      setPanorama(new window.naver.maps.Panorama(panoRef.current!, panoOptions));
+    };
     initPano();
   }, []);
 
@@ -42,7 +43,7 @@ export default function Panorama() {
       );
       panorama.setPosition(position);
     }
-  }, [coordinates]);
+  }, [panorama, coordinates]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -111,7 +112,7 @@ export default function Panorama() {
       onMouseMove={handleMouseMove}
     >
       <div ref={panoRef} className="w-full h-full" />
-      <img
+      <Image
         src="/image/compass.png"
         alt="Compass"
         className="compass-image"
