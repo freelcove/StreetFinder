@@ -11,6 +11,7 @@ import Panorama from '../components/Panorama';
 import Map from '../components/Map';
 import { calculateDistance } from '@/app/utils/calculateDistance';
 
+
 const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export default function GameComponent() {
@@ -138,20 +139,17 @@ export default function GameComponent() {
 
     return (
         <MultiplayerGameContext.Provider value={{ stompClient, gameState, users, connected, coordinates, userCoordinates, setUserCoordinates, userState, setUserState, photodate, setPhotodate }}>
-            <div className="relative w-full h-full z-0 grid grid-cols-4">
+            <div className="relative w-full h-full flex overflow-hidden z-0">
                 {coordinates && (
                     <>
-                        <div className="col-span-3 ">
+                        <div className="w-3/4 flex-grow">
                             <Panorama />
                         </div>
-                        <div className="col-span-1 grid grid-rows-[3fr,1fr] ">
-                            <div className="w-full z-10">
-                                <div>
-                                    <MultiplayerChat />
-
-                                </div>
+                        <div className="w-1/4 flex flex-col">
+                            <div className="h-1/2 flex-grow overflow-auto">
+                                <MultiplayerChat />
                             </div>
-                            <div className="w-full z-10 block">
+                            <div className="w-full h-1/2">
                                 <Map />
                             </div>
                         </div>
@@ -159,5 +157,6 @@ export default function GameComponent() {
                 )}
             </div>
         </MultiplayerGameContext.Provider>
+
     );
 }

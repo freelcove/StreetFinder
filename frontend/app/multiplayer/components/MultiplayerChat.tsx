@@ -91,14 +91,14 @@ export default function MultiplayerChat() {
 
   return (
     <div className="p-1 w-full h-full flex flex-col bg-white">
-      <ul ref={messageAreaRef} className="h-64 w-full overflow-y-scroll p-2 rounded">
+      <ul ref={messageAreaRef} className="h-full w-full overflow-y-scroll p-2 rounded">
         {chatMessages.map((chatMessage, i) => (
           <li key={i}>
             {renderSystemMessageContent(chatMessage)}
           </li>
         ))}
       </ul>
-      <form onSubmit={sendMessage} className="flex mt-1">
+      <form onSubmit={sendMessage} className="flex w-full mt-1">
         <input
           type="text"
           placeholder="Type a message..."
