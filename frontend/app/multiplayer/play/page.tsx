@@ -105,7 +105,7 @@ export default function GameComponent() {
     }, [backendUrl,session,userId,username]);
 
     useEffect(() => {
-        if (userCoordinates) {
+        if (userCoordinates && coordinates) {
             const dist = calculateDistance(
                 userCoordinates.lat,
                 userCoordinates.lng,
@@ -123,7 +123,7 @@ export default function GameComponent() {
                 return () => clearTimeout(timer);
             }
         }
-    }, [userCoordinates])
+    }, [userCoordinates, coordinates])
 
     useEffect(() => {
         console.log(userState);

@@ -6,10 +6,11 @@ declare module "next-auth" {
    */
   interface Session {
     user: {
+      id: string,
+      name: string,
+      email?: string,
 
     },
-    session:{
-        accessToken: string,
-    }
+    accessToken?: string;
   }
 }

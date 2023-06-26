@@ -118,7 +118,7 @@ export default function Map() {
       }
     }
 
-  }, [gameState, coordinates, setUserCoordinates]);
+  }, [gameState, coordinates, setUserCoordinates, userCoordinates]);
 
   useEffect(() => {
     gameStateRef.current = gameState;

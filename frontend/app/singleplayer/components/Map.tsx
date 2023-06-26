@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useContext } from 'react';
-import { GameContext } from '../context/GameContext';
+import { GameContext } from '../context/SingleplayerGameContext';
 
 export default function Map() {
 

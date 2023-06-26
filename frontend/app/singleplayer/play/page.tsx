@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import Panorama from "@/app/singleplayer/components/Panorama";
 import Map from "@/app/singleplayer/components/Map";
-import { GameContext } from '../context/GameContext';
+import { GameContext } from '../context/SingleplayerGameContext';
 import Link from 'next/link';
 import { calculateDistance } from '@/app/utils/calculateDistance';
 
@@ -13,6 +13,7 @@ export default function SingleplayerPlayPage() {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const { data: session, status } = useSession();
     const [gameState, setGameState] = useState('playing');
+    const [photodate, setPhotodate] = useState('');
     const [coordinates, setCoordinates] = useState<{ lat: number; lng: number; } | null>(null);
     const [userCoordinates, setUserCoordinates] = useState<{ lat: number; lng: number; } | null>(null);
     const [distance, setDistance] = useState<number | null>(null);
@@ -48,7 +49,7 @@ export default function SingleplayerPlayPage() {
 
     // Handle Guess/Next game button click
     const handleButtonClick = () => {
-        if (gameState === 'playing' && userCoordinates) {
+        if (gameState === 'playing' && coordinates && userCoordinates) {
             const dist = calculateDistance(
                 userCoordinates.lat,
                 userCoordinates.lng,
@@ -71,7 +72,7 @@ export default function SingleplayerPlayPage() {
     }, [gameState]);
 
     return (
-        <GameContext.Provider value={{ gameState, setGameState, coordinates, userCoordinates, setUserCoordinates }}>
+        <GameContext.Provider value={{ gameState, setGameState, coordinates, userCoordinates, setUserCoordinates, photodate, setPhotodate }}>
             <div className="relative w-full h-full overflow-hidden z-0">
                 {coordinates && (
                     <>

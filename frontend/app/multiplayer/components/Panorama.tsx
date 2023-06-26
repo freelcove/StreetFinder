@@ -9,29 +9,31 @@ export default function Panorama() {
   );
   const [panorama, setPanorama] = useState<naver.maps.Panorama | null>(null);
 
-  const initPano = () => {
-    if (!window.naver.maps.Panorama || !coordinates) {
-      console.error(
-        "Naver Maps Panorama script or coordinates are not loaded.",
-      );
-      return;
-    }
-    const panoOptions = {
-      position: new window.naver.maps.LatLng(coordinates.lat, coordinates.lng),
-      pov: {
-        pan: -135,
-        tilt: 0,
-        fov: 120,
-      },
-      flightSpot: false,
-      logoControl: false,
-      zoomControl: false,
-      aroundControl: false,
-    };
-    setPanorama(new window.naver.maps.Panorama(panoRef.current!, panoOptions));
-  };
+  
 
   useEffect(() => {
+    const initPano = () => {
+      if (!window.naver.maps.Panorama || !coordinates) {
+        console.error(
+          "Naver Maps Panorama script or coordinates are not loaded.",
+        );
+        return;
+      }
+      const panoOptions = {
+        position: new window.naver.maps.LatLng(coordinates.lat, coordinates.lng),
+        pov: {
+          pan: -135,
+          tilt: 0,
+          fov: 120,
+        },
+        flightSpot: false,
+        logoControl: false,
+        zoomControl: false,
+        aroundControl: false,
+      };
+      setPanorama(new window.naver.maps.Panorama(panoRef.current!, panoOptions));
+    };
+
     initPano();
   }, []);
 
@@ -47,7 +49,7 @@ export default function Panorama() {
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [coordinates]);
+  }, [panorama, coordinates, setPhotodate]);
 
   useEffect(() => {
     // window 크기에 따라 화면 resize
