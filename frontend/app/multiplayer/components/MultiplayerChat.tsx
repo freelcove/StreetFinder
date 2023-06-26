@@ -25,7 +25,6 @@ export default function MultiplayerChat() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   const messageAreaRef = useRef<HTMLUListElement | null>(null);
-  const [chatVisible, setChatVisible] = useState(true);
 
 
   useEffect(() => {
@@ -58,19 +57,19 @@ export default function MultiplayerChat() {
     switch (systemMessage.type) {
       case 'CONNECT':
         textColor = 'text-green-500';
-        return <span className={textColor}>{systemMessage.username} joined!</span>;
+        return <span className={`${textColor} w-full break-words`}>{systemMessage.username} joined!</span>;
       case 'DISCONNECT':
         textColor = 'text-yellow-500';
-        return <span className={textColor}>{systemMessage.username} left!</span>;
+        return <span className={`${textColor}  w-full break-words`}>{systemMessage.username} left!</span>;
       case 'WIN':
         textColor = 'text-red-500';
-        return <span className={textColor}>{systemMessage.username} won the game!</span>;
+        return <span className={`${textColor}  w-full break-words`}>{systemMessage.username} won the game!</span>;
       case 'CHAT':
         textColor = 'text-gray-800';
-        return <span className={textColor}>{systemMessage.username}: {systemMessage.content}</span>;
+        return <span className={`${textColor}  w-full break-words`}>{systemMessage.username}: {systemMessage.content}</span>;
       default:
         textColor = 'text-gray-800';
-        return <span className={textColor}>{systemMessage.content}</span>;
+        return <span className={`${textColor}  w-full break-words`}>{systemMessage.content}</span>;
     }
   }
 
@@ -90,39 +89,25 @@ export default function MultiplayerChat() {
     }
   };
 
-
-
   return (
-    <div className="p-1 bg-white bg-opacity-80 hover:bg-opacity-100">
-      {/* <button
-        className="p-1 bg-blue-500 text-white rounded text-xs"
-        onClick={() => setChatVisible(!chatVisible)}
-      >
-        {chatVisible ? 'Hide' : 'Show'}
-      </button> */}
-      <div className={`${chatVisible ? '' : 'hidden'}`}>
-        <ul ref={messageAreaRef} className="h-64 overflow-y-scroll p-2 rounded">
-          {chatMessages.map((chatMessage, i) => (
-            <li key={i}>
-                {renderSystemMessageContent(chatMessage)}
-            </li>
-          ))}
-
-        </ul>
-        <form onSubmit={sendMessage} className="flex mt-4">
-          <input
-            type="text"
-            placeholder="Type a message..."
-            className="p-1 border border-gray-300 rounded flex-grow"
-            value={messageContents}
-            onChange={(e) => setMessageContents(e.target.value)}
-          />
-          {/* <button type="submit" className="p-2 bg-blue-500 text-white rounded">
-            Send
-          </button> */}
-        </form>
-      </div>
-
+    <div className="p-1 w-full h-full flex flex-col bg-white">
+      <ul ref={messageAreaRef} className="h-64 w-full overflow-y-scroll p-2 rounded">
+        {chatMessages.map((chatMessage, i) => (
+          <li key={i}>
+            {renderSystemMessageContent(chatMessage)}
+          </li>
+        ))}
+      </ul>
+      <form onSubmit={sendMessage} className="flex mt-1">
+        <input
+          type="text"
+          placeholder="Type a message..."
+          className="p-1 border border-gray-300 rounded flex-grow"
+          value={messageContents}
+          onChange={(e) => setMessageContents(e.target.value)}
+        />
+      </form>
     </div>
   );
+  
 };

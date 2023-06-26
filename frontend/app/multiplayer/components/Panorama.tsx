@@ -52,8 +52,12 @@ export default function Panorama() {
   useEffect(() => {
     // window 크기에 따라 화면 resize
     const handleResize = () => {
-      let size = { width: window.innerWidth, height: window.innerHeight };
-      if (panorama) panorama.setSize(size);
+      if (!panoRef.current) return;
+      const parent = panoRef.current.parentElement;
+      if (panorama && parent) {
+        const size = { width: parent.offsetWidth, height: parent.offsetHeight };
+        panorama.setSize(size);
+      }
     };
     window.addEventListener("resize", handleResize);
 

@@ -6,7 +6,7 @@ export default function UserList() {
   const { users, userCoordinates, coordinates, gameState, setUserCoordinates, userState } = useContext(MultiplayerGameContext);
 
   return (
-    <div className="p-4 bg-white bg-opacity-70 text-sm">
+    <div className="w-full h-full p-4 bg-white bg-opacity-70 text-sm">
       
       <h2>Users:</h2>
       <ul>

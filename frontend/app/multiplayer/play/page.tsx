@@ -30,6 +30,12 @@ export default function GameComponent() {
     const [userCoordinates, setUserCoordinates] = useState<{ lat: number; lng: number; } | null>(null);
     const [distance, setDistance] = useState<number | null>(null);
 
+    const [isUserListVisible, setIsUserListVisible] = useState(false);
+
+    const toggleUserList = () => {
+        setIsUserListVisible(!isUserListVisible);
+    };
+
     useEffect(() => {
         const token = (session as any)?.accessToken;
 
@@ -54,7 +60,7 @@ export default function GameComponent() {
                     try {
                         const messageData = JSON.parse(message.body);
                         if (messageData.gameState) setGameState(messageData.gameState);
-                        if (messageData.users)setUsers(messageData.users);
+                        if (messageData.users) setUsers(messageData.users);
                         if (messageData.coordinates) setCoordinates(messageData.coordinates);
 
                     } catch (error) {
@@ -66,7 +72,7 @@ export default function GameComponent() {
                     try {
                         const messageData = JSON.parse(message.body);
                         if (messageData.gameState) setGameState(messageData.gameState);
-                        if (messageData.users)setUsers(messageData.users);
+                        if (messageData.users) setUsers(messageData.users);
                         if (messageData.coordinates) setCoordinates(messageData.coordinates);
 
                     } catch (error) {
@@ -132,22 +138,23 @@ export default function GameComponent() {
 
     return (
         <MultiplayerGameContext.Provider value={{ stompClient, gameState, users, connected, coordinates, userCoordinates, setUserCoordinates, userState, setUserState, photodate, setPhotodate }}>
-            <div className="relative w-full h-full overflow-hidden z-0">
+            <div className="relative w-full h-full z-0 grid grid-cols-4">
                 {coordinates && (
                     <>
+                        <div className="col-span-3 ">
+                            <Panorama />
+                        </div>
+                        <div className="col-span-1 grid grid-rows-[3fr,1fr] ">
+                            <div className="w-full z-10">
+                                <div>
+                                    <MultiplayerChat />
 
-                        <div className="absolute top-5 right-5 w-[20%] aspect-[4/3] z-10">
-                            <MultiplayerChat />
-
+                                </div>
+                            </div>
+                            <div className="w-full z-10 block">
+                                <Map />
+                            </div>
                         </div>
-                        <div className="absolute bottom-5 right-5 w-[20%] aspect-[4/3] bg-white opacity-80 hover:w-[30%] origin-bottom-right hover:opacity-100 transition-all duration-200 z-10">
-                            <Map />
-                        </div>
-                        <div className="absolute top-5 left-5 w-[10%] aspect-[4/3] z-10">
-                            <UserList />
-                            {photodate}
-                        </div>
-                        <Panorama />
                     </>
                 )}
             </div>

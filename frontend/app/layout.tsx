@@ -1,4 +1,5 @@
 import './globals.css'
+
 import { Inter } from 'next/font/google'
 import AuthSession from './provider/AuthProvider'
 import Script from 'next/script';
