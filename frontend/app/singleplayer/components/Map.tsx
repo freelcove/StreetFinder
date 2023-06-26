@@ -50,7 +50,7 @@ export default function Map() {
             position: e.coord,
             map: mapInstanceRef.current,
             icon: {
-              url:'/image/map_pin_red.png',
+              url:'/image/marker_blue.png',
               scaledSize: new naver.maps.Size(30,30)
             }
           });
@@ -75,10 +75,10 @@ export default function Map() {
       actualMarkerRef.current = new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(coordinates.lat, coordinates.lng),
         map: mapInstanceRef.current,
-        // icon: {
-        //   url:'/image/mapPin_red.png',
-        //   scaledSize: new naver.maps.Size(50,50)
-        // }
+        icon: {
+          url:'/image/flag.png',
+          scaledSize: new naver.maps.Size(50,50)
+        }
       });
 
       mapInstanceRef.current.setCenter(userCoordinates)
