@@ -4,13 +4,7 @@ import { IMessage } from '@stomp/stompjs';
 import { useSession } from 'next-auth/react';
 import { MultiplayerGameContext } from '../context/MultiplayerGameContext';
 
-const colors = [
-  'bg-blue-500', 'bg-green-500', 'bg-cyan-500', 'bg-red-500',
-  'bg-yellow-500', 'bg-pink-500', 'bg-orange-500', 'bg-teal-500'
-];
-
 interface ChatMessage {
-  
   userId: string;
   username: string;
   content: string;
@@ -52,7 +46,7 @@ export default function MultiplayerChat() {
   };
 
 
-  function renderSystemMessageContent(systemMessage) {
+  function renderSystemMessageContent(systemMessage: ChatMessage) {
     let textColor = '';
     switch (systemMessage.type) {
       case 'CONNECT':
@@ -98,11 +92,11 @@ export default function MultiplayerChat() {
           </li>
         ))}
       </ul>
-      <form onSubmit={sendMessage} className="flex w-full mt-1">
+      <form onSubmit={sendMessage} className="flex mt-1">
         <input
           type="text"
           placeholder="Type a message..."
-          className="p-1 border border-gray-300 rounded flex-grow"
+          className="p-1 border border-gray-300 rounded flex-grow overflow-auto"
           value={messageContents}
           onChange={(e) => setMessageContents(e.target.value)}
         />
