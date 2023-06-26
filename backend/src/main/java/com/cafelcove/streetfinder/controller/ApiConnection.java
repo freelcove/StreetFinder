@@ -48,8 +48,9 @@ public class ApiConnection {
         int count = Integer.parseInt(variable);
         int i = 0;
         while(i<count){
-            data.add(dao.getPosition(dbUrl, dbId, dbPw));
+            data.add(dao.getPosition(dbUrl, dbId, dbPw, data));
             if(data.get(i)==null){
+                data.remove(i);
                 i--;
             } else {
                 i++;
