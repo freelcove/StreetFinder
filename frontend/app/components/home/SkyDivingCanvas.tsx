@@ -1,17 +1,17 @@
 
 "use client";
 import * as THREE from 'three';
-import { useRef, useMemo, useState, useEffect, useContext,  } from 'react';
+import { useRef, useMemo  } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 
 
-function MovingClouds({ isZooming }) {
+function MovingClouds({ isZooming }: { isZooming: boolean }) {
     const cloudTexture = useLoader(THREE.TextureLoader, '/image/cloud1.png');
     const cloudRefs = useRef([]);
 
     useFrame(() => {
         // Move clouds forward in every frame
-        cloudRefs.current.forEach((cloud, index) => {
+        cloudRefs.current.forEach((cloud: THREE.Object3D) => {
             const speed = isZooming ? 0.3 : 0.01 ;
             cloud.position.z += speed;
             if (cloud.position.z > 5) {
@@ -39,12 +39,12 @@ function MovingClouds({ isZooming }) {
             );
         });
         return cloudsArray;
-    }, []);
+    }, [cloudTexture]);
 
     return <>{clouds}</>;
 }
 
-export default function SkyDivingCanvas({isZooming}) {
+export default function SkyDivingCanvas({isZooming}: {isZooming: boolean}) {
    
     return (
         <div className="w-screen h-screen absolute top-0 left-0 z-2">

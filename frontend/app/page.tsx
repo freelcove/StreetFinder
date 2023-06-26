@@ -1,12 +1,10 @@
 "use client";
 
 import SkyDivingCanvas from '@/app/components/home/SkyDivingCanvas';
-import SatelliteMap from '@/app/components/home/SatelliteMap';
 import { useState, useCallback, Suspense, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image'
 
-// Home.js
 export default function Home() {
 
   enum Stage {
@@ -14,7 +12,7 @@ export default function Home() {
     CHOOSE_MODE
   }
 
-  const [map, setMap] = useState(null);
+  const [map, setMap] = useState<naver.maps.Map | null>(null);
   const [isZooming, setIsZooming] = useState(false);
   const [homeState, setHomeState] = useState(Stage.LANDING);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,10 +28,12 @@ export default function Home() {
       logoControl: false,
       scaleControl: false,
     };
+    let newMap = null;
+    if (mapRef.current !== null) {
 
-    const newMap = new window.naver.maps.Map(mapRef.current, mapOptions)
-    setMap(newMap);
-
+      newMap = new window.naver.maps.Map(mapRef.current, mapOptions)
+      setMap(newMap);
+    }
   };
 
   useEffect(() => {
@@ -55,7 +55,6 @@ export default function Home() {
     }, 500);
 
     return () => clearTimeout(timer);
-
 
   }, [map]);
 
@@ -103,14 +102,8 @@ export default function Home() {
             </Link>
           </div>
         </div>
-
-
       )
       }
-
-
     </div >
   );
-
 };
-

@@ -10,9 +10,9 @@ export default function Map() {
   const userMarkerRef = useRef(null);
   const actualMarkerRef = useRef(null);
   const polylineRef = useRef(null);
-  const { userCoordinates, coordinates, gameStatus, setUserCoordinates } = useContext(GameContext);
+  const { userCoordinates, coordinates, gameState, setUserCoordinates } = useContext(GameContext);
 
-  const gameStatusRef = useRef(gameStatus);
+  const gameStateRef = useRef(gameState);
 
 
   const initMap = () => {
@@ -43,7 +43,7 @@ export default function Map() {
     });
 
     window.naver.maps.Event.addListener(mapInstanceRef.current, "click", function (e: any) {
-      if (gameStatusRef.current === 'playing') {
+      if (gameStateRef.current === 'playing') {
         if (!userMarkerRef.current) {
           console.log("no marker")
           userMarkerRef.current = new window.naver.maps.Marker({
@@ -71,7 +71,7 @@ export default function Map() {
 
   useEffect(() => {
 
-    if (gameStatus === 'results' && coordinates) {
+    if (gameState === 'results' && coordinates) {
       actualMarkerRef.current = new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(coordinates.lat, coordinates.lng),
         map: mapInstanceRef.current,
@@ -95,7 +95,7 @@ export default function Map() {
 
     }
 
-    if (gameStatus === 'playing') {
+    if (gameState === 'playing') {
       if (userMarkerRef.current) {
         userMarkerRef.current.setMap(null);
         userMarkerRef.current = null;
@@ -112,11 +112,11 @@ export default function Map() {
       }
     }
 
-  }, [gameStatus, coordinates,]);
+  }, [gameState, coordinates,]);
 
   useEffect(() => {
-    gameStatusRef.current = gameStatus;
-  }, [gameStatus]);
+    gameStateRef.current = gameState;
+  }, [gameState]);
 
   useEffect(() => {
     return () => {

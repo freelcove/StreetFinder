@@ -66,7 +66,7 @@ export default function Map() {
     }
     );
 
-  }, []);
+  }, [setUserCoordinates]);
 
 
   useEffect(() => {
@@ -114,7 +114,7 @@ export default function Map() {
       }
     }
 
-  }, [gameState, coordinates,]);
+  }, [gameState, coordinates, setUserCoordinates]);
 
   useEffect(() => {
     gameStateRef.current = gameState;

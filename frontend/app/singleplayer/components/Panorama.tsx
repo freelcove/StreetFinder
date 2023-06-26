@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, useContext } from "react";
 import { GameContext } from "../context/GameContext";
 
+
 export default function Panorama() {
   const panoRef = useRef<HTMLDivElement>(null);
   const { coordinates } = useContext(GameContext);
-  const [panorama, setPanorama] = useState(null);
+  const [panorama, setPanorama] = useState<naver.maps.Panorama | null>(null);
   const [panoramaRotation, setPanoramaRotation] = useState(0);
   const [isMouseDown, setIsMouseDown] = useState(false);
 
@@ -26,7 +27,7 @@ export default function Panorama() {
       aroundControl: false,
     };
 
-    setPanorama(new window.naver.maps.Panorama(panoRef.current, panoOptions));
+    setPanorama(new window.naver.maps.Panorama(panoRef.current!, panoOptions));
   };
 
   useEffect(() => {
@@ -59,7 +60,7 @@ export default function Panorama() {
     const handlePanoramaRotate = () => {
       if (panorama && panorama.getPov) {
         const pov = panorama.getPov();
-        setPanoramaRotation(pov.pan);
+        setPanoramaRotation(pov.pan!);
       }
     };
 
