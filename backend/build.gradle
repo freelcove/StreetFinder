@@ -19,9 +19,7 @@ repositories {
 }
 
 dependencies {
-	//implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	//implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	compileOnly 'org.projectlombok:lombok'
@@ -39,8 +37,8 @@ dependencies {
 	implementation 'org.springframework:spring-messaging'
 	implementation 'org.springframework.security:spring-security-messaging'
 
-
 	implementation 'com.github.vladimir-bukhtoyarov:bucket4j-core:6.2.0'
+
 	// https://mvnrepository.com/artifact/mysql/mysql-connector-java
 	implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.26'
 	implementation 'com.opencsv:opencsv:5.5.2'
