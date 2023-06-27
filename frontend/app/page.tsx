@@ -1,97 +1,129 @@
 "use client";
 
-import Link from 'next/link';
-import { useEffect } from 'react';
-import { useSession, getSession } from "next-auth/react";
+import SkyDivingCanvas from "@/app/components/home/SkyDivingCanvas";
+import { useState, useCallback, useRef, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import SignIn from "./auth/signin/page";
+import { signIn, signOut, useSession } from "next-auth/react";
+import React from "react";
+import { warmupRequest } from "./utils/warmupRequest";
 
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-export default function MyComponent() {
+export default function Home() {
+  enum Stage {
+    LANDING,
+    CHOOSE_MODE,
+  }
   const { data: session } = useSession();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      // Manually update session
-      getSession().then(session => console.log("session refreshed"));
-    }, 60000); // Check every minute
+  const [map, setMap] = useState<naver.maps.Map | null>(null);
+  const [isZooming, setIsZooming] = useState(false);
+  const [homeState, setHomeState] = useState(Stage.LANDING);
+  const [isLoading, setIsLoading] = useState(true);
 
-    return () => clearInterval(interval); // Clean up on component unmount
+  const mapRef = useRef<HTMLDivElement>(null);
+
+  const isLogged = session?.user ? true : false;
+
+  const initMap = () => {
+    const mapOptions = {
+      center: new window.naver.maps.LatLng(35.876436, 128.625559),
+      zoom: 12,
+      mapTypeId: "satellite",
+      mapDataControl: false,
+      logoControl: false,
+      scaleControl: false,
+    };
+    let newMap = null;
+    if (mapRef.current !== null) {
+      newMap = new window.naver.maps.Map(mapRef.current, mapOptions);
+      setMap(newMap);
+    }
+  };
+
+  useEffect(() => {
+    initMap();
+    warmupRequest();
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000); // Set the timeout duration based on your loading time
+
+    return () => clearTimeout(timer);
   }, []);
 
+  const handleTitleClick = useCallback(() => {
+    setIsZooming(true);
+
+    const timer = setTimeout(() => {
+      setIsZooming(false);
+      setHomeState(Stage.CHOOSE_MODE);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [Stage.CHOOSE_MODE]);
+
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-r from-indigo-500 to-blue-500 text-white">
-      {/* Navbar */}
-      <nav className="bg-transparent shadow-md">
-        <div className="container mx-auto px-6 py-3 flex justify-between items-center">
-          <div className="text-3xl font-bold">
-            Street Finder
-          </div>
-          <div className="flex justify-between items-center gap-5 text-lg">
-            <Link href="/practice">
-              <p className="hover:text-indigo-200 cursor-pointer">Practice Game</p>
-            </Link>
-            <Link href="/apitest">
-              <p className="hover:text-indigo-200 cursor-pointer">API Test</p>
-            </Link>
-            <Link href="/chat">
-              <p className="hover:text-indigo-200 cursor-pointer">Chat</p>
-            </Link>
-            <Link href="/maptest">
-              <p className="hover:text-indigo-200 cursor-pointer">Map Test</p>
-            </Link>
-            <Link href="/landing">
-              <p className="hover:text-indigo-200 cursor-pointer">Landing Page Test</p>
-            </Link>
-            <Link href="/auth">
-              <p className="hover:text-indigo-200 cursor-pointer">Auth</p>
-            </Link>
-          </div>
+    <div className="relative overflow-hidden w-screen h-screen z-0">
+      {isLoading && (
+        <div className="absolute w-screen h-screen bg-white flex justify-center items-center z-50">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
         </div>
-      </nav>
+      )}
+      <div ref={mapRef} className="w-full h-full" />
+      <SkyDivingCanvas isZooming={isZooming} />
+      {homeState === Stage.LANDING && (
+        <>
+          <Image
+            src="/image/title1.png"
+            loading="eager"
+            width={380}
+            height={380}
+            alt="STREET FINDER"
+            onClick={() => {
+              handleTitleClick();
+            }}
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-in-out hover:scale-105"
+          />
+        </>
+      )}
+      {homeState === Stage.CHOOSE_MODE && (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex gap-10">
+          <div className="bg-white shadow-lg rounded-lg p-5 flex flex-col items-center">
+            <h2 className="text-3xl font-bold mb-3">SINGLEPLAYER</h2>
+            <p>Some introduction to Singleplayer mode.</p>
+            <Link href="/singleplayer">
+              <button className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
+                Play
+              </button>
+            </Link>
+          </div>
+          <div className="bg-white shadow-lg rounded-lg p-5 flex flex-col items-center">
+            <h2 className="text-3xl font-bold mb-3">MULTIPLAYER</h2>
+            <p>Some introduction to Multiplayer mode.</p>
+            {!isLogged ? (
+              <SignIn />
+            ) : (
+              <Link href="/multiplayer">
 
-      {/* Main Content */}
-      <main className="flex-grow">
-        <div className="container mx-auto px-6 py-20">
-          <div className="text-center">
-            <h1 className="text-5xl font-bold mb-4">Welcome to Street Finder!</h1>
-            <p className="text-2xl">Discover the streets like never before</p>
-          </div>
-          <div className="grid grid-cols-3 gap-6 mt-16">
-            {/* Cards */}
-            <div className="col-span-1 bg-white p-6 rounded-lg shadow-md text-black">
-              <h3 className="text-lg font-semibold mb-4">Explore Streets</h3>
-              <p>Find streets with ease and learn about different pathways and alleys.</p>
-            </div>
-            <div className="col-span-1 bg-white p-6 rounded-lg shadow-md text-black">
-              <h3 className="text-lg font-semibold mb-4">Community Chat</h3>
-              <p>Join the community chat and engage with other street explorers.</p>
-            </div>
-            <div className="col-span-1 bg-white p-6 rounded-lg shadow-md text-black">
-              <h3 className="text-lg font-semibold mb-4">Custom Maps</h3>
-              <p>Create your custom maps and share your street adventures.</p>
-            </div>
-          </div>
-        </div>
-      </main>
+                <button className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
+                  Play
+                </button>
+              </Link>
 
-      {/* Footer */}
-      <footer className="bg-white shadow-md">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <div className="text-gray-700">
-              &copy; 2023 Street Finder, Inc.
-            </div>
-            <div className="flex justify-between items-center gap-5 text-gray-700">
-              <Link href="/privacy">
-                <p>Privacy Policy</p>
-              </Link>
-              <Link href="/terms">
-                <p>Terms of Service</p>
-              </Link>
-            </div>
+            )}
           </div>
         </div>
-      </footer>
+      )}
+      {isLogged ? (
+        <div className="absolute bottom-0 right-0 mb-3 mr-3">
+          <button
+            className="text-2xl font-bold duration-300 ease-in-out hover:scale-105"
+            onClick={() => signOut()}
+          >
+            Sign Out
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

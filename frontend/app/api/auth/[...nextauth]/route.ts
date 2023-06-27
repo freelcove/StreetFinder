@@ -4,6 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "@/prisma/prisma"
 import jwt from "jsonwebtoken";
+import { Adapter } from "next-auth/adapters";
 
 
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -14,8 +15,7 @@ if (!JWT_SECRET) {
 
 const handler = NextAuth({
     secret: process.env.NEXTAUTH_SECRET,
-    adapter: PrismaAdapter(prisma),
-    database: process.env.DATABASE_URL,
+    adapter: PrismaAdapter(prisma!) as Adapter,
     providers: [
         NaverProvider({
             clientId: process.env.NAVER_CLIENT_ID!,
@@ -32,7 +32,7 @@ const handler = NextAuth({
     events: {
         async signIn(message) {
             if (message?.user?.id) {
-                const user = await prisma.user.findUnique({
+                const user = await prisma!.user.findUnique({
                     where: {
                         id: message.user.id,
                     },
@@ -40,7 +40,7 @@ const handler = NextAuth({
 
                 if (user && !user.name) {
                     const username = user.email?.split('@')[0];
-                    await prisma.user.update({
+                    await prisma!.user.update({
                         where: {
                             id: user.id,
                         },
@@ -57,44 +57,49 @@ const handler = NextAuth({
     },
     callbacks: {
         async jwt({ token, user, account }) {
-            const jwtPayload = {
-                id: user?.id || token.id,
-                email: user?.email || token.email,
+            if (account && user) { // This block runs when the user logs in
+              const jwtPayload = {
+                id: user.id,
+                username: user.name,
+                email: user.email,
                 role: 'ROLE_USER',
-            };
-
-            if (account) {
-                // This block runs when the user logs in
-                const jwtToken = jwt.sign(jwtPayload, JWT_SECRET, {
-                    expiresIn: '1h' 
-                });
-                return { ...token, accessToken: jwtToken };
+              };
+              const jwtToken = jwt.sign(jwtPayload, JWT_SECRET, {
+                expiresIn: '6h'
+              });
+              return { ...token, ...jwtPayload, accessToken: jwtToken };
             }
-
             return token;
-        }
+          }
+          
         ,
         async session({ session, token, user }) {
+
+            session.user = {
+                ...session.user,
+                id: token.id as string, // Add the user's ID from the JWT to the session
+              };
             const currentTime = Math.floor(Date.now() / 1000);
 
             // Decode the accessToken to check its expiration
-            const decodedAccessToken = jwt.decode(token.accessToken);
+            const decodedAccessToken = jwt.decode(token.accessToken as string);
 
-            if (decodedAccessToken && currentTime >= decodedAccessToken.exp) {
+            if (decodedAccessToken && typeof decodedAccessToken !== 'string' && 'exp' in decodedAccessToken && currentTime >= decodedAccessToken.exp!) {
                 console.log('Refreshing token');
 
                 const jwtPayload = {
-                    id: token.id,
-                    email: token.email,
-                    role: 'ROLE_USER'
+                    id: user?.id || token.id,
+                    username: user?.name || token.username,
+                    email: user?.email || token.email,
+                    role: 'ROLE_USER',
                 };
 
-                const refreshedToken = jwt.sign(jwtPayload, JWT_SECRET, { expiresIn: '1h' });
+                const refreshedToken = jwt.sign(jwtPayload, JWT_SECRET, { expiresIn: '24h' });
                 token.accessToken = refreshedToken;
             }
 
 
-            session.accessToken = token.accessToken;
+            session.accessToken = token.accessToken as string;
             return session;
         }
     },

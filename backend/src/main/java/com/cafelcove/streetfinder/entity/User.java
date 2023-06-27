@@ -1,16 +1,16 @@
 package com.cafelcove.streetfinder.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
-    private String id;
-    private String password;
-    private String name;
-    private String email;
-    private String email_verified;
-    private String image;
-
+    private String userId;
+    private String username;
+    private String role;
 }
