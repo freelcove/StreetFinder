@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete</title>
+</head>
+<body>
+    <h1>Delete Controller</h1>
+    <form action="delete" method="post">
+        <h2>데이터 삭제</h2>
+        <p>테이블 이름</p>
+        Place<input type="radio" value="Place" name="table"><br>
+        City<input type="radio" value="City" name="table"><br>
+        Category<input type="radio" value="Category" name="table"><br>
+        Subcategory<input type="radio" value="Subcategory" name="table"><br><br>
+
+        삭제할 데이터 ID : <input type="text" name="id">
+        <input type="submit" value="선택">
+    </form>
+    <form action="home.html">
+        <h2>직접 입력하기</h2>
+        <table>
+            <tr>
+                <td>작업중</td>
+            </tr>
+        </table>
+        <input type="submit" value="선택">
+    </form>
+    <a href="/">Home</a>
+</body>
+</html>

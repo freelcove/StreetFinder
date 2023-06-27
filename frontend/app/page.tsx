@@ -1,88 +1,124 @@
 "use client";
 
-import Link from 'next/link';
-import {useEffect} from 'react';
-
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+import SkyDivingCanvas from "@/app/components/home/SkyDivingCanvas";
+import { useState, useCallback, Suspense, useRef, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import SignIn from "./auth/signin/page";
+import { signIn, signOut, useSession } from "next-auth/react";
+import React from "react";
 
 export default function Home() {
+  enum Stage {
+    LANDING,
+    CHOOSE_MODE,
+  }
 
+  const [map, setMap] = useState<naver.maps.Map | null>(null);
+  const [isZooming, setIsZooming] = useState(false);
+  const [homeState, setHomeState] = useState(Stage.LANDING);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const mapRef = useRef<HTMLDivElement>(null);
+
+  const initMap = () => {
+    const mapOptions = {
+      center: new window.naver.maps.LatLng(35.876436, 128.625559),
+      zoom: 12,
+      mapTypeId: "satellite",
+      mapDataControl: false,
+      logoControl: false,
+      scaleControl: false,
+    };
+    let newMap = null;
+    if (mapRef.current !== null) {
+      newMap = new window.naver.maps.Map(mapRef.current, mapOptions);
+      setMap(newMap);
+    }
+  };
 
   useEffect(() => {
-    fetch(`${backendUrl}/warmup`, {
-      method: 'GET',
-    });
+    initMap();
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 600); // Set the timeout duration based on your loading time
+
+    return () => clearTimeout(timer);
   }, []);
 
+  const handleTitleClick = useCallback(() => {
+    setIsZooming(true);
+
+    const timer = setTimeout(() => {
+      setIsZooming(false);
+      setHomeState(Stage.CHOOSE_MODE);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [Stage.CHOOSE_MODE]);
+  const { data: session } = useSession();
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100">
-      {/* Navbar */}
-      <nav className="bg-white shadow-md">
-        <div className="container mx-auto px-6 py-3 flex justify-between items-center">
-          <div className="text-2xl font-semibold text-gray-700">
-            Street Finder
-          </div>
-          <div className="flex justify-between items-center gap-5">
-            <Link href="/apitest">
-              <p className="text-gray-800 hover:text-indigo-600">API Test</p>
-            </Link>
-            <Link href="/chat">
-              <p className="text-gray-800 hover:text-indigo-600">Chat</p>
-            </Link>
-            <Link href="/menu3">
-              <p className="text-gray-800 hover:text-indigo-600">Menu 3</p>
-            </Link>
-            <Link href="/menu4">
-              <p className="text-gray-800 hover:text-indigo-600">Menu 4</p>
-            </Link>
-            <Link href="/menu5">
-              <p className="text-gray-800 hover:text-indigo-600">Menu 5</p>
-            </Link>
-          </div>
+    <div className="relative overflow-hidden w-screen h-screen z-0">
+      {isLoading && (
+        <div className="absolute w-screen h-screen bg-white flex justify-center items-center z-50">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
         </div>
-      </nav>
-
-      {/* Main Content */}
-      <main className="flex-grow">
-        <div className="container mx-auto px-6 py-8">
-          <h2 className="text-3xl font-semibold text-gray-800 mb-6">Welcome to Street Finder!</h2>
-          <div className="grid grid-cols-3 gap-6">
-            {/* Content */}
-            <div className="col-span-2 bg-white p-6 rounded-lg shadow-md">
-              <p className="text-gray-700">
-                Content goes here. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-              </p>
-            </div>
-
-            {/* Sidebar */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Sidebar</h3>
-              <p className="text-gray-700">
-                Additional content goes here. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.
-              </p>
-            </div>
-          </div>
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-white shadow-md">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <div className="text-gray-700">
-              &copy; 2023 Street Finder, Inc.
-            </div>
-            <div className="flex justify-between items-center gap-5 text-gray-700">
-              <Link href="/privacy">
-                <p>Privacy Policy</p>
+      )}
+      <div ref={mapRef} className="w-full h-full" />
+      <SkyDivingCanvas isZooming={isZooming} />
+      {homeState === Stage.LANDING && (
+        <>
+          <Image
+            src="/image/title1.png"
+            loading="eager"
+            width={380}
+            height={380}
+            alt="STREET FINDER"
+            onClick={() => {
+              handleTitleClick();
+            }}
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-in-out hover:scale-105"
+          />
+        </>
+      )}
+      {homeState === Stage.CHOOSE_MODE && (
+        <div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <div className="flex gap-10">
+              <Link href="/singleplayer">
+                <button className="text-3xl font-bold duration-300 ease-in-out hover:scale-105">
+                  SINGLEPLAYER
+                </button>
               </Link>
-              <Link href="/terms">
-                <p>Terms of Service</p>
+              <Link href="/multiplayer">
+                <button className="text-3xl font-bold duration-300 ease-in-out hover:scale-105">
+                  MULTIPLAYER
+                </button>
               </Link>
             </div>
           </div>
+          {session?.user ? (
+            <div
+              className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-transparent"
+              style={{ height: "90vh" }}
+            >
+              <button
+                className="text-2xl font-bold duration-300 ease-in-out hover:scale-105"
+                onClick={() => signOut()}
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div
+              className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-transparent"
+              style={{ height: "90vh" }}
+            >
+              <SignIn />
+            </div>
+          )}
         </div>
-      </footer>
+      )}
     </div>
   );
 }
