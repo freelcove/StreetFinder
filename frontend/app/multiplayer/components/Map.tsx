@@ -46,14 +46,11 @@ export default function Map() {
     // Listener for map clicks
     window.naver.maps.Event.addListener(mapInstanceRef.current, "click", function (e: any) {
       if (gameStateRef.current === 'IN_PROGRESS' && userStateRef.current === 'PLAYING') {
+        console.log(mapInstanceRef.current)
         if (!userMarkerRef.current) {
           userMarkerRef.current = new window.naver.maps.Marker({
             position: e.coord,
             map: mapInstanceRef.current!,
-            icon: {
-              url: '/image/marker_blue.png',
-              scaledSize: new naver.maps.Size(30, 30)
-            }
           });
         }
         else {
@@ -78,7 +75,8 @@ export default function Map() {
         map: mapInstanceRef.current!,
         icon: {
           url: '/image/flag.png',
-          scaledSize: new naver.maps.Size(30, 30)
+          scaledSize: new naver.maps.Size(30, 30),
+          anchor:new naver.maps.Point(3, 29.5)
         }
       });
 
@@ -118,7 +116,8 @@ export default function Map() {
       }
     }
 
-  }, [gameState, coordinates, setUserCoordinates, userCoordinates]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState]);
 
   // Keep a reference to the gameState up to date
   useEffect(() => {

@@ -43,9 +43,9 @@ export default function GameComponent() {
         }
 
         stompClient.current = new Client({
-            debug: (str) => {
-                console.log(str);
-            },
+            // debug: (str) => {
+            //     console.log(str);
+            // },
             webSocketFactory: () => new SockJS(`${backendUrl}/ws`),
             connectHeaders: {
                 Authorization: `Bearer ${token}`,
@@ -60,7 +60,6 @@ export default function GameComponent() {
                         if (messageData.gameState) setGameState(messageData.gameState);
                         if (messageData.users) setUsers(messageData.users);
                         if (messageData.coordinates) setCoordinates(messageData.coordinates);
-                        console.log('Coordinates from message:', messageData.coordinates);
 
                     } catch (error) {
                         console.error("Error parsing message:", error);
@@ -73,7 +72,6 @@ export default function GameComponent() {
                         if (messageData.gameState) setGameState(messageData.gameState);
                         if (messageData.users) setUsers(messageData.users);
                         if (messageData.coordinates) setCoordinates(messageData.coordinates);
-                        console.log('Coordinates from message:', messageData.coordinates);
 
 
                     } catch (error) {
@@ -119,7 +117,7 @@ export default function GameComponent() {
                 coordinates.lat,
                 coordinates.lng
             );
-            if (dist < 20) {
+            if (dist < 1) {
                 handleWin();
             }
             else {

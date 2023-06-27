@@ -1,7 +1,7 @@
 "use client";
 
 import SkyDivingCanvas from "@/app/components/home/SkyDivingCanvas";
-import { useState, useCallback, Suspense, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import SignIn from "./auth/signin/page";
@@ -13,6 +13,7 @@ export default function Home() {
     LANDING,
     CHOOSE_MODE,
   }
+  const { data: session } = useSession();
 
   const [map, setMap] = useState<naver.maps.Map | null>(null);
   const [isZooming, setIsZooming] = useState(false);
@@ -20,6 +21,8 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   const mapRef = useRef<HTMLDivElement>(null);
+
+  const isLogged = session?.user ? true : false;
 
   const initMap = () => {
     const mapOptions = {
@@ -56,7 +59,7 @@ export default function Home() {
 
     return () => clearTimeout(timer);
   }, [Stage.CHOOSE_MODE]);
-  const { data: session } = useSession();
+
   return (
     <div className="relative overflow-hidden w-screen h-screen z-0">
       {isLoading && (
@@ -82,43 +85,43 @@ export default function Home() {
         </>
       )}
       {homeState === Stage.CHOOSE_MODE && (
-        <div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <div className="flex gap-10">
-              <Link href="/singleplayer">
-                <button className="text-3xl font-bold duration-300 ease-in-out hover:scale-105">
-                  SINGLEPLAYER
-                </button>
-              </Link>
-              <Link href="/multiplayer">
-                <button className="text-3xl font-bold duration-300 ease-in-out hover:scale-105">
-                  MULTIPLAYER
-                </button>
-              </Link>
-            </div>
-          </div>
-          {session?.user ? (
-            <div
-              className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-transparent"
-              style={{ height: "90vh" }}
-            >
-              <button
-                className="text-2xl font-bold duration-300 ease-in-out hover:scale-105"
-                onClick={() => signOut()}
-              >
-                Sign Out
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex gap-10">
+          <div className="bg-white shadow-lg rounded-lg p-5 flex flex-col items-center">
+            <h2 className="text-3xl font-bold mb-3">SINGLEPLAYER</h2>
+            <p>Some introduction to Singleplayer mode.</p>
+            <Link href="/singleplayer">
+              <button className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
+                Play
               </button>
-            </div>
-          ) : (
-            <div
-              className="absolute left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-transparent"
-              style={{ height: "90vh" }}
-            >
+            </Link>
+          </div>
+          <div className="bg-white shadow-lg rounded-lg p-5 flex flex-col items-center">
+            <h2 className="text-3xl font-bold mb-3">MULTIPLAYER</h2>
+            <p>Some introduction to Multiplayer mode.</p>
+            {!isLogged ? (
               <SignIn />
-            </div>
-          )}
+            ) : (
+              <Link href="/multiplayer">
+
+                <button className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
+                  Play
+                </button>
+              </Link>
+
+            )}
+          </div>
         </div>
       )}
+      {isLogged ? (
+        <div className="absolute bottom-0 right-0 mb-3 mr-3">
+          <button
+            className="text-2xl font-bold duration-300 ease-in-out hover:scale-105"
+            onClick={() => signOut()}
+          >
+            Sign Out
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }
