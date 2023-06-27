@@ -52,7 +52,7 @@ public class DbInsertDao {
                 }
                 try {
                     String sql = "";
-                    sql="insert into Place(id, name, latitude, longitude, city_id, address, category_id, subcategory_id) values(?,?,?,?,?,?,?,?);";
+                    sql="insert into Place(id, name, latitude, longitude, city_id, address, category_id, subcategory_id, visits) values(?,?,?,?,?,?,?,?,?);";
                     pstmt = conn.prepareStatement(sql);
                     pstmt.setInt(1,item.getId());
                     pstmt.setString(2, item.getName());
@@ -62,6 +62,7 @@ public class DbInsertDao {
                     pstmt.setString(6, item.getAddress());
                     pstmt.setInt(7, item.getCategory_id());
                     pstmt.setInt(8, item.getSubcategory_id());
+                    pstmt.setInt(9, item.getVisits());
                     System.out.println(pstmt);
                     pstmt.executeUpdate();
                 } catch (Exception e) {

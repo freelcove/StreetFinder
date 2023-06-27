@@ -1,33 +1,13 @@
 "use client";
-import { useEffect, useRef, useState } from 'react';
-import Position from "../../../public/json/position.json";
+import { useEffect, useRef } from 'react';
 
 export default function MapPanoTest() {
+
     const panoRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<HTMLDivElement>(null);
-    const [position, setPosotion] = useState<Object>(Position);
-    useEffect(() => {
-      fetch("http://localhost:8080/api/position/each")
-      .then(res =>res.json())
-      .then(res =>setPosotion(res))
-    }, []);
-    
-    setTimeout(() => {
-        console.log(position);
-        
-        initMapPano();
-    }, 2000);
-    
-    let lat;
-    let lon;
 
 
     const initMapPano = () => {
-
-        lat=position.data[0].latitude;
-        lon=position.data[0].longitude;
-
-
         if (!window.naver.maps.Panorama) {
             console.error('Naver Maps script is not loaded.');
         }
@@ -42,7 +22,7 @@ export default function MapPanoTest() {
 
         // initialize panorama
         const panoOptions = {
-            position: new window.naver.maps.LatLng(lon, lat),
+            position: new window.naver.maps.LatLng(37.3599605, 127.1058814),
             pov: {
                 pan: -135,
                 tilt: 29,
@@ -68,11 +48,9 @@ export default function MapPanoTest() {
     };
 
 
-    // useEffect(() => {
-    //     initMapPano();
-    //     console.log(position);
-        
-    // }, [position]);
+    useEffect(() => {
+        initMapPano();
+    }, []);
 
     return (
         <div className="w-screen h-screen">

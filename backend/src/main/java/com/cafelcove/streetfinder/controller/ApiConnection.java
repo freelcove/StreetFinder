@@ -27,15 +27,21 @@ public class ApiConnection {
     @GetMapping(value = "/position/each")
     public PositionDataDTO eachPosition() {
         System.out.println("Catch the connection try");
+        // System.out.println(dbUrl);
+        // System.out.println(dbId);
+        // System.out.println(dbPw);
         List<PositionDTO> data = new ArrayList<PositionDTO>();
         PositionDataDTO result = new PositionDataDTO();
         GetPositionDAO dao = new GetPositionDAO();
-        data.add(dao.getPosition(dbUrl, dbId, dbPw));
-        if (data != null) {
-            result.setResult("Sucess");
+        PositionDTO positionDTO = dao.getPosition(dbUrl, dbId, dbPw);
+        if (positionDTO.getLat() != null) {
+            data.add(positionDTO);
+            result.setResult("Success");
+            result.setData(data);
+        } else {
             result.setData(data);
         }
-        System.out.println(result);
+        System.out.println(result.getData().get(0).getPlace_name());
         return result;
     }
 
@@ -48,8 +54,9 @@ public class ApiConnection {
         int count = Integer.parseInt(variable);
         int i = 0;
         while(i<count){
-            data.add(dao.getPosition(dbUrl, dbId, dbPw));
+            data.add(dao.getPosition(data));
             if(data.get(i)==null){
+                data.remove(i);
                 i--;
             } else {
                 i++;

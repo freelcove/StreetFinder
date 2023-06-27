@@ -52,7 +52,7 @@ public class DbReadDao {
             String sql = "select * from Place;";
             rs = stmt.executeQuery(sql);
             while(rs.next()){
-                Place data = new Place(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getString(9),rs.getString(10));
+                Place data = new Place(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getString(9),rs.getString(10),rs.getString(11));
                 arr.add(data);
             }
         } catch (Exception e3) {
@@ -87,7 +87,7 @@ public class DbReadDao {
             String sql = "select * from Place where id="+id+";";
             rs = stmt.executeQuery(sql);
             rs.next();
-            arr = new Place(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getString(9),rs.getString(10));
+            arr = new Place(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5),rs.getString(6),rs.getString(7),rs.getString(8),rs.getString(9),rs.getString(10),rs.getString(11));
             System.out.println(arr.toString());
         } catch (Exception e3) {
             e3.printStackTrace();

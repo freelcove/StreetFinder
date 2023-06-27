@@ -94,7 +94,7 @@ public class DbController {
             ArrayList<Place> place = new ArrayList<Place>();
             Place data = new Place((String) map.get("id"), (String) map.get("name"), (String) map.get("latitude"),
                     (String) map.get("longitude"), (String) map.get("city_id"), (String) map.get("address"),
-                    (String) map.get("category_is"), (String) map.get("subcategory_id"), null, null);
+                    (String) map.get("category_is"), (String) map.get("subcategory_id"), (String) map.get("visits"), null, null);
             place.add(data);
             db.insertPlace(place);
         }
@@ -153,6 +153,18 @@ public class DbController {
         } else if (variable1.equals("Place")) {
             db.updatePlace();
         }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("/"));
+        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+    }
+
+    @PostMapping(value = "/update/visits")
+    public ResponseEntity<?> updateVisits() {
+        DbUpdateDao db = new DbUpdateDao();
+
+
+        db.updateVisitsPlace();
+
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("/"));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);

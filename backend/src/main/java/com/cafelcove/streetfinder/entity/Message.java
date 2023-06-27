@@ -7,7 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ChatMessage {
+public class Message {
 
     private MessageType type;
     private String content;
@@ -15,9 +15,12 @@ public class ChatMessage {
 
     public enum MessageType {
 
-    CHAT,
-    JOIN,
-    LEAVE
-}
+        CHAT,
+        JOIN,
+        LEAVE,
+        CONNECT,
+        DISCONNECT,
+        WIN
+    }
 
 }

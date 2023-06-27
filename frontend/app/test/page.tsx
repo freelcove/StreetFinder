@@ -6,6 +6,8 @@ import LandingPageController from '@/components/LandingPageController';
 import { useState, useCallback } from 'react';
 import LandingPanorama from '@/components/LandingPanorama';
 import Link from 'next/link';
+import { W } from 'drizzle-orm/query-promise.d-2e42fbc9';
+import { redirect } from 'next/dist/server/api-utils';
 
 // Home.js
 const Home = () => {
@@ -29,6 +31,7 @@ const Home = () => {
           setIsZooming(false); // Reset isZooming to false when zoom is complete
           setShowCanvas(false);
           setShowMap(false);
+          window.location.replace('/../maptest')
         } else {
           map.setZoom(currentZoom, true);
         }

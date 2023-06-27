@@ -34,6 +34,44 @@ public class DbUpdateDao {
         }
     }
 
+
+    // places 데이터베이스 update
+    public void updateVisitsPlace() {
+        if (checkValue()) {
+            return;
+        }
+        ArrayList<Place> arr = new CsvDao().readPlaceCSV();
+        for (Place data : arr) {
+            if (data.getLatitude() < 0 && data.getLongitude() < 0) {
+                try {
+                    Class.forName("com.mysql.cj.jdbc.Driver");
+                    Connection conn = DriverManager.getConnection(dbConnectionPage, dbConnectionId, dbConnectionPw);
+
+                    String sql = "";
+                    sql = "update Place set visits = ?, updated_at = now() where id=?";
+                    pstmt = conn.prepareStatement(sql);
+                    pstmt.setFloat(1, data.getVisits());
+                    pstmt.setInt(2, data.getId());
+                    System.out.println(pstmt);
+                    pstmt.executeUpdate();
+                } catch (Exception e3) {
+                    e3.printStackTrace();
+                } finally {
+                    try {
+                        if (conn != null) {
+                            conn.close();
+                        }
+                        if (pstmt != null) {
+                            pstmt.close();
+                        }
+                    } catch (Exception e4) {
+                        e4.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
     // places 데이터베이스 update
     public void updatePlace() {
         if (checkValue()) {

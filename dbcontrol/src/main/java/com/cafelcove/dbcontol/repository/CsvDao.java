@@ -20,7 +20,8 @@ public class CsvDao {
     // 현재 CSV 파일이 있는 위치 리턴하는 함수
     public String getDir() {
         String dir = System.getProperty("user.dir");
-        dir += "\\src\\main\\resources\\csv\\";
+        dir += "\\..\\dbcontrol\\src\\main\\resources\\csv\\";
+        System.out.println(dir);
         return dir;
     }
 
@@ -193,14 +194,23 @@ public class CsvDao {
                     continue;
                 }
                 String[] lineArr = line.split(",");
-                if (lineArr[2] != null && lineArr[3] != null) {
+                // System.out.println(lineArr[0]);
+                // System.out.println(lineArr[1]);
+                // System.out.println(lineArr[2].equals(""));
+                // System.out.println(lineArr[3]);
+                // System.out.println(lineArr[4]);
+                // System.out.println(lineArr[5]);
+                // System.out.println(lineArr[6]);
+                // System.out.println(lineArr[7]);
+                // System.out.println(lineArr[8]);
+                if (!lineArr[2].equals("") && !lineArr[3].equals("")) {
                     Place data = new Place(lineArr[0], lineArr[1], Float.parseFloat(lineArr[2]),
                             Float.parseFloat(lineArr[3]),
-                            lineArr[4], lineArr[5], lineArr[6], lineArr[7]);
+                            lineArr[4], lineArr[5], lineArr[6], lineArr[7], lineArr[8]);
                     csvList.add(data);
                 } else {
                     Place data = new Place(lineArr[0], lineArr[1], Float.parseFloat("-1"), Float.parseFloat("-1"),
-                            lineArr[4], lineArr[5], lineArr[6], lineArr[7]);
+                            lineArr[4], lineArr[5], lineArr[6], lineArr[7], lineArr[8]);
                     csvList.add(data);
                 }
             }

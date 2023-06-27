@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation';
 
 export default function SignIn() {
   const router = useRouter();
-
   const handleSignIn = (provider) => {
     signIn(provider, { callbackUrl: `/` });
+    
   };
 
   return (

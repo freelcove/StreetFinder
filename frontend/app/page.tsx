@@ -1,94 +1,115 @@
 "use client";
 
+import SkyDivingCanvas from '@/app/components/home/SkyDivingCanvas';
+import SatelliteMap from '@/app/components/home/SatelliteMap';
+import { useState, useCallback, Suspense, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import {useEffect} from 'react';
-import { useSession, getSession } from "next-auth/react";
+import Image from 'next/image'
 
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+// Home.js
+export default function Home() {
 
-export default function MyComponent() {
-  const { data: session } = useSession();
+  enum Stage {
+    LANDING,
+    CHOOSE_MODE
+  }
+
+  const [map, setMap] = useState(null);
+  const [isZooming, setIsZooming] = useState(false);
+  const [homeState, setHomeState] = useState(Stage.LANDING);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const mapRef = useRef<HTMLDivElement>(null);
+
+  const initMap = () => {
+    const mapOptions = {
+      center: new window.naver.maps.LatLng(35.876436, 128.625559),
+      zoom: 12,
+      mapTypeId: "satellite",
+      mapDataControl: false,
+      logoControl: false,
+      scaleControl: false,
+    };
+
+    const newMap = new window.naver.maps.Map(mapRef.current, mapOptions)
+    setMap(newMap);
+
+  };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      // Manually update session
-      getSession().then(session => console.log("session refreshed"));
-    }, 60000); // Check every minute
+    initMap();
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);  // Set the timeout duration based on your loading time
 
-    return () => clearInterval(interval); // Clean up on component unmount
+    return () => clearTimeout(timer);
   }, []);
 
+
+  const handleTitleClick = useCallback(() => {
+    setIsZooming(true);
+
+    setTimeout(() => {
+      setIsZooming(false);
+      setHomeState(Stage.CHOOSE_MODE);
+    }, 500);
+
+
+
+  }, [map]);
+
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-r from-indigo-500 to-blue-500 text-white">
-      {/* Navbar */}
-      <nav className="bg-transparent shadow-md">
-        <div className="container mx-auto px-6 py-3 flex justify-between items-center">
-          <div className="text-3xl font-bold">
-            Street Finder
-          </div>
-          <div className="flex justify-between items-center gap-5 text-lg">
-            <Link href="/apitest">
-              <p className="hover:text-indigo-200 cursor-pointer">API Test</p>
+    <div className='relative overflow-hidden w-screen h-screen z-0'>
+      {isLoading && (
+        <div className="absolute w-screen h-screen bg-white flex justify-center items-center z-50">
+          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+        </div>)
+      }
+      <div ref={mapRef} className="w-full h-full" />
+      <SkyDivingCanvas isZooming={isZooming} />
+      {homeState === Stage.LANDING && (
+        <>
+          <Image
+            src="/image/title1.png"
+            loading="eager"
+            width={380}
+            height={380}
+            alt="STREET FINDER"
+            onClick={() => {
+              handleTitleClick();
+            }}
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-in-out hover:scale-105"
+          />
+        </>
+      )}
+      {homeState === Stage.CHOOSE_MODE && (
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="flex gap-10">
+            <Link href="/singleplayer">
+              <button className="text-3xl font-bold duration-300 ease-in-out hover:scale-105" >
+                SINGLEPLAYER
+              </button>
             </Link>
-            <Link href="/chat">
-              <p className="hover:text-indigo-200 cursor-pointer">Chat</p>
-            </Link>
-            <Link href="/maptest">
-              <p className="hover:text-indigo-200 cursor-pointer">Map Test</p>
-            </Link>
-            <Link href="/test">
-              <p className="hover:text-indigo-200 cursor-pointer">Test</p>
+            <Link href="/multiplayer">
+              <button className="text-3xl font-bold duration-300 ease-in-out hover:scale-105" >
+                MULTIPLAYER
+              </button>
             </Link>
             <Link href="/auth">
-              <p className="hover:text-indigo-200 cursor-pointer">Auth</p>
+              <button className="text-3xl font-bold duration-300 ease-in-out hover:scale-105" >
+                LOGIN
+              </button>
             </Link>
           </div>
         </div>
-      </nav>
 
-      {/* Main Content */}
-      <main className="flex-grow">
-        <div className="container mx-auto px-6 py-20">
-          <div className="text-center">
-            <h1 className="text-5xl font-bold mb-4">Welcome to Street Finder!</h1>
-            <p className="text-2xl">Discover the streets like never before</p>
-          </div>
-          <div className="grid grid-cols-3 gap-6 mt-16">
-            {/* Cards */}
-            <div className="col-span-1 bg-white p-6 rounded-lg shadow-md text-black">
-              <h3 className="text-lg font-semibold mb-4">Explore Streets</h3>
-              <p>Find streets with ease and learn about different pathways and alleys.</p>
-            </div>
-            <div className="col-span-1 bg-white p-6 rounded-lg shadow-md text-black">
-              <h3 className="text-lg font-semibold mb-4">Community Chat</h3>
-              <p>Join the community chat and engage with other street explorers.</p>
-            </div>
-            <div className="col-span-1 bg-white p-6 rounded-lg shadow-md text-black">
-              <h3 className="text-lg font-semibold mb-4">Custom Maps</h3>
-              <p>Create your custom maps and share your street adventures.</p>
-            </div>
-          </div>
-        </div>
-      </main>
 
-      {/* Footer */}
-      <footer className="bg-white shadow-md">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            <div className="text-gray-700">
-              &copy; 2023 Street Finder, Inc.
-            </div>
-            <div className="flex justify-between items-center gap-5 text-gray-700">
-              <Link href="/privacy">
-                <p>Privacy Policy</p>
-              </Link>
-              <Link href="/terms">
-                <p>Terms of Service</p>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
+      )
+      }
+
+
+    </div >
   );
-}
+
+};
+

@@ -1,0 +1,11 @@
+
+{
+    "result":"Sample",
+    "data":[
+        {"place_id":0,"place_name":"경북산업직업전문학교","lat":128.6255372, "lng":35.876608},
+        {"place_id":1,"place_name":"수성못","lat":128.6190653, "lng":35.827334},
+        {"place_id":2,"place_name":"이월드","lat":128.5606349, "lng":35.8547239},
+        {"place_id":3,"place_name":"강정고령보","lat":128.4646774, "lng":35.8413117},
+        {"place_id":4,"place_name":"팔공산 케이블카","lat":128.6948967, "lng":35.9908413}
+    ]
+}
