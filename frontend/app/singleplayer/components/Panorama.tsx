@@ -8,7 +8,6 @@ export default function Panorama() {
   const [panorama, setPanorama] = useState<naver.maps.Panorama | null>(null);
   const [panoramaRotation, setPanoramaRotation] = useState(0);
 
-
   const initPano = () => {
     if (!window.naver.maps.Panorama || !coordinates) {
       console.error("Naver Maps Panorama script is not loaded.");
@@ -29,10 +28,10 @@ export default function Panorama() {
 
     setPanorama(new window.naver.maps.Panorama(panoRef.current!, panoOptions));
   };
-  
+
   useEffect(() => {
     initPano();
-  }, [initPano]);
+  }, []);
 
   useEffect(() => {
     if (panorama && coordinates) {
@@ -63,14 +62,12 @@ export default function Panorama() {
         setPanoramaRotation(pov.pan!);
       }
     };
-      const listener = panorama?.addListener("pov_changed", handlePanoramaRotate);
+    const listener = panorama?.addListener("pov_changed", handlePanoramaRotate);
 
     return () => {
-        panorama?.removeListener(listener!);
+      panorama?.removeListener(listener!);
     };
   }, [panorama]);
-
-
 
   return (
     <div className="w-full h-full z-0 relative">
