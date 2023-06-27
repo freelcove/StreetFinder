@@ -4,8 +4,6 @@ import { useEffect, useRef, useContext } from 'react';
 import { SingleplayerGameContext } from '../context/SingleplayerGameContext';
 
 export default function Map() {
-
-
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<naver.maps.Map | null>(null);
   const userMarkerRef = useRef<naver.maps.Marker | null>(null);
@@ -51,8 +49,9 @@ export default function Map() {
             position: e.coord,
             map: mapInstanceRef.current!,
             icon: {
-              url: '/image/marker_blue.png',
-              scaledSize: new naver.maps.Size(30, 30)
+              url: '/image/flag.png',
+              scaledSize: new naver.maps.Size(30, 30),
+              anchor:new naver.maps.Point(3, 29.5)
             }
           });
         }
@@ -68,7 +67,7 @@ export default function Map() {
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setUserCoordinates]);
+  }, []);
 
 
   useEffect(() => {
@@ -77,10 +76,7 @@ export default function Map() {
       actualMarkerRef.current = new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(coordinates.lat, coordinates.lng),
         map: mapInstanceRef.current!,
-        icon: {
-          url: '/image/flag.png',
-          scaledSize: new naver.maps.Size(50, 50)
-        }
+
       });
 
       if (userCoordinates) {
@@ -118,7 +114,8 @@ export default function Map() {
       }
     }
 
-  }, [gameState, coordinates, userCoordinates]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState]);
 
   useEffect(() => {
     gameStateRef.current = gameState;
