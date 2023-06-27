@@ -48,11 +48,6 @@ export default function Map() {
           userMarkerRef.current = new window.naver.maps.Marker({
             position: e.coord,
             map: mapInstanceRef.current!,
-            icon: {
-              url: '/image/flag.png',
-              scaledSize: new naver.maps.Size(30, 30),
-              anchor:new naver.maps.Point(3, 29.5)
-            }
           });
         }
         else {
@@ -69,13 +64,16 @@ export default function Map() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   useEffect(() => {
-
     if (gameState === 'results' && coordinates) {
       actualMarkerRef.current = new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(coordinates.lat, coordinates.lng),
         map: mapInstanceRef.current!,
+        icon: {
+          url: '/image/flag.png',
+          scaledSize: new naver.maps.Size(30, 30),
+          anchor:new naver.maps.Point(3, 29.5)
+        }
 
       });
 

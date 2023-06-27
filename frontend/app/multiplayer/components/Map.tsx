@@ -135,9 +135,10 @@ export default function Map() {
       }
     };
   }, []);
+  let mapBorderStyle = userState === "HOLD" ? "border-red-500" : "";
 
   return (
-    <div ref={mapRef} className="w-full h-full" />
+    <div ref={mapRef} className={`w-full h-full border-[3px] ${mapBorderStyle}`} />
   );
 };
 
