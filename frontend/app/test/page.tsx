@@ -19,7 +19,7 @@ export default function PanoTest() {
             },
             flightSpot: false,
         };
-        new window.naver.maps.Panorama(panoRef.current, panoOptions);
+        new window.naver.maps.Panorama(panoRef.current!, panoOptions);
     };
 
     useEffect(() => {
