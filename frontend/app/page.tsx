@@ -55,8 +55,7 @@ export default function Home() {
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [map, Stage.CHOOSE_MODE]);
-  const { data: session } = useSession();
+  }, [Stage.CHOOSE_MODE]);
 
   return (
     <div className="relative overflow-hidden w-screen h-screen z-0">
