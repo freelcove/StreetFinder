@@ -15,7 +15,7 @@ if (!JWT_SECRET) {
 
 const handler = NextAuth({
     secret: process.env.NEXTAUTH_SECRET,
-    adapter: PrismaAdapter(prisma) as Adapter,
+    adapter: PrismaAdapter(prisma!) as Adapter,
     providers: [
         NaverProvider({
             clientId: process.env.NAVER_CLIENT_ID!,
@@ -32,7 +32,7 @@ const handler = NextAuth({
     events: {
         async signIn(message) {
             if (message?.user?.id) {
-                const user = await prisma.user.findUnique({
+                const user = await prisma!.user.findUnique({
                     where: {
                         id: message.user.id,
                     },
@@ -40,7 +40,7 @@ const handler = NextAuth({
 
                 if (user && !user.name) {
                     const username = user.email?.split('@')[0];
-                    await prisma.user.update({
+                    await prisma!.user.update({
                         where: {
                             id: user.id,
                         },

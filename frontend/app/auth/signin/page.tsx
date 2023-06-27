@@ -2,11 +2,12 @@
 
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function SignIn() {
   const router = useRouter();
 
-  const handleSignIn = (provider) => {
+  const handleSignIn = (provider:string) => {
     signIn(provider, { callbackUrl: `/` });
   };
 
@@ -41,12 +42,15 @@ export default function SignIn() {
           }}
           onClick={() => handleSignIn("google")}
         >
-          <span style={{ fontSize: "30px", marginRight: "10px" }}>
-            <img
-              src="/image/google.png"
-              alt="Google Icon"
-              style={{ width: "30px" }}
-            />
+                  <span
+            style={{
+              fontSize: "30px",
+              marginRight: "10px",
+              marginTop: "-1px",
+              color: "red",
+            }}
+          >
+            G
           </span>
           <span>Sign in</span>
         </button>

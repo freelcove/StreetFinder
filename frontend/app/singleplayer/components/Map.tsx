@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useContext } from 'react';
-import { GameContext } from '../context/SingleplayerGameContext';
+import { SinglePlayerGameContext } from '../context/SinglePlayerGameContext';
 
 export default function Map() {
 
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef(null);
-  const userMarkerRef = useRef(null);
-  const actualMarkerRef = useRef(null);
-  const polylineRef = useRef(null);
-  const { userCoordinates, coordinates, gameState, setUserCoordinates } = useContext(GameContext);
 
-  const gameStateRef = useRef(gameState);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<naver.maps.Map | null>(null);
+  const userMarkerRef = useRef<naver.maps.Marker | null>(null);
+  const actualMarkerRef = useRef<naver.maps.Marker | null>(null);
+  const polylineRef = useRef<naver.maps.Polyline | null>(null);
+  const { userCoordinates, coordinates, gameState, setUserCoordinates } = useContext(SinglePlayerGameContext);
+
+  const gameStateRef = useRef<string>(gameState);
 
 
   const initMap = () => {
@@ -30,13 +31,13 @@ export default function Map() {
       logoControl: false,
     };
 
-    mapInstanceRef.current = new window.naver.maps.Map(mapRef.current, mapOptions);
+    mapInstanceRef.current = new window.naver.maps.Map(mapRef.current!, mapOptions);
   };
 
   useEffect(() => {
     initMap();
     polylineRef.current = new window.naver.maps.Polyline({
-      map: mapInstanceRef.current,
+      map: mapInstanceRef.current!,
       path: [],
       strokeColor: '#5347AA',
       strokeWeight: 2
@@ -48,10 +49,10 @@ export default function Map() {
           console.log("no marker")
           userMarkerRef.current = new window.naver.maps.Marker({
             position: e.coord,
-            map: mapInstanceRef.current,
+            map: mapInstanceRef.current!,
             icon: {
-              url:'/image/marker_blue.png',
-              scaledSize: new naver.maps.Size(30,30)
+              url: '/image/marker_blue.png',
+              scaledSize: new naver.maps.Size(30, 30)
             }
           });
         }
@@ -66,6 +67,7 @@ export default function Map() {
     }
     );
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setUserCoordinates]);
 
 
@@ -74,22 +76,26 @@ export default function Map() {
     if (gameState === 'results' && coordinates) {
       actualMarkerRef.current = new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(coordinates.lat, coordinates.lng),
-        map: mapInstanceRef.current,
+        map: mapInstanceRef.current!,
         icon: {
-          url:'/image/flag.png',
-          scaledSize: new naver.maps.Size(50,50)
+          url: '/image/flag.png',
+          scaledSize: new naver.maps.Size(50, 50)
         }
       });
 
-      mapInstanceRef.current.setCenter(userCoordinates)
+      if (userCoordinates) {
+        mapInstanceRef.current!.setCenter(userCoordinates)
+        polylineRef.current!.setPath([userCoordinates, coordinates]);
+        polylineRef.current!.setMap(mapInstanceRef.current);
 
-      polylineRef.current.setPath([userCoordinates, coordinates]);
-      polylineRef.current.setMap(mapInstanceRef.current);
-
-      //TODO: set zoom according to the polyline distance
-      let polylineDistance = polylineRef.current.getDistance()
-      if (polylineDistance > 1000) {
-        mapInstanceRef.current.setZoom(11, true);
+        // Set zoom according to the polyline distance
+        let polylineDistance = polylineRef.current!.getDistance()
+        if (polylineDistance > 1000) {
+          mapInstanceRef.current!.setZoom(11, true);
+        }
+      }
+      else {
+        mapInstanceRef.current!.setCenter(coordinates)
       }
 
 

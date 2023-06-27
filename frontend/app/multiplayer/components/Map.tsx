@@ -6,16 +6,15 @@ import { MultiplayerGameContext } from '../context/MultiplayerGameContext';
 export default function Map() {
 
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef(null);
-  const userMarkerRef = useRef(null);
-  const actualMarkerRef = useRef(null);
-  const polylineRef = useRef(null);
+  const mapInstanceRef = useRef<naver.maps.Map | null>(null);
+  const userMarkerRef = useRef<naver.maps.Marker | null>(null);
+  const actualMarkerRef = useRef<naver.maps.Marker | null>(null);
+  const polylineRef = useRef<naver.maps.Polyline | null>(null);
   const { userCoordinates, coordinates, gameState, setUserCoordinates, userState } = useContext(MultiplayerGameContext);
+  const gameStateRef = useRef<string>(gameState);
+  const userStateRef = useRef<string>(userState);
 
-  const gameStateRef = useRef(gameState);
-  const userStateRef = useRef(userState);
-
-
+  // Create a map instance and assign it to mapInstanceRef.
   const initMap = () => {
     if (!window.naver) {
       console.error('Naver Maps script is not loaded.');
@@ -31,27 +30,29 @@ export default function Map() {
       logoControl: false,
     };
 
-    mapInstanceRef.current = new window.naver.maps.Map(mapRef.current, mapOptions);
+    mapInstanceRef.current = new window.naver.maps.Map(mapRef.current!, mapOptions);
   };
 
+  // Initialize map and setup click event listener
   useEffect(() => {
     initMap();
     polylineRef.current = new window.naver.maps.Polyline({
-      map: mapInstanceRef.current,
+      map: mapInstanceRef.current!,
       path: [],
       strokeColor: '#5347AA',
       strokeWeight: 2
     });
 
+    // Listener for map clicks
     window.naver.maps.Event.addListener(mapInstanceRef.current, "click", function (e: any) {
       if (gameStateRef.current === 'IN_PROGRESS' && userStateRef.current === 'PLAYING') {
         if (!userMarkerRef.current) {
           userMarkerRef.current = new window.naver.maps.Marker({
             position: e.coord,
-            map: mapInstanceRef.current,
+            map: mapInstanceRef.current!,
             icon: {
-              url:'/image/marker_blue.png',
-              scaledSize: new naver.maps.Size(30,30)
+              url: '/image/marker_blue.png',
+              scaledSize: new naver.maps.Size(30, 30)
             }
           });
         }
@@ -65,41 +66,40 @@ export default function Map() {
       }
     }
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  }, [setUserCoordinates]);
-
-
+  // Update map based on gameState
   useEffect(() => {
-
+    // Display actual marker and polyline when game state is 'DISPLAYING_RESULTS'
     if (gameState === 'DISPLAYING_RESULTS' && coordinates) {
       actualMarkerRef.current = new window.naver.maps.Marker({
         position: new window.naver.maps.LatLng(coordinates.lat, coordinates.lng),
-        map: mapInstanceRef.current,
+        map: mapInstanceRef.current!,
         icon: {
-          url:'/image/flag.png',
-          scaledSize: new naver.maps.Size(30,30)
+          url: '/image/flag.png',
+          scaledSize: new naver.maps.Size(30, 30)
         }
       });
 
       if (userCoordinates) {
-        mapInstanceRef.current.setCenter(userCoordinates)
+        mapInstanceRef.current!.setCenter(userCoordinates)
+        polylineRef.current!.setPath([userCoordinates, coordinates]);
+        polylineRef.current!.setMap(mapInstanceRef.current);
 
-        polylineRef.current.setPath([userCoordinates, coordinates]);
-        polylineRef.current.setMap(mapInstanceRef.current);
-
-        //TODO: set zoom according to the polyline distance
-        let polylineDistance = polylineRef.current.getDistance()
+        // Set zoom according to the polyline distance
+        let polylineDistance = polylineRef.current!.getDistance()
         if (polylineDistance > 1000) {
-          mapInstanceRef.current.setZoom(11, true);
+          mapInstanceRef.current!.setZoom(11, true);
         }
       }
       else {
-        mapInstanceRef.current.setCenter(coordinates)
-
+        mapInstanceRef.current!.setCenter(coordinates)
       }
 
     }
 
+    // Clear all markers and polyline when game state is 'IN_PROGRESS'
     if (gameState === 'IN_PROGRESS') {
       if (userMarkerRef.current) {
         setUserCoordinates(null);
@@ -120,6 +120,7 @@ export default function Map() {
 
   }, [gameState, coordinates, setUserCoordinates, userCoordinates]);
 
+  // Keep a reference to the gameState up to date
   useEffect(() => {
     gameStateRef.current = gameState;
   }, [gameState]);
@@ -130,7 +131,6 @@ export default function Map() {
 
   useEffect(() => {
     return () => {
-      // Clean up on unmount
       if (mapInstanceRef.current) {
         mapInstanceRef.current.destroy();
       }

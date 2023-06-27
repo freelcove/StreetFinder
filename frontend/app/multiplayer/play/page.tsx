@@ -12,13 +12,10 @@ import Map from '../components/Map';
 import { calculateDistance } from '@/app/utils/calculateDistance';
 
 
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
 export default function GameComponent() {
     const { data: session } = useSession();
     const [gameState, setGameState] = useState('');
     const [userState, setUserState] = useState('PLAYING');
-    const [photodate, setPhotodate] = useState('');
     const username = session?.user?.name || '';
     const userId = session?.user?.id || '';
     const [connected, setConnected] = useState<boolean>(false);
@@ -63,6 +60,7 @@ export default function GameComponent() {
                         if (messageData.gameState) setGameState(messageData.gameState);
                         if (messageData.users) setUsers(messageData.users);
                         if (messageData.coordinates) setCoordinates(messageData.coordinates);
+                        console.log('Coordinates from message:', messageData.coordinates);
 
                     } catch (error) {
                         console.error("Error parsing message:", error);
@@ -75,6 +73,8 @@ export default function GameComponent() {
                         if (messageData.gameState) setGameState(messageData.gameState);
                         if (messageData.users) setUsers(messageData.users);
                         if (messageData.coordinates) setCoordinates(messageData.coordinates);
+                        console.log('Coordinates from message:', messageData.coordinates);
+
 
                     } catch (error) {
                         console.error("Error parsing message:", error);
@@ -134,7 +134,7 @@ export default function GameComponent() {
 
 
     return (
-        <MultiplayerGameContext.Provider value={{ stompClient, gameState, users, connected, coordinates, userCoordinates, setUserCoordinates, userState, setUserState, photodate, setPhotodate }}>
+        <MultiplayerGameContext.Provider value={{ stompClient, gameState, users, connected, coordinates, userCoordinates, setUserCoordinates, userState, setUserState }}>
             <div className="relative w-full h-full flex overflow-hidden z-0">
                 {coordinates && (
                     <>

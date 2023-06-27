@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-interface IUserCoordinate {
+interface CoordinatesType {
   lat: number;
   lng: number;
 }
@@ -8,19 +8,15 @@ interface IUserCoordinate {
 interface ISinglePlayerGameContext {
   gameState: string;
   setGameState: React.Dispatch<React.SetStateAction<string>>;
-  coordinates: IUserCoordinate | null;
-  userCoordinates: IUserCoordinate | null;
-  setUserCoordinates: React.Dispatch<React.SetStateAction<IUserCoordinate | null>>;
-  photodate: string;
-  setPhotodate: React.Dispatch<React.SetStateAction<string>>;
+  coordinates: CoordinatesType | null;
+  userCoordinates: CoordinatesType | null;
+  setUserCoordinates: React.Dispatch<React.SetStateAction<CoordinatesType | null>>;
 }
 
-export const GameContext = createContext<ISinglePlayerGameContext>({
+export const SinglePlayerGameContext = createContext<ISinglePlayerGameContext>({
   gameState: '',
   setGameState: () => {},
   coordinates: null,
   userCoordinates: null,
   setUserCoordinates: () => {},
-  photodate: '',
-  setPhotodate: () => {},
 });

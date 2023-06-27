@@ -7,15 +7,15 @@ import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 
 function MovingClouds({ isZooming }: { isZooming: boolean }) {
     const cloudTexture = useLoader(THREE.TextureLoader, '/image/cloud1.png');
-    const cloudRefs = useRef([]);
+    const cloudRefs = useRef<(THREE.Mesh | null)[]>([]);
 
     useFrame(() => {
         // Move clouds forward in every frame
-        cloudRefs.current.forEach((cloud: THREE.Object3D) => {
+        cloudRefs.current.forEach((cloud) => {
             const speed = isZooming ? 0.3 : 0.01 ;
-            cloud.position.z += speed;
-            if (cloud.position.z > 5) {
-                cloud.position.set(Math.random() * 60 - 30, Math.random() * 30 - 15, (Math.random() * -70) -70);
+            cloud!.position.z += speed;
+            if (cloud!.position.z > 5) {
+                cloud!.position.set(Math.random() * 60 - 30, Math.random() * 30 - 15, (Math.random() * -70) -70);
             }
         });
     });

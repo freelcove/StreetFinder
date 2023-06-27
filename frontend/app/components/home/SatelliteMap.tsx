@@ -15,7 +15,7 @@ export default function SatelliteMap() {
       scaleControl: false,
     };
 
-    const map = new window.naver.maps.Map(mapRef.current, mapOptions);
+    const map = new window.naver.maps.Map(mapRef.current!, mapOptions);
   };
 
   useEffect(() => {

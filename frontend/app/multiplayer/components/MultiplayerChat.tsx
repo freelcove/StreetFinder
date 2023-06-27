@@ -28,17 +28,19 @@ export default function MultiplayerChat() {
   }, [chatMessages]);
 
   useEffect(() => {
-    if (stompClient.current && connected) {
-      stompClient.current.subscribe('/topic/chat', onMessageReceived);
+    const currentStompClient = stompClient.current;
+    if (currentStompClient && connected) {
+      currentStompClient.subscribe('/topic/chat', onMessageReceived);
       console.log("chat subscription success");
     }
 
     return () => {
-      if (stompClient.current) {
-        stompClient.current.unsubscribe('/topic/chat');
+      if (currentStompClient) {
+        currentStompClient.unsubscribe('/topic/chat');
       }
     };
   }, [stompClient, connected]);
+
 
   const onMessageReceived = (payload: IMessage) => {
     const message = JSON.parse(payload.body) as ChatMessage;
@@ -59,8 +61,13 @@ export default function MultiplayerChat() {
         textColor = 'text-red-500';
         return <span className={`${textColor}  w-full break-words`}>{systemMessage.username} won the game!</span>;
       case 'CHAT':
-        textColor = 'text-gray-800';
-        return <span className={`${textColor}  w-full break-words`}>{systemMessage.username}: {systemMessage.content}</span>;
+        return (
+          <>
+            <span className="text-blue-500 w-full whitespace-nowrap">{systemMessage.username}</span>:
+            <span className="text-gray-800 w-full break-words ml-1">{systemMessage.content}</span>
+          </>
+        );
+
       default:
         textColor = 'text-gray-800';
         return <span className={`${textColor}  w-full break-words`}>{systemMessage.content}</span>;
@@ -103,5 +110,5 @@ export default function MultiplayerChat() {
       </form>
     </div>
   );
-  
+
 };
