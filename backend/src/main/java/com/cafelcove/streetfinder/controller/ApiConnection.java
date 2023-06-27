@@ -30,9 +30,12 @@ public class ApiConnection {
         List<PositionDTO> data = new ArrayList<PositionDTO>();
         PositionDataDTO result = new PositionDataDTO();
         GetPositionDAO dao = new GetPositionDAO();
-        data.add(dao.getPosition(dbUrl, dbId, dbPw));
-        if (data != null) {
+        PositionDTO positionDTO = dao.getPosition(dbUrl, dbId, dbPw);
+        if (positionDTO.getLat() != null) {
+            data.add(positionDTO);
             result.setResult("Success");
+            result.setData(data);
+        } else {
             result.setData(data);
         }
         System.out.println(result.getData().get(0).getPlace_name());
@@ -48,8 +51,9 @@ public class ApiConnection {
         int count = Integer.parseInt(variable);
         int i = 0;
         while(i<count){
-            data.add(dao.getPosition(dbUrl, dbId, dbPw));
+            data.add(dao.getPosition(dbUrl, dbId, dbPw, data));
             if(data.get(i)==null){
+                data.remove(i);
                 i--;
             } else {
                 i++;

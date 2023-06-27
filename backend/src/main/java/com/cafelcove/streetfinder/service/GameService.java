@@ -3,12 +3,25 @@ package com.cafelcove.streetfinder.service;
 
 import org.springframework.stereotype.Service;
 
+import com.cafelcove.streetfinder.controller.ApiConnection;
+import com.cafelcove.streetfinder.dto.PositionDTO;
+import com.cafelcove.streetfinder.dto.PositionDataDTO;
 import com.cafelcove.streetfinder.entity.Message;
 import com.cafelcove.streetfinder.entity.User;
+import com.cafelcove.streetfinder.repository.GetPositionDAO;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.cj.xdevapi.JsonArray;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,15 +94,77 @@ public class GameService {
         return Math.round(value * scale) / scale;
     }
 
+    public PositionDataDTO connPositionDataDTO(){
+        PositionDataDTO data = new PositionDataDTO();
+        try {
+            String apiURL = "http://localhost:8080/api/position/each";
+            URL url = new URL(apiURL);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            int responseCode = con.getResponseCode();
+
+            BufferedReader br;
+
+            if(responseCode == 200){
+                br = new BufferedReader(new InputStreamReader(con.getInputStream(),"UTF-8"));
+            } else {
+                br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+            }
+
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+
+            while((inputLine = br.readLine()) != null){
+                response.append(inputLine);
+            }
+
+            br.close();
+
+            JSONTokener tokener = new JSONTokener(response.toString());
+            JSONObject object= new JSONObject(tokener);
+            JSONArray arr = object.getJSONArray("data");
+            List<PositionDTO> input = new ArrayList<PositionDTO>();
+            for(int i = 0; i<arr.length(); i++){
+                JSONObject temp = (JSONObject) arr.get(i);
+                PositionDTO positionDTO = new PositionDTO(String.valueOf(temp.get("place_id")),(String) temp.get("place_name"),
+                String.valueOf(temp.get("lat")), String.valueOf(temp.get("lng")), String.valueOf(temp.get("visits")));
+                System.out.println(temp);
+                System.out.println(temp.get("place_id"));
+                System.out.println(temp.get("place_name"));
+                System.out.println(temp.get("lat"));
+                System.out.println(temp.get("lng"));
+                System.out.println(temp.get("visits"));
+
+                input.add(positionDTO);
+            }
+            data.setData(input);
+            for (PositionDTO item : data.getData()) {
+                System.out.println(item.getPlace_name());
+                System.out.println(item.getPlace_id());
+                System.out.println(item.getLat());
+                System.out.println(item.getLng());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return data;
+    }
+
     public void startNewGame() {
         System.out.println("Starting new game");
         if (gameState == "NOTSET") broadcastUsers();
         gameState = "IN_PROGRESS";
-
-        double lat = generateRandomCoordinate(35.77, 35.98, 7);
-        double lng = generateRandomCoordinate(128.43, 128.77, 7);
-        coordinates.put("lat", lat);
-        coordinates.put("lng", lng);
+        PositionDataDTO data = new PositionDataDTO();
+        data = connPositionDataDTO();
+        for (PositionDTO item : data.getData()) {
+            System.out.println(item.getLat());
+            System.out.println(item.getLng());
+        }
+        double lat = Math.floor(data.getData().get(0).getLat()*100000)/100000.0;
+        double lng = Math.floor(data.getData().get(0).getLng()*100000)/100000.0;
+        coordinates.put("lat", lng);
+        coordinates.put("lng", lat);
+        System.out.println(lat + ", " +lng);
         
         broadcastGameStateAndCoordinates();
     }
