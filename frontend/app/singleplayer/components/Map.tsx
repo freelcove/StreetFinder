@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useContext } from 'react';
-import { SinglePlayerGameContext } from '../context/SinglePlayerGameContext';
+import { SingleplayerGameContext } from '../context/SingleplayerGameContext';
 
 export default function Map() {
 
@@ -11,7 +11,7 @@ export default function Map() {
   const userMarkerRef = useRef<naver.maps.Marker | null>(null);
   const actualMarkerRef = useRef<naver.maps.Marker | null>(null);
   const polylineRef = useRef<naver.maps.Polyline | null>(null);
-  const { userCoordinates, coordinates, gameState, setUserCoordinates } = useContext(SinglePlayerGameContext);
+  const { userCoordinates, coordinates, gameState, setUserCoordinates } = useContext(SingleplayerGameContext);
 
   const gameStateRef = useRef<string>(gameState);
 

@@ -5,7 +5,7 @@ interface CoordinatesType {
   lng: number;
 }
 
-interface ISinglePlayerGameContext {
+interface ISingleplayerGameContext {
   gameState: string;
   setGameState: React.Dispatch<React.SetStateAction<string>>;
   coordinates: CoordinatesType | null;
@@ -13,7 +13,7 @@ interface ISinglePlayerGameContext {
   setUserCoordinates: React.Dispatch<React.SetStateAction<CoordinatesType | null>>;
 }
 
-export const SinglePlayerGameContext = createContext<ISinglePlayerGameContext>({
+export const SingleplayerGameContext = createContext<ISingleplayerGameContext>({
   gameState: '',
   setGameState: () => {},
   coordinates: null,
