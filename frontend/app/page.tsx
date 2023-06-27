@@ -7,6 +7,7 @@ import Image from "next/image";
 import SignIn from "./auth/signin/page";
 import { signIn, signOut, useSession } from "next-auth/react";
 import React from "react";
+import { warmupRequest } from "./utils/warmupRequest";
 
 export default function Home() {
   enum Stage {
@@ -42,9 +43,10 @@ export default function Home() {
 
   useEffect(() => {
     initMap();
+    warmupRequest();
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 600); // Set the timeout duration based on your loading time
+    }, 1000); // Set the timeout duration based on your loading time
 
     return () => clearTimeout(timer);
   }, []);
