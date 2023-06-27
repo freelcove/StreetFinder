@@ -1,6 +1,6 @@
 "use client";
 
-import SkyDivingCanvas from "@/app/components/home/SkyDivingCanvas";
+import SkyDivingCanvas from "@/app/components/SkyDivingCanvas";
 import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";

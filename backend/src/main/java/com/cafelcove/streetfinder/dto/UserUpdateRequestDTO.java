@@ -1,15 +1,13 @@
 package com.cafelcove.streetfinder.dto;
 
-import java.math.BigDecimal;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-public class PlaceDTO {
-    private int id;
+@NoArgsConstructor
+public class UserUpdateRequestDTO {
     private String name;
-    private BigDecimal latitude;
-    private BigDecimal longitude;
+    private String color;
 }

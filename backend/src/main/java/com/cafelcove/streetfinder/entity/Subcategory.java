@@ -1,13 +1,10 @@
 package com.cafelcove.streetfinder.entity;
 
-import org.springframework.stereotype.Repository;
-
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Repository
 public class Subcategory {
     private int id;
     private String name;

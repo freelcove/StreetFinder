@@ -46,10 +46,11 @@ public class WebsocketPreHandler implements ChannelInterceptor {
                 // Validate the token
                 if (jwtUtil.validateToken(token)) {
                     var claims = jwtUtil.getClaims(token);
-                    String userId = claims.get("id", String.class);
-                    String username = claims.get("username", String.class);
+                    String id = claims.get("id", String.class);
+                    String name = claims.get("name", String.class);
                     String role = claims.get("role", String.class);
-                    User userPrincipal = new User(userId, username, role);
+                    String color = claims.get("color", String.class);
+                    User userPrincipal = new User(id, name, role, color);
 
                     // Create and set the authentication token in the security context
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userPrincipal, null, List.of(new SimpleGrantedAuthority(role)));

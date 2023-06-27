@@ -39,10 +39,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
             if (jwtUtil.validateToken(token)) {
                 var claims = jwtUtil.getClaims(token);
-                String userId = claims.get("id", String.class);
+                String id = claims.get("id", String.class);
                 String role = claims.get("role", String.class);
                 GrantedAuthority authority = new SimpleGrantedAuthority(role);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId,
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(id,
                         null, Collections.singleton(authority));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {

@@ -52,13 +52,13 @@ public class GameService {
 
     public void addUser(User user) {
         users.add(user);
-        broadcastChatMessage(Message.MessageType.CONNECT, "/topic/chat", user.getUsername());
+        broadcastChatMessage(Message.MessageType.CONNECT, "/topic/chat", user.getName());
 
     }
 
     public void removeUser(User user) {
         users.remove(user);
-        broadcastChatMessage(Message.MessageType.DISCONNECT, "/topic/chat", user.getUsername());
+        broadcastChatMessage(Message.MessageType.DISCONNECT, "/topic/chat", user.getName());
 
     }
 
@@ -85,7 +85,7 @@ public class GameService {
         if (gameState.equals("IN_PROGRESS")) {
             gameState = "DISPLAYING_RESULTS";
 
-            broadcastChatMessage(Message.MessageType.WIN, "/topic/chat", message.getUsername());
+            broadcastChatMessage(Message.MessageType.WIN, "/topic/chat", message.getName());
             broadcastGameState();
 
             // Transition to next states with delays
@@ -94,10 +94,10 @@ public class GameService {
         }
     }
 
-    private void broadcastChatMessage(Message.MessageType type, String destination, String username) {
+    private void broadcastChatMessage(Message.MessageType type, String destination, String name) {
         Message chatMessage = new Message();
         chatMessage.setType(type);
-        chatMessage.setUsername(username);
+        chatMessage.setName(name);
         messagingTemplate.convertAndSend(destination, chatMessage);
     }
     
@@ -135,7 +135,7 @@ public class GameService {
     }
 
         private void broadcastGameStateAndCoordinatesToUser(Message message) {
-        logger.info("Sending game state to user " + message.getUserId() + ": " + message);
-        broadcastToUser(message.getUserId(), Map.of("gameState", gameState, "coordinates", coordinates));
+        logger.info("Sending game state to user " + message.getId() + ": " + message);
+        broadcastToUser(message.getId(), Map.of("gameState", gameState, "coordinates", coordinates));
     }
 }

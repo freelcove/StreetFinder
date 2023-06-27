@@ -5,8 +5,8 @@ import { useSession } from 'next-auth/react';
 import { MultiplayerGameContext } from '../context/MultiplayerGameContext';
 
 interface ChatMessage {
-  userId: string;
-  username: string;
+  id: string;
+  name: string;
   content: string;
   type: 'CHAT' | 'CONNECT' | 'DISCONNECT' | 'WIN';
 }
@@ -14,12 +14,21 @@ interface ChatMessage {
 export default function MultiplayerChat() {
   const { stompClient, connected } = useContext(MultiplayerGameContext);
   const { data: session } = useSession();
-  const username = session?.user?.name || '';
+  const name = session?.user?.name || '';
   const [messageContents, setMessageContents] = useState<string>('');
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   const messageAreaRef = useRef<HTMLUListElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current?.focus();
+    }
+  });
+  
+
+  
 
   useEffect(() => {
     if (messageAreaRef.current) {
@@ -53,17 +62,17 @@ export default function MultiplayerChat() {
     switch (systemMessage.type) {
       case 'CONNECT':
         textColor = 'text-green-500';
-        return <span className={`${textColor} w-full break-words`}>{systemMessage.username} joined!</span>;
+        return <span className={`${textColor} w-full break-words`}>{systemMessage.name} joined!</span>;
       case 'DISCONNECT':
         textColor = 'text-yellow-500';
-        return <span className={`${textColor}  w-full break-words`}>{systemMessage.username} left!</span>;
+        return <span className={`${textColor}  w-full break-words`}>{systemMessage.name} left!</span>;
       case 'WIN':
         textColor = 'text-red-500';
-        return <span className={`${textColor}  w-full break-words`}>{systemMessage.username} won the game!</span>;
+        return <span className={`${textColor}  w-full break-words`}>{systemMessage.name} won the game!</span>;
       case 'CHAT':
         return (
           <>
-            <span className="text-blue-500 w-full whitespace-nowrap">{systemMessage.username}</span>:
+            <span className="text-blue-500 w-full whitespace-nowrap">{systemMessage.name}</span>:
             <span className="text-gray-800 w-full break-words ml-1">{systemMessage.content}</span>
           </>
         );
@@ -78,7 +87,7 @@ export default function MultiplayerChat() {
     event.preventDefault();
     if (messageContents.trim() && stompClient.current) {
       const chatMessage = {
-        username: username,
+        name: name,
         content: messageContents,
         type: 'CHAT'
       };
@@ -101,6 +110,7 @@ export default function MultiplayerChat() {
       </ul>
       <form onSubmit={sendMessage} className="flex mt-1">
         <input
+        ref={inputRef}
           type="text"
           placeholder="Type a message..."
           className="p-1 border border-gray-300 rounded flex-grow overflow-auto"

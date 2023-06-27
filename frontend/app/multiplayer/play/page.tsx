@@ -16,8 +16,8 @@ export default function GameComponent() {
     const { data: session } = useSession();
     const [gameState, setGameState] = useState('');
     const [userState, setUserState] = useState('PLAYING');
-    const username = session?.user?.name || '';
-    const userId = session?.user?.id || '';
+    const name = session?.user?.name || '';
+    const id = session?.user?.id || '';
     const [connected, setConnected] = useState<boolean>(false);
 
     const stompClient = useRef<Client | null>(null);
@@ -65,7 +65,7 @@ export default function GameComponent() {
                         console.error("Error parsing message:", error);
                     }
                 });
-                stompClient.current?.subscribe(`/user/${userId}/state`, (message) => {
+                stompClient.current?.subscribe(`/user/${id}/state`, (message) => {
                     console.log('Sent to you:', message.body);
                     try {
                         const messageData = JSON.parse(message.body);
@@ -82,7 +82,7 @@ export default function GameComponent() {
 
                 stompClient.current?.publish({
                     destination: '/app/game.start',
-                    body: JSON.stringify({ userId: userId, username: username }),
+                    body: JSON.stringify({ id: id, name: name }),
 
                 });
             },
@@ -100,13 +100,14 @@ export default function GameComponent() {
                 setConnected(false);
             }
         }
-    }, [backendUrl,session,userId,username]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         const handleWin = () => {
             stompClient.current?.publish({
                 destination: '/app/game.win',
-                body: JSON.stringify({ username: username }),
+                body: JSON.stringify({ name: name }),
             });
     
         };
@@ -128,7 +129,7 @@ export default function GameComponent() {
                 return () => clearTimeout(timer);
             }
         }
-    }, [userCoordinates, coordinates, username])
+    }, [userCoordinates, coordinates, name])
 
 
     return (
