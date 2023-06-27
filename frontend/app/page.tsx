@@ -56,7 +56,7 @@ export default function Home() {
 
     return () => clearTimeout(timer);
 
-  }, [map, Stage.CHOOSE_MODE]);
+  }, [Stage.CHOOSE_MODE]);
 
   return (
     <div className='relative overflow-hidden w-screen h-screen z-0'>

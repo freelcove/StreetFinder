@@ -105,6 +105,13 @@ export default function GameComponent() {
     }, [backendUrl,session,userId,username]);
 
     useEffect(() => {
+        const handleWin = () => {
+            stompClient.current?.publish({
+                destination: '/app/game.win',
+                body: JSON.stringify({ username: username }),
+            });
+    
+        };
         if (userCoordinates && coordinates) {
             const dist = calculateDistance(
                 userCoordinates.lat,
@@ -123,19 +130,8 @@ export default function GameComponent() {
                 return () => clearTimeout(timer);
             }
         }
-    }, [userCoordinates, coordinates])
+    }, [userCoordinates, coordinates, username])
 
-    useEffect(() => {
-        console.log(userState);
-    }, [userState])
-
-    const handleWin = () => {
-        stompClient.current?.publish({
-            destination: '/app/game.win',
-            body: JSON.stringify({ username: username }),
-        });
-
-    };
 
     return (
         <MultiplayerGameContext.Provider value={{ stompClient, gameState, users, connected, coordinates, userCoordinates, setUserCoordinates, userState, setUserState, photodate, setPhotodate }}>
