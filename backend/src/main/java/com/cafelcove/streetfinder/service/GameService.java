@@ -3,30 +3,20 @@ package com.cafelcove.streetfinder.service;
 
 import org.springframework.stereotype.Service;
 
-import com.cafelcove.streetfinder.controller.ApiConnection;
-import com.cafelcove.streetfinder.dto.PositionDTO;
-import com.cafelcove.streetfinder.dto.PositionDataDTO;
+import com.cafelcove.streetfinder.dto.PlaceDTO;
 import com.cafelcove.streetfinder.entity.Message;
 import com.cafelcove.streetfinder.entity.User;
-import com.cafelcove.streetfinder.repository.GetPositionDAO;
+import com.cafelcove.streetfinder.repository.PlaceRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysql.cj.xdevapi.JsonArray;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -39,11 +29,16 @@ public class GameService {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private List<String> users = new ArrayList<>();
-    private String gameState = "NOTSET";
-    private Map<String, Double> coordinates = new HashMap<>();
+    @Autowired
+    private PlaceRepository placeRepository;
 
-    public List<String> getUsers() {
+    private List<User> users = new CopyOnWriteArrayList<>();
+    private String gameState = "NOTSET";
+    private Map<String, BigDecimal> coordinates;
+
+    private static final Logger logger = LoggerFactory.getLogger(GameService.class);
+
+    public List<User> getUsers() {
         return users;
     }
 
@@ -56,211 +51,91 @@ public class GameService {
     }
 
     public void addUser(User user) {
-        String userId = user.getUserId();
-        String username = user.getUsername();
-        String role = user.getRole();
-        users.add(username);
-        System.out.println("User added: " + username);
+        users.add(user);
+        broadcastChatMessage(Message.MessageType.CONNECT, "/topic/chat", user.getUsername());
 
-        // construct chat message for connection and send it
-        Message chatMessage = new Message();
-        chatMessage.setType(Message.MessageType.CONNECT);
-        chatMessage.setUsername(username);
-
-        messagingTemplate.convertAndSend("/topic/chat", chatMessage);
-        
     }
 
     public void removeUser(User user) {
-        String userId = user.getUserId();
-        String username = user.getUsername();
-        String role = user.getRole();
-        users.remove(username);
-        System.out.println("User removed: " + username);
+        users.remove(user);
+        broadcastChatMessage(Message.MessageType.DISCONNECT, "/topic/chat", user.getUsername());
 
-        // construct chat message
-        Message chatMessage = new Message();
-        chatMessage.setType(Message.MessageType.DISCONNECT);
-        chatMessage.setUsername(username);
-        // send chat message
-        messagingTemplate.convertAndSend("/topic/chat", chatMessage);
-
-    }
-
-    public double generateRandomCoordinate(double min, double max, int decimalPoint) {
-        Random random = new Random();
-        double value = min + (max - min) * random.nextDouble();
-        double scale = Math.pow(10, decimalPoint);
-        return Math.round(value * scale) / scale;
-    }
-
-    public PositionDataDTO connPositionDataDTO(){
-        PositionDataDTO data = new PositionDataDTO();
-        try {
-            String apiURL = "http://localhost:8080/api/position/each";
-            URL url = new URL(apiURL);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            int responseCode = con.getResponseCode();
-
-            BufferedReader br;
-
-            if(responseCode == 200){
-                br = new BufferedReader(new InputStreamReader(con.getInputStream(),"UTF-8"));
-            } else {
-                br = new BufferedReader(new InputStreamReader(con.getErrorStream()));
-            }
-
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-
-            while((inputLine = br.readLine()) != null){
-                response.append(inputLine);
-            }
-
-            br.close();
-
-            JSONTokener tokener = new JSONTokener(response.toString());
-            JSONObject object= new JSONObject(tokener);
-            JSONArray arr = object.getJSONArray("data");
-            List<PositionDTO> input = new ArrayList<PositionDTO>();
-            for(int i = 0; i<arr.length(); i++){
-                JSONObject temp = (JSONObject) arr.get(i);
-                PositionDTO positionDTO = new PositionDTO(String.valueOf(temp.get("place_id")),(String) temp.get("place_name"),
-                String.valueOf(temp.get("lat")), String.valueOf(temp.get("lng")), String.valueOf(temp.get("visits")));
-                System.out.println(temp);
-                System.out.println(temp.get("place_id"));
-                System.out.println(temp.get("place_name"));
-                System.out.println(temp.get("lat"));
-                System.out.println(temp.get("lng"));
-                System.out.println(temp.get("visits"));
-
-                input.add(positionDTO);
-            }
-            data.setData(input);
-            for (PositionDTO item : data.getData()) {
-                System.out.println(item.getPlace_name());
-                System.out.println(item.getPlace_id());
-                System.out.println(item.getLat());
-                System.out.println(item.getLng());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return data;
     }
 
     public void startNewGame() {
-        System.out.println("Starting new game");
-        if (gameState == "NOTSET") broadcastUsers();
-        gameState = "IN_PROGRESS";
-        PositionDataDTO data = new PositionDataDTO();
-        data = connPositionDataDTO();
-        for (PositionDTO item : data.getData()) {
-            System.out.println(item.getLat());
-            System.out.println(item.getLng());
+        logger.info("Starting new game");
+        if (gameState.equals("NOTSET")) {
+            broadcastUsers();
         }
-        double lat = Math.floor(data.getData().get(0).getLat()*100000)/100000.0;
-        double lng = Math.floor(data.getData().get(0).getLng()*100000)/100000.0;
-        coordinates.put("lat", lng);
-        coordinates.put("lng", lat);
-        System.out.println(lat + ", " +lng);
-        
+        gameState = "IN_PROGRESS";
+
+        PlaceDTO randomPlace = placeRepository.getRandomPlace();
+
+        coordinates = Map.of("lat", randomPlace.getLatitude(), "lng", randomPlace.getLongitude());
+
         broadcastGameStateAndCoordinates();
     }
 
     public void joinPreviousGame(Message message) {
-        System.out.println("joinPreviousGame");
         broadcastUsers();
         broadcastGameStateAndCoordinatesToUser(message);
     }
 
     public void playerWin(Message message) {
-        if ("IN_PROGRESS".equals(gameState)) {
+        if (gameState.equals("IN_PROGRESS")) {
             gameState = "DISPLAYING_RESULTS";
 
-            Message winMessage = new Message();
-            winMessage.setType(Message.MessageType.WIN);
-            winMessage.setUsername(message.getUsername());
-
-            messagingTemplate.convertAndSend("/topic/chat", winMessage);
+            broadcastChatMessage(Message.MessageType.WIN, "/topic/chat", message.getUsername());
             broadcastGameState();
 
             // Transition to next states with delays
             ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-            executorService.schedule(() -> startNewGame(), 5, TimeUnit.SECONDS);
+            executorService.schedule(() -> startNewGame(), 15, TimeUnit.SECONDS);
         }
     }
 
-    private void broadcastGameStateAndCoordinatesToUser(Message message) {
-        String userId = message.getUserId();
-        System.out.println("Sending game state to user " + userId + ": " + message);
+    private void broadcastChatMessage(Message.MessageType type, String destination, String username) {
+        Message chatMessage = new Message();
+        chatMessage.setType(type);
+        chatMessage.setUsername(username);
+        messagingTemplate.convertAndSend(destination, chatMessage);
+    }
+    
+    private void broadcastData(String destination, Map<String, Object> payload) {
         try {
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("gameState", gameState);
-            payload.put("coordinates", coordinates);
             String broadcastedMessage = objectMapper.writeValueAsString(payload);
-            System.out.println("Broadcasted message: " + broadcastedMessage);
-            messagingTemplate.convertAndSendToUser(userId, "/state", broadcastedMessage);
+            logger.info("Broadcasted message: " + broadcastedMessage);
+            messagingTemplate.convertAndSend(destination, broadcastedMessage);
         } catch (Exception e) {
-            System.out.println("broadcast error: " + e);
-            // handle the exception
+            logger.error("broadcast error: ", e);
         }
-
     }
 
     private void broadcastGameState() {
-        try {
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("gameState", gameState);
-            String broadcastedMessage = objectMapper.writeValueAsString(payload);
-            System.out.println("Broadcasted message: " + broadcastedMessage);
-            messagingTemplate.convertAndSend("/topic/game", broadcastedMessage);
-        } catch (Exception e) {
-            System.out.println("broadcast error: " + e);
-            // handle the exception
-        }
+        broadcastData("/topic/game", Map.of("gameState", gameState));
     }
 
     private void broadcastGameStateAndCoordinates() {
-        try {
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("gameState", gameState);
-            payload.put("coordinates", coordinates);
-            String broadcastedMessage = objectMapper.writeValueAsString(payload);
-            System.out.println("Broadcasted message: " + broadcastedMessage);
-            messagingTemplate.convertAndSend("/topic/game", broadcastedMessage);
-        } catch (Exception e) {
-            System.out.println("broadcast error: " + e);
-            // handle the exception
-        }
+        broadcastData("/topic/game", Map.of("gameState", gameState, "coordinates", coordinates));
     }
 
     private void broadcastUsers() {
+        broadcastData("/topic/game", Map.of("users", users));
+    }
+
+
+    private void broadcastToUser(String userId, Map<String, Object> payload) {
         try {
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("users", users);
             String broadcastedMessage = objectMapper.writeValueAsString(payload);
-            System.out.println("Broadcasted message: " + broadcastedMessage);
-            messagingTemplate.convertAndSend("/topic/game", broadcastedMessage);
+            logger.info("Broadcasted message to user {}: {}", userId, broadcastedMessage);
+            messagingTemplate.convertAndSendToUser(userId, "/state", broadcastedMessage);
         } catch (Exception e) {
-            System.out.println("broadcast error: " + e);
-            // handle the exception
+            logger.error("broadcast error: ", e);
         }
     }
 
-    // the original broadcastGameState with three parameters
-    private void broadcastCoordinates() {
-        try {
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("coordinates", coordinates);
-            String broadcastedMessage = objectMapper.writeValueAsString(payload);
-            System.out.println("Broadcasted message: " + broadcastedMessage);
-            messagingTemplate.convertAndSend("/topic/game", broadcastedMessage);
-        } catch (Exception e) {
-            System.out.println("broadcast error: " + e);
-            // handle the exception
-        }
+        private void broadcastGameStateAndCoordinatesToUser(Message message) {
+        logger.info("Sending game state to user " + message.getUserId() + ": " + message);
+        broadcastToUser(message.getUserId(), Map.of("gameState", gameState, "coordinates", coordinates));
     }
-
 }

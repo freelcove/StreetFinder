@@ -1,19 +1,17 @@
 package com.cafelcove.streetfinder.entity;
 
-
-import org.springframework.stereotype.Repository;
+import java.math.BigDecimal;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
-@Repository
 public class Place {
     private int id;
     private String name;
-    private Float latitude;
-    private Float longitude;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
     private int city_id;
     private String address;
     private int category_id;
@@ -22,22 +20,22 @@ public class Place {
     private String created_at;
     private String updated_at;
 
-    
+    public Place() {
+    }
 
-    public Place(){}
-
-    public String checkEmpty(String input){
-        if(input.equals("")){
+    public String checkEmpty(String input) {
+        if (input.equals("")) {
             return "0";
         }
         return input;
     }
 
-    public Place(String id, String name, String latitude, String logitude, String city_id, String address, String category_id, String subcategory_id, String visits, String created_at, String updated_at){
+    public Place(String id, String name, String latitude, String logitude, String city_id, String address,
+            String category_id, String subcategory_id, String visits, String created_at, String updated_at) {
         this.id = Integer.parseInt(id);
         this.name = name;
-        this.latitude = Float.parseFloat(latitude);
-        this.longitude = Float.parseFloat(logitude);
+        this.latitude = new BigDecimal(latitude);
+        this.longitude = new BigDecimal(logitude);
         this.city_id = Integer.parseInt(city_id);
         this.address = address;
         this.category_id = Integer.parseInt(category_id);
@@ -47,7 +45,8 @@ public class Place {
         this.updated_at = updated_at;
     }
 
-    public Place(String id, String name, Float latitude, Float logitude, String city_id, String address, String category_id, String subcategory_id, String visits, String created_at, String updated_at){
+    public Place(String id, String name, BigDecimal latitude, BigDecimal logitude, String city_id, String address,
+            String category_id, String subcategory_id, String visits, String created_at, String updated_at) {
         this.id = Integer.parseInt(id);
         this.name = name;
         this.latitude = latitude;
@@ -61,7 +60,8 @@ public class Place {
         this.updated_at = updated_at;
     }
 
-    public Place(String id, String name, Float latitude, Float logitude, String city_id, String address, String category_id, String subcategory_id, String visits){
+    public Place(String id, String name, BigDecimal latitude, BigDecimal logitude, String city_id, String address,
+            String category_id, String subcategory_id, String visits) {
         this.id = Integer.parseInt(id);
         this.name = name;
         this.latitude = latitude;
@@ -75,7 +75,8 @@ public class Place {
         this.updated_at = null;
     }
 
-        public Place (int id, String name, Float latitude, Float logitude, int city_id, String address, int category_id, int subcategory_id, int visits, String created_at, String updated_at){
+    public Place(int id, String name, BigDecimal latitude, BigDecimal logitude, int city_id, String address,
+            int category_id, int subcategory_id, int visits, String created_at, String updated_at) {
         this.id = id;
         this.name = name;
         this.latitude = latitude;
@@ -87,7 +88,6 @@ public class Place {
         this.created_at = created_at;
         this.updated_at = updated_at;
     }
-
 
     @Override
     public String toString() {
