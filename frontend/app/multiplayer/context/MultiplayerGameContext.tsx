@@ -7,10 +7,17 @@ type CoordinatesType = {
   lng: number;
 };
 
+interface IUser {
+  id: string;
+  name: string;
+  role: string;
+  color: string;
+}
+
 interface IMultiplayerGameContext {
   stompClient: React.MutableRefObject<Client | null>;
   gameState: string;
-  users: string[];
+  users: IUser[];
   connected: boolean;
   coordinates: CoordinatesType | null;
   userCoordinates: CoordinatesType | null;

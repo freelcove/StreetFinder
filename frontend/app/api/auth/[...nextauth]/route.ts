@@ -59,7 +59,7 @@ const handler = NextAuth({
         strategy: "jwt"
     },
     callbacks: {
-        async jwt({ token, user, account }) {
+        async jwt({ token, trigger, user, account, session }) {
             if (account && user) { // This block runs when the user logs in
                 const jwtPayload = {
                     id: user.id,
@@ -72,6 +72,10 @@ const handler = NextAuth({
                     expiresIn: '6h'
                 });
                 return { ...token, ...jwtPayload, accessToken: jwtToken };
+            }
+
+            if (trigger === "update" && session) {
+                token = { ...token, ...session };
             }
             return token;
         }

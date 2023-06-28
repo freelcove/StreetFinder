@@ -5,7 +5,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import SignIn from "./auth/signin/page";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import React from "react";
 import { warmupRequest } from "./utils/warmupRequest";
 
@@ -117,16 +117,7 @@ export default function Home() {
         </div>
 
       )}
-      {isLogged ? (
-        <div className="absolute bottom-0 right-0 mb-3 mr-3">
-          <button
-            className="text-2xl font-bold duration-300 ease-in-out hover:scale-105"
-            onClick={() => signOut()}
-          >
-            Sign Out
-          </button>
-        </div>
-      ) : null}
+
     </div>
   );
 }

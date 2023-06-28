@@ -1,46 +1,71 @@
 "use client";
-import { useState, useEffect, useRef, useContext } from 'react';
+import { useState, useEffect, useRef, useContext, useCallback, memo } from 'react';
 import { IMessage } from '@stomp/stompjs';
 import { useSession } from 'next-auth/react';
 import { MultiplayerGameContext } from '../context/MultiplayerGameContext';
 
-interface ChatMessage {
+interface IChatMessage {
   id: string;
   name: string;
+  color: string;
   content: string;
   type: 'CHAT' | 'CONNECT' | 'DISCONNECT' | 'WIN';
 }
 
+interface ChatMessageProps {
+  message: IChatMessage;
+}
+
 export default function MultiplayerChat() {
-  const { stompClient, connected } = useContext(MultiplayerGameContext);
+  const { stompClient, connected, users } = useContext(MultiplayerGameContext);
   const { data: session } = useSession();
-  const name = session?.user?.name || '';
+  const [userId, setUserId] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
+  const [userColor, setUserColor] = useState<string>('');
   const [messageContents, setMessageContents] = useState<string>('');
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   const messageAreaRef = useRef<HTMLUListElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  const [chatMessages, setChatMessages] = useState<IChatMessage[]>([]);
+
+  // Wrapped component in memo to prevent unnecessary re-renders
+  const ChatMessage = memo(({ message }: ChatMessageProps) => (
+    <li className="break-words w-full">{getMessageContent(message)}</li>
+  ));
+  const [canSendMessage, setCanSendMessage] = useState(true);
+
+
+  // Listening for session changes to update user's name and color
   useEffect(() => {
+    if (session) {
+      setUserId(session?.user?.id);
+      setUserName(session?.user?.name);
+      setUserColor(session?.user?.color);
+    }
+  }, [session]);
+
+  // Setting focus on chat input field on mount
+  useEffect(() => {
+
     if (inputRef.current) {
       inputRef.current?.focus();
     }
-  });
-  
+    console.log(users);
+  }, []);
 
-  
-
+  // Auto-scroll to the latest chat message
   useEffect(() => {
     if (messageAreaRef.current) {
       messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight;
     }
   }, [chatMessages]);
 
+  // Setup and teardown chat subscription
   useEffect(() => {
     const currentStompClient = stompClient.current;
     if (currentStompClient && connected) {
       currentStompClient.subscribe('/topic/chat', onMessageReceived);
-      console.log("chat subscription success");
     }
 
     return () => {
@@ -50,75 +75,83 @@ export default function MultiplayerChat() {
     };
   }, [stompClient, connected]);
 
-
-  const onMessageReceived = (payload: IMessage) => {
-    const message = JSON.parse(payload.body) as ChatMessage;
+  // Handle new chat messages
+  const onMessageReceived = useCallback((payload: IMessage) => {
+    const message = JSON.parse(payload.body) as IChatMessage;
     setChatMessages((prevMessages) => [...prevMessages, message]);
-  };
+  }, []);
 
-
-  function renderSystemMessageContent(systemMessage: ChatMessage) {
-    let textColor = '';
-    switch (systemMessage.type) {
+  // Render messages according to type
+  const getMessageContent = useCallback((chatMessage: IChatMessage) => {
+    switch (chatMessage.type) {
       case 'CONNECT':
-        textColor = 'text-green-500';
-        return <span className={`${textColor} w-full break-words`}>{systemMessage.name} joined!</span>;
+        return <span className="text-green-500">{chatMessage.name} joined!</span>;
       case 'DISCONNECT':
-        textColor = 'text-yellow-500';
-        return <span className={`${textColor}  w-full break-words`}>{systemMessage.name} left!</span>;
+        return <span className="text-yellow-500">{chatMessage.name} left!</span>;
       case 'WIN':
-        textColor = 'text-red-500';
-        return <span className={`${textColor}  w-full break-words`}>{systemMessage.name} won the game!</span>;
+        return <span className="text-red-500">{chatMessage.name} won the game!</span>;
       case 'CHAT':
         return (
           <>
-            <span className="text-blue-500 w-full whitespace-nowrap">{systemMessage.name}</span>:
-            <span className="text-gray-800 w-full break-words ml-1">{systemMessage.content}</span>
+            <span style={{color: chatMessage.color}} className="whitespace-nowrap">{chatMessage.name}</span>:
+            <span className="text-gray-800  ml-1">{chatMessage.content}</span>
           </>
         );
-
       default:
-        textColor = 'text-gray-800';
-        return <span className={`${textColor}  w-full break-words`}>{systemMessage.content}</span>;
+        return <span className="text-gray-800">{chatMessage.content}</span>;
     }
-  }
+  }, [users]);
 
-  const sendMessage = (event: React.FormEvent) => {
+  // Send a chat message
+  const sendMessage = useCallback((event: React.FormEvent) => {
     event.preventDefault();
+  
+    if (!canSendMessage) {
+      return;
+    }
+  
     if (messageContents.trim() && stompClient.current) {
       const chatMessage = {
-        name: name,
+        id: userId,
+        name: userName,
+        color: userColor,
         content: messageContents,
         type: 'CHAT'
       };
+      
       stompClient.current.publish({
         destination: '/app/chat.sendMessage',
         body: JSON.stringify(chatMessage),
       });
+      
       setMessageContents('');
+      
+      // Disable sending message
+      setCanSendMessage(false);
+      // Re-enable after a few seconds
+      setTimeout(() => setCanSendMessage(true), 500); 
     }
-  };
+  }, [messageContents, userName, canSendMessage]);
+
 
   return (
     <div className="p-1 w-full h-full flex flex-col bg-white">
       <ul ref={messageAreaRef} className="h-full w-full overflow-y-scroll p-2 rounded">
-        {chatMessages.map((chatMessage, i) => (
-          <li key={i}>
-            {renderSystemMessageContent(chatMessage)}
-          </li>
+        {chatMessages.map((message, i) => (
+          <ChatMessage key={i} message={message} />
         ))}
       </ul>
       <form onSubmit={sendMessage} className="flex mt-1">
         <input
-        ref={inputRef}
+          ref={inputRef}
           type="text"
           placeholder="Type a message..."
           className="p-1 border border-gray-300 rounded flex-grow overflow-auto"
           value={messageContents}
           onChange={(e) => setMessageContents(e.target.value)}
+
         />
       </form>
     </div>
   );
-
 };

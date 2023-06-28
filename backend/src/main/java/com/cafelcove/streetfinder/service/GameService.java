@@ -4,13 +4,13 @@ package com.cafelcove.streetfinder.service;
 import org.springframework.stereotype.Service;
 
 import com.cafelcove.streetfinder.dto.PlaceDTO;
+import com.cafelcove.streetfinder.entity.GameState;
 import com.cafelcove.streetfinder.entity.Message;
 import com.cafelcove.streetfinder.entity.User;
 import com.cafelcove.streetfinder.repository.PlaceRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
 import java.math.BigDecimal;
@@ -23,30 +23,30 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class GameService {
-    @Autowired
-    private SimpMessageSendingOperations messagingTemplate;
+        private final SimpMessageSendingOperations messagingTemplate;
+    private final ObjectMapper objectMapper;
+    private final PlaceRepository placeRepository;
+    private static final Logger logger = LoggerFactory.getLogger(GameService.class);
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private PlaceRepository placeRepository;
-
-    private List<User> users = new CopyOnWriteArrayList<>();
-    private String gameState = "NOTSET";
+    private final List<User> users = new CopyOnWriteArrayList<>();
+    private GameState gameState = GameState.NOTSET;
     private Map<String, BigDecimal> coordinates;
 
-    private static final Logger logger = LoggerFactory.getLogger(GameService.class);
+    public GameService(SimpMessageSendingOperations messagingTemplate, ObjectMapper objectMapper, PlaceRepository placeRepository) {
+        this.messagingTemplate = messagingTemplate;
+        this.objectMapper = objectMapper;
+        this.placeRepository = placeRepository;
+    }
 
     public List<User> getUsers() {
         return users;
     }
 
-    public String getGameState() {
+    public GameState getGameState() {
         return gameState;
     }
 
-    public void setGameState(String gameState) {
+    public void setGameState(GameState gameState) {
         this.gameState = gameState;
     }
 
@@ -64,10 +64,10 @@ public class GameService {
 
     public void startNewGame() {
         logger.info("Starting new game");
-        if (gameState.equals("NOTSET")) {
+        if (gameState.equals(GameState.NOTSET)) {
             broadcastUsers();
         }
-        gameState = "IN_PROGRESS";
+        gameState = GameState.IN_PROGRESS;
 
         PlaceDTO randomPlace = placeRepository.getRandomPlace();
 
@@ -82,8 +82,8 @@ public class GameService {
     }
 
     public void playerWin(Message message) {
-        if (gameState.equals("IN_PROGRESS")) {
-            gameState = "DISPLAYING_RESULTS";
+        if (gameState.equals(GameState.IN_PROGRESS)) {
+            gameState = GameState.DISPLAYING_RESULTS;
 
             broadcastChatMessage(Message.MessageType.WIN, "/topic/chat", message.getName());
             broadcastGameState();

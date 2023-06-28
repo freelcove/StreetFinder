@@ -137,7 +137,7 @@ export default function Map() {
   }, []);
 
   return (
-    <div ref={mapRef} className={`w-full h-full border-[3px] ${userState === "HOLD" ? "border-red-500" : ""}`} />
+    <div ref={mapRef} className="w-full h-full" />
   );
   
 };

@@ -5,10 +5,12 @@
    * the main part of the application starts using those resources.
    * Logs the response message to the console or logs an error if the request fails.
    */
+  
   export const warmupRequest = async () => {
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     try {
       // Send a GET request to the '/warmup' endpoint
-      const response = await fetch('/warmup');
+      const response = await fetch(`${backendUrl}/warmup`);
 
       // Parse the response as text
       const data = await response.text();

@@ -1,19 +1,22 @@
 "use client";
-import { useSession } from 'next-auth/react';
+import { getSession, useSession } from 'next-auth/react';
 import { useEffect, useState } from 'react';
+import { signOut } from 'next-auth/react';
+
 
 const Profile = () => {
-    const { data: session } = useSession();
-    const [name, setUsername] = useState("");
-    const [color, setColor] = useState("#FFFFFF");
+    const { data: session, update } = useSession(); 
+    const [name, setName] = useState("");
+    const [color, setColor] = useState("#000000");
     const [message, setMessage] = useState("");
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
+    // If session data is present, initialize name and color
     useEffect(() => {
         if (session) {
-            setUsername(session.user.name);
-            setColor(session.user.color ? session.user.color : "#FFFFFF");
-
+            setName(session.user.name);
+            setColor(session.user.color ? session.user.color : "#000000");
+            console.log(session!.user);
         }
     }, [session]);
 
@@ -30,7 +33,6 @@ const Profile = () => {
             name: name,
             color: color,
         };
-        console.log(updatedUser);
 
         const response = await fetch(`${backendUrl}/api/user/${session!.user.id}`, {
             method: 'PUT',
@@ -41,9 +43,11 @@ const Profile = () => {
             body: JSON.stringify(updatedUser),
         });
 
+        // If response is OK, update session data
         if (response.ok) {
             const data = await response.json();
-            console.log(data);
+            update(data);
+            getSession();
             setMessage("Profile updated successfully.");
         } else {
             setMessage("Failed to update profile. Please try again.");
@@ -52,14 +56,12 @@ const Profile = () => {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <h1 className="text-2xl font-bold mb-4">Welcome, {name}!</h1>
             <form onSubmit={handleSubmit} className="flex flex-col items-center bg-white p-4 shadow-md rounded-md">
                 <input
                     type="text"
-                    placeholder="Username"
+                    placeholder={name}
                     className="mb-2 p-1 border border-gray-200 rounded"
-                    value={name}
-                    onChange={(e) => setUsername(e.target.value)}
+                    onChange={(e) => setName(e.target.value)}
                 />
                 <input
                     type="color"
@@ -74,6 +76,14 @@ const Profile = () => {
                     Update Profile
                 </button>
             </form>
+
+            <button
+                className="text-2xl font-bold duration-300 ease-in-out hover:scale-105"
+                onClick={() => signOut()}
+            >
+                Sign Out
+            </button>
+
             {message && <p>{message}</p>}
         </div>
     );
