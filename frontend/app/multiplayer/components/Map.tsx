@@ -135,7 +135,7 @@ export default function Map() {
   }, []);
 
   return (
-    <div ref={mapRef} className="w-full h-full" />
+    <div ref={mapRef} className="w-full h-full outline-none" />
   );
   
 };

@@ -16,6 +16,11 @@ interface ChatMessageContentProps {
   message: IChatMessage;
 }
 
+const MAX_RENDERED_MESSAGES = 100; // Define the maximum number of messages to be rendered at once
+
+const MAX_MESSAGE_LENGTH = 80;
+
+
 const ChatMessageContent = memo(({ message }: ChatMessageContentProps) => {
   switch (message.type) {
     case 'CONNECT':
@@ -23,7 +28,7 @@ const ChatMessageContent = memo(({ message }: ChatMessageContentProps) => {
     case 'DISCONNECT':
       return <span className="text-yellow-500">{message.name} left!</span>;
     case 'WIN':
-      return <span className="text-red-500">{message.name} won the game!</span>;
+      return <span className="text-red-500 font-bold">{message.name} won the game!</span>;
     case 'CHAT':
       return (
         <>
@@ -50,6 +55,7 @@ export default function MultiplayerChat() {
 
   const [chatMessages, setChatMessages] = useState<IChatMessage[]>([]);
   const [canSendMessage, setCanSendMessage] = useState(true);
+  const [renderedMessagesCount, setRenderedMessagesCount] = useState(MAX_RENDERED_MESSAGES);
 
   useEffect(() => {
     if (session) {
@@ -123,7 +129,7 @@ export default function MultiplayerChat() {
   return (
     <div className="p-1 w-full h-full flex flex-col bg-white">
       <ul ref={messageAreaRef} className="h-full w-full overflow-y-scroll p-2 rounded">
-        {chatMessages.map((message, i) => (
+        {chatMessages.slice(-renderedMessagesCount).map((message, i) => (
           <li className="break-words w-full" key={i}>
             <ChatMessageContent message={message} />
           </li>
@@ -133,6 +139,7 @@ export default function MultiplayerChat() {
         <input
           ref={inputRef}
           type="text"
+          maxLength={MAX_MESSAGE_LENGTH}
           placeholder="Type a message..."
           className="p-1 border border-gray-300 rounded flex-grow overflow-auto"
           value={messageContents}
