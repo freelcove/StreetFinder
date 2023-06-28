@@ -44,7 +44,6 @@ export default function Map() {
     window.naver.maps.Event.addListener(mapInstanceRef.current, "click", function (e: any) {
       if (gameStateRef.current === 'playing') {
         if (!userMarkerRef.current) {
-          console.log("no marker")
           userMarkerRef.current = new window.naver.maps.Marker({
             position: e.coord,
             map: mapInstanceRef.current!,

@@ -46,7 +46,6 @@ export default function Map() {
     // Listener for map clicks
     window.naver.maps.Event.addListener(mapInstanceRef.current, "click", function (e: any) {
       if (gameStateRef.current === 'IN_PROGRESS' && userStateRef.current === 'PLAYING') {
-        console.log(mapInstanceRef.current)
         if (!userMarkerRef.current) {
           userMarkerRef.current = new window.naver.maps.Marker({
             position: e.coord,

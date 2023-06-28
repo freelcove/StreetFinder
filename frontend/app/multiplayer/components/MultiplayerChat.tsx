@@ -115,7 +115,7 @@ export default function MultiplayerChat() {
       setMessageContents('');
 
       setCanSendMessage(false);
-      setTimeout(() => setCanSendMessage(true), 500);
+      setTimeout(() => setCanSendMessage(true), 1000); // Adjust this to set chat limit time.
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messageContents, userName, canSendMessage]);

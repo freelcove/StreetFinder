@@ -17,7 +17,6 @@ export default function ProfileCard() {
         if (session) {
             setName(session.user.name);
             setColor(session.user.color ? session.user.color : "#000000");
-            console.log(session!.user);
         }
     }, [session]);
 
