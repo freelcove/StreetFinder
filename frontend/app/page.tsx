@@ -8,6 +8,9 @@ import SignIn from "./auth/signin/page";
 import { useSession } from "next-auth/react";
 import React from "react";
 import { warmupRequest } from "./utils/warmupRequest";
+import ProfileCard from "./components/ProfileCard";
+import { SingleplayerCard } from "./components/SingleplayerCard";
+import { MultiplayerCard } from "./components/MultiplayerCard";
 
 export default function Home() {
   enum Stage {
@@ -86,38 +89,13 @@ export default function Home() {
           />
         </>
       )}
-      {homeState === Stage.CHOOSE_MODE && (      
-        <div className="grid grid-cols-2 rounded-xl bg-gray-200 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
-          <div className="col-span-2 items-center">
-            <p className="text-2xl font-bold text-left">Hello {session?.user.name}!</p>
-          </div>
-          <div className="shadow-lg rounded-lg p-5 items-center bg-orange-200">
-            <h2 className="text-3xl font-bold mb-3">SINGLEPLAYER</h2>
-            <p>Some introduction to Singleplayer mode.</p>
-            <Link href="/singleplayer">
-              <button className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
-                Play
-              </button>
-            </Link>
-          </div>
-          <div className="bg-white shadow-lg rounded-lg p-5 flex flex-col items-center">
-            <h2 className="text-3xl font-bold mb-3">MULTIPLAYER</h2>
-            <p>Some introduction to Multiplayer mode.</p>
-            {!isLogged ? (
-              <SignIn />
-            ) : (
-              <Link href="/multiplayer">
-
-                <button className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
-                  Play
-                </button>
-              </Link>
-            )}
-          </div>
+      {homeState === Stage.CHOOSE_MODE && (
+        <div className="grid grid-cols-3 gap-4 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
+          <ProfileCard />
+          <SingleplayerCard />
+          <MultiplayerCard />
         </div>
-
       )}
-
     </div>
   );
 }

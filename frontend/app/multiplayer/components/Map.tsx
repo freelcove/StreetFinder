@@ -112,7 +112,6 @@ export default function Map() {
         polylineRef.current.setMap(null);
         polylineRef.current.setPath([]);
 
-
       }
     }
 

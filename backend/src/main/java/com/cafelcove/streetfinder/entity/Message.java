@@ -13,6 +13,7 @@ public class Message {
     private String content;
     private String id;
     private String name;
+    private String color;
 
     public enum MessageType {
 

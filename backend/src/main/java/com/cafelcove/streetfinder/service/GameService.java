@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class GameService {
-        private final SimpMessageSendingOperations messagingTemplate;
+    private final SimpMessageSendingOperations messagingTemplate;
     private final ObjectMapper objectMapper;
     private final PlaceRepository placeRepository;
     private static final Logger logger = LoggerFactory.getLogger(GameService.class);
@@ -32,7 +32,8 @@ public class GameService {
     private GameState gameState = GameState.NOTSET;
     private Map<String, BigDecimal> coordinates;
 
-    public GameService(SimpMessageSendingOperations messagingTemplate, ObjectMapper objectMapper, PlaceRepository placeRepository) {
+    public GameService(SimpMessageSendingOperations messagingTemplate, ObjectMapper objectMapper,
+            PlaceRepository placeRepository) {
         this.messagingTemplate = messagingTemplate;
         this.objectMapper = objectMapper;
         this.placeRepository = placeRepository;
@@ -100,7 +101,7 @@ public class GameService {
         chatMessage.setName(name);
         messagingTemplate.convertAndSend(destination, chatMessage);
     }
-    
+
     private void broadcastData(String destination, Map<String, Object> payload) {
         try {
             String broadcastedMessage = objectMapper.writeValueAsString(payload);
@@ -123,7 +124,6 @@ public class GameService {
         broadcastData("/topic/game", Map.of("users", users));
     }
 
-
     private void broadcastToUser(String userId, Map<String, Object> payload) {
         try {
             String broadcastedMessage = objectMapper.writeValueAsString(payload);
@@ -134,7 +134,7 @@ public class GameService {
         }
     }
 
-        private void broadcastGameStateAndCoordinatesToUser(Message message) {
+    private void broadcastGameStateAndCoordinatesToUser(Message message) {
         logger.info("Sending game state to user " + message.getId() + ": " + message);
         broadcastToUser(message.getId(), Map.of("gameState", gameState, "coordinates", coordinates));
     }

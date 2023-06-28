@@ -17,7 +17,7 @@ import Confetti from 'react-dom-confetti';
 const PLAYING = 'PLAYING';
 const WIN = 'WIN';
 const WRONG = 'WRONG';
-const WIN_TIMEOUT = 15000; 
+const WIN_TIMEOUT = 15000;
 const WRONG_TIMEOUT = 3000;
 
 export default function GameComponent() {
@@ -156,13 +156,14 @@ export default function GameComponent() {
                 return () => clearTimeout(timer);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userCoordinates])
 
 
     return (
         <MultiplayerGameContext.Provider value={{ stompClient, gameState, users, connected, coordinates, userCoordinates, setUserCoordinates, userState, setUserState }}>
             <div className="relative w-full h-full flex overflow-hidden z-0">
-            <div className="absolute top-0 left-0 w-full h-full z-30 pointer-events-none flex items-center justify-center">
+                <div className="absolute top-0 left-0 w-full h-full z-30 pointer-events-none flex items-center justify-center">
                     <Confetti active={confetti} config={confettiConfig} />
                 </div>
 

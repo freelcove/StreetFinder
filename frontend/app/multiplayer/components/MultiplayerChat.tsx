@@ -12,12 +12,33 @@ interface IChatMessage {
   type: 'CHAT' | 'CONNECT' | 'DISCONNECT' | 'WIN';
 }
 
-interface ChatMessageProps {
+interface ChatMessageContentProps {
   message: IChatMessage;
 }
 
+const ChatMessageContent = memo(({ message }: ChatMessageContentProps) => {
+  switch (message.type) {
+    case 'CONNECT':
+      return <span className="text-green-500">{message.name} joined!</span>;
+    case 'DISCONNECT':
+      return <span className="text-yellow-500">{message.name} left!</span>;
+    case 'WIN':
+      return <span className="text-red-500">{message.name} won the game!</span>;
+    case 'CHAT':
+      return (
+        <>
+          <span style={{ color: message.color }} className="whitespace-nowrap">{message.name}</span>:
+          <span className="text-gray-800 ml-1">{message.content}</span>
+        </>
+      );
+    default:
+      return <span className="text-gray-800">{message.content}</span>;
+  }
+});
+ChatMessageContent.displayName = 'ChatMessageContent';
+
 export default function MultiplayerChat() {
-  const { stompClient, connected, users } = useContext(MultiplayerGameContext);
+  const { stompClient, connected } = useContext(MultiplayerGameContext);
   const { data: session } = useSession();
   const [userId, setUserId] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
@@ -28,40 +49,28 @@ export default function MultiplayerChat() {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const [chatMessages, setChatMessages] = useState<IChatMessage[]>([]);
-
-  // Wrapped component in memo to prevent unnecessary re-renders
-  const ChatMessage = memo(({ message }: ChatMessageProps) => (
-    <li className="break-words w-full">{getMessageContent(message)}</li>
-  ));
   const [canSendMessage, setCanSendMessage] = useState(true);
 
-
-  // Listening for session changes to update user's name and color
   useEffect(() => {
     if (session) {
-      setUserId(session?.user?.id);
-      setUserName(session?.user?.name);
-      setUserColor(session?.user?.color);
+      setUserId(session.user.id);
+      setUserName(session.user.name);
+      setUserColor(session.user.color);
     }
   }, [session]);
 
-  // Setting focus on chat input field on mount
   useEffect(() => {
-
     if (inputRef.current) {
-      inputRef.current?.focus();
+      inputRef.current.focus();
     }
-    console.log(users);
   }, []);
 
-  // Auto-scroll to the latest chat message
   useEffect(() => {
     if (messageAreaRef.current) {
       messageAreaRef.current.scrollTop = messageAreaRef.current.scrollHeight;
     }
   }, [chatMessages]);
 
-  // Setup and teardown chat subscription
   useEffect(() => {
     const currentStompClient = stompClient.current;
     if (currentStompClient && connected) {
@@ -73,43 +82,22 @@ export default function MultiplayerChat() {
         currentStompClient.unsubscribe('/topic/chat');
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stompClient, connected]);
 
-  // Handle new chat messages
   const onMessageReceived = useCallback((payload: IMessage) => {
     const message = JSON.parse(payload.body) as IChatMessage;
+
     setChatMessages((prevMessages) => [...prevMessages, message]);
   }, []);
 
-  // Render messages according to type
-  const getMessageContent = useCallback((chatMessage: IChatMessage) => {
-    switch (chatMessage.type) {
-      case 'CONNECT':
-        return <span className="text-green-500">{chatMessage.name} joined!</span>;
-      case 'DISCONNECT':
-        return <span className="text-yellow-500">{chatMessage.name} left!</span>;
-      case 'WIN':
-        return <span className="text-red-500">{chatMessage.name} won the game!</span>;
-      case 'CHAT':
-        return (
-          <>
-            <span style={{color: chatMessage.color}} className="whitespace-nowrap">{chatMessage.name}</span>:
-            <span className="text-gray-800  ml-1">{chatMessage.content}</span>
-          </>
-        );
-      default:
-        return <span className="text-gray-800">{chatMessage.content}</span>;
-    }
-  }, [users]);
-
-  // Send a chat message
   const sendMessage = useCallback((event: React.FormEvent) => {
     event.preventDefault();
-  
+
     if (!canSendMessage) {
       return;
     }
-  
+
     if (messageContents.trim() && stompClient.current) {
       const chatMessage = {
         id: userId,
@@ -118,27 +106,27 @@ export default function MultiplayerChat() {
         content: messageContents,
         type: 'CHAT'
       };
-      
+
       stompClient.current.publish({
         destination: '/app/chat.sendMessage',
         body: JSON.stringify(chatMessage),
       });
-      
-      setMessageContents('');
-      
-      // Disable sending message
-      setCanSendMessage(false);
-      // Re-enable after a few seconds
-      setTimeout(() => setCanSendMessage(true), 500); 
-    }
-  }, [messageContents, userName, canSendMessage]);
 
+      setMessageContents('');
+
+      setCanSendMessage(false);
+      setTimeout(() => setCanSendMessage(true), 500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messageContents, userName, canSendMessage]);
 
   return (
     <div className="p-1 w-full h-full flex flex-col bg-white">
       <ul ref={messageAreaRef} className="h-full w-full overflow-y-scroll p-2 rounded">
         {chatMessages.map((message, i) => (
-          <ChatMessage key={i} message={message} />
+          <li className="break-words w-full" key={i}>
+            <ChatMessageContent message={message} />
+          </li>
         ))}
       </ul>
       <form onSubmit={sendMessage} className="flex mt-1">
@@ -149,7 +137,6 @@ export default function MultiplayerChat() {
           className="p-1 border border-gray-300 rounded flex-grow overflow-auto"
           value={messageContents}
           onChange={(e) => setMessageContents(e.target.value)}
-
         />
       </form>
     </div>
