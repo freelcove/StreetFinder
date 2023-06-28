@@ -86,9 +86,12 @@ export default function Home() {
           />
         </>
       )}
-      {homeState === Stage.CHOOSE_MODE && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex gap-10">
-          <div className="bg-white shadow-lg rounded-lg p-5 flex flex-col items-center">
+      {homeState === Stage.CHOOSE_MODE && (      
+        <div className="grid grid-cols-2 rounded-xl bg-gray-200 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
+          <div className="col-span-2 items-center">
+            <p className="text-2xl font-bold text-left">Hello {session?.user.name}!</p>
+          </div>
+          <div className="shadow-lg rounded-lg p-5 items-center bg-orange-200">
             <h2 className="text-3xl font-bold mb-3">SINGLEPLAYER</h2>
             <p>Some introduction to Singleplayer mode.</p>
             <Link href="/singleplayer">
@@ -109,10 +112,10 @@ export default function Home() {
                   Play
                 </button>
               </Link>
-
             )}
           </div>
         </div>
+
       )}
       {isLogged ? (
         <div className="absolute bottom-0 right-0 mb-3 mr-3">
