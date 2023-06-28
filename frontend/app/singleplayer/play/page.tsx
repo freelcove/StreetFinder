@@ -7,6 +7,9 @@ import Map from "@/app/singleplayer/components/Map";
 import { SingleplayerGameContext } from '../context/SingleplayerGameContext';
 import Link from 'next/link';
 import { calculateDistance } from '@/app/utils/calculateDistance';
+import Sample from "../../../public/json/test-sample-2.json";
+import { redirect } from 'next/navigation';
+import { list } from 'postcss';
 
 
 export default function SingleplayerPlayPage() {
@@ -16,35 +19,59 @@ export default function SingleplayerPlayPage() {
     const [coordinates, setCoordinates] = useState<{ lat: number; lng: number; } | null>(null);
     const [userCoordinates, setUserCoordinates] = useState<{ lat: number; lng: number; } | null>(null);
     const [distance, setDistance] = useState<number | null>(null);
+    const [times, setTimes] = useState(null);
+    let count = 0;
+    let arr = new Array<{id:Number, name:String, visits:number}>;
 
-
-    const fetchAndSetCoordinates = useCallback(async () => {
-        if (session && session.accessToken) {
-            try {
-                const response = await fetch(`${backendUrl}/api/position/each`, {
-                    method: "GET",
-                    headers: {
-                        Authorization: `Bearer ${session.accessToken}`,
-                    },
+    const setSampleCoordinates = useCallback(async () => {
+        let num = Math.floor(Math.random() * 50);
+        let isDuple = true;
+        if (arr[0]!=null) {
+            // while (isDuple) {
+            //     console.log("checkDuple");
+            // }
+            while (isDuple) {
+                arr.forEach(item => {
+                    isDuple = false;
+                    if (item.id == num) {
+                        num = Math.floor(Math.random() * 50);
+                        isDuple = true;
+                        return;
+                    }
                 });
-                const data = await response.json();
-                console.log(data.data[0].lat);
-                console.log(data.data[0].lng);
-
-                setCoordinates({
-                    lat: data.data[0].lng,
-                    lng: data.data[0].lat
-                });
-
-            } catch (error) {
-                console.error("Error fetching coordinates:", error);
+                console.log("isDuple:"+isDuple);
             }
+            
         }
-    }, [backendUrl, session])
+        console.log("num:"+num);
+        console.log(arr);
+        count++;
+        await setTimes(count);
+        if (count != 6) {
+            const data = await Sample.data[num];
+            console.log(data.lat);
+            console.log(data.lng);
+            console.log(data.place_name);
+            arr.push({id:num, name:data.place_name, visits:data.visits});
+            await setCoordinates({
+                lat: data.lng,
+                lng: data.lat
+            });
+        }
+        console.log("-----------------------");
+        
+    }, [])
 
     useEffect(() => {
-        fetchAndSetCoordinates();
-    }, [fetchAndSetCoordinates]);
+        setSampleCoordinates();
+    }, []);
+    useEffect(() => {
+        if (times == 6) {
+
+            redirect("/singleplayer/play/result")
+        }
+
+    }, [times])
 
     // Handle Guess/Next game button click
     const handleButtonClick = () => {
@@ -59,7 +86,7 @@ export default function SingleplayerPlayPage() {
             setGameState('results');
 
         } else {
-            fetchAndSetCoordinates();
+            setSampleCoordinates();
             setUserCoordinates(null);
             setDistance(null);
             setGameState('playing');
