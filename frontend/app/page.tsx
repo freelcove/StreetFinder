@@ -1,12 +1,16 @@
 "use client";
 
-import SkyDivingCanvas from "@/app/components/home/SkyDivingCanvas";
+import SkyDivingCanvas from "@/app/components/SkyDivingCanvas";
 import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import SignIn from "./auth/signin/page";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import React from "react";
+import { warmupRequest } from "./utils/warmupRequest";
+import ProfileCard from "./components/ProfileCard";
+import { SingleplayerCard } from "./components/SingleplayerCard";
+import { MultiplayerCard } from "./components/MultiplayerCard";
 
 export default function Home() {
   enum Stage {
@@ -42,9 +46,10 @@ export default function Home() {
 
   useEffect(() => {
     initMap();
+    warmupRequest();
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 600); // Set the timeout duration based on your loading time
+    }, 1000); // Set the timeout duration based on your loading time
 
     return () => clearTimeout(timer);
   }, []);
@@ -85,43 +90,12 @@ export default function Home() {
         </>
       )}
       {homeState === Stage.CHOOSE_MODE && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex gap-10">
-          <div className="bg-white shadow-lg rounded-lg p-5 flex flex-col items-center">
-            <h2 className="text-3xl font-bold mb-3">SINGLEPLAYER</h2>
-            <p>Some introduction to Singleplayer mode.</p>
-            <Link href="/singleplayer">
-              <button className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
-                Play
-              </button>
-            </Link>
-          </div>
-          <div className="bg-white shadow-lg rounded-lg p-5 flex flex-col items-center">
-            <h2 className="text-3xl font-bold mb-3">MULTIPLAYER</h2>
-            <p>Some introduction to Multiplayer mode.</p>
-            {!isLogged ? (
-              <SignIn />
-            ) : (
-              <Link href="/multiplayer">
-
-                <button className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700">
-                  Play
-                </button>
-              </Link>
-
-            )}
-          </div>
+        <div className="grid grid-cols-3 gap-4 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
+          <ProfileCard />
+          <SingleplayerCard />
+          <MultiplayerCard />
         </div>
       )}
-      {isLogged ? (
-        <div className="absolute bottom-0 right-0 mb-3 mr-3">
-          <button
-            className="text-2xl font-bold duration-300 ease-in-out hover:scale-105"
-            onClick={() => signOut()}
-          >
-            Sign Out
-          </button>
-        </div>
-      ) : null}
     </div>
   );
 }

@@ -112,7 +112,6 @@ export default function Map() {
         polylineRef.current.setMap(null);
         polylineRef.current.setPath([]);
 
-
       }
     }
 
@@ -139,5 +138,6 @@ export default function Map() {
   return (
     <div ref={mapRef} className="w-full h-full" />
   );
+  
 };
 

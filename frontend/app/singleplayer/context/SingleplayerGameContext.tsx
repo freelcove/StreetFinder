@@ -11,6 +11,7 @@ interface ISingleplayerGameContext {
   coordinates: CoordinatesType | null;
   userCoordinates: CoordinatesType | null;
   setUserCoordinates: React.Dispatch<React.SetStateAction<CoordinatesType | null>>;
+  playList: Array<{ id: number, name: string, visits: number }> | null;
 }
 
 export const SingleplayerGameContext = createContext<ISingleplayerGameContext>({
@@ -19,4 +20,5 @@ export const SingleplayerGameContext = createContext<ISingleplayerGameContext>({
   coordinates: null,
   userCoordinates: null,
   setUserCoordinates: () => {},
+  playList: null,
 });

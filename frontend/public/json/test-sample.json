@@ -1,0 +1,45 @@
+{
+    "result": "Sample",
+    "data": [
+        {
+            "place_id": 387,
+            "place_name": "영선시장",
+            "lat": 128.5909,
+            "lng": 35.852554,
+            "visits": 6043,
+            "color":"red"
+        },
+        {
+            "place_id": 340,
+            "place_name": "대구농수산물도매시장",
+            "lat": 128.54303,
+            "lng": 35.902607,
+            "visits": 171717,
+            "color":"yellow"
+        },
+        {
+            "place_id": 673,
+            "place_name": "울진왕돌참가자미회",
+            "lat": 128.61,
+            "lng": 35.841385,
+            "visits": 4956,
+            "color":"green"
+        },
+        {
+            "place_id": 43,
+            "place_name": "만촌자전거경기장",
+            "lat": 128.65826,
+            "lng": 35.872906,
+            "visits": 5811,
+            "color":"blue"
+        },
+        {
+            "place_id": 185,
+            "place_name": "송현공원",
+            "lat": 128.5565,
+            "lng": 35.832745,
+            "visits": 776,
+            "color":"orange"
+        }
+    ]
+}

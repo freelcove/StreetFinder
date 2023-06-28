@@ -25,25 +25,35 @@ public class WebsocketPreHandler implements ChannelInterceptor {
 
     private final JwtUtil jwtUtil;
 
+    /**
+     * Intercepts a message pre-send and validates the JWT token in the header
+     * @param message the message to be sent
+     * @param channel the channel the message is sent through
+     * @return the original message or modified message
+     */
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor headerAccessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
         if (StompCommand.CONNECT.equals(headerAccessor.getCommand())) {
+            // Extract the Authorization header
             String authorizationHeader = headerAccessor.getFirstNativeHeader("Authorization");
+
+            // Check if the Authorization header is present and starts with "Bearer "
             if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
                 String token = authorizationHeader.substring(7);
 
+                // Validate the token
                 if (jwtUtil.validateToken(token)) {
-
                     var claims = jwtUtil.getClaims(token);
-                    String userId = claims.get("id", String.class);
-                    String username = claims.get("username", String.class);
+                    String id = claims.get("id", String.class);
+                    String name = claims.get("name", String.class);
                     String role = claims.get("role", String.class);
-                    User userPrincipal = new User(userId, username, role);
+                    String color = claims.get("color", String.class);
+                    User userPrincipal = new User(id, name, role, color);
 
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                            userPrincipal, null, List.of(new SimpleGrantedAuthority(role)));
+                    // Create and set the authentication token in the security context
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userPrincipal, null, List.of(new SimpleGrantedAuthority(role)));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     headerAccessor.setUser(authentication);
 
@@ -51,15 +61,14 @@ public class WebsocketPreHandler implements ChannelInterceptor {
                 } else {
                     System.out.println("JWT token is not valid or missing");
                     throw new AccessDeniedException("Authorization header is missing or does not contain Bearer token");
-
                 }
             } else {
                 System.out.println("Authorization header is missing or does not contain Bearer token");
                 throw new AccessDeniedException("Authorization header is missing or does not contain Bearer token");
-
             }
         }
 
         return message;
     }
 }
+

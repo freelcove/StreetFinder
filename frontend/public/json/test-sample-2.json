@@ -1,0 +1,355 @@
+{
+    "result": "Sample",
+    "data": [
+        {
+            "place_id": 487,
+            "place_name": "맥도날드대구희망DT점",
+            "lat": 128.6133,
+            "lng": 35.8467,
+            "visits": 15173
+        },
+        {
+            "place_id": 975,
+            "place_name": "무진장함버지기",
+            "lat": 128.67007,
+            "lng": 35.880375,
+            "visits": 4323
+        },
+        {
+            "place_id": 557,
+            "place_name": "삿뽀로대구점",
+            "lat": 128.62334,
+            "lng": 35.82346,
+            "visits": 11735
+        },
+        {
+            "place_id": 187,
+            "place_name": "노변공원",
+            "lat": 128.69937,
+            "lng": 35.83877,
+            "visits": 730
+        },
+        {
+            "place_id": 978,
+            "place_name": "사파키친",
+            "lat": 128.63092,
+            "lng": 35.87662,
+            "visits": 4306
+        },
+        {
+            "place_id": 457,
+            "place_name": "안일사",
+            "lat": 128.57538,
+            "lng": 35.823837,
+            "visits": 4939
+        },
+        {
+            "place_id": 587,
+            "place_name": "뭄뭄",
+            "lat": 128.52287,
+            "lng": 35.814358,
+            "visits": 4510
+        },
+        {
+            "place_id": 960,
+            "place_name": "동인정",
+            "lat": 128.63614,
+            "lng": 35.980972,
+            "visits": 4557
+        },
+        {
+            "place_id": 418,
+            "place_name": "광덕시장",
+            "lat": 128.58241,
+            "lng": 35.837193,
+            "visits": 1429
+        },
+        {
+            "place_id": 757,
+            "place_name": "레이틀리92",
+            "lat": 128.75249,
+            "lng": 35.875587,
+            "visits": 8641
+        },
+        {
+            "place_id": 59,
+            "place_name": "팔현파크골프장",
+            "lat": 128.67432,
+            "lng": 35.87004,
+            "visits": 963
+        },
+        {
+            "place_id": 210,
+            "place_name": "첼시풋살클럽",
+            "lat": 128.662,
+            "lng": 35.877388,
+            "visits": 1185
+        },
+        {
+            "place_id": 976,
+            "place_name": "산중식당파계사점",
+            "lat": 128.63638,
+            "lng": 35.983143,
+            "visits": 4321
+        },
+        {
+            "place_id": 24,
+            "place_name": "이웃집수달",
+            "lat": 128.58128,
+            "lng": 35.857265,
+            "visits": 2614
+        },
+        {
+            "place_id": 239,
+            "place_name": "송해기념관",
+            "lat": 128.48885,
+            "lng": 35.771584,
+            "visits": 1516
+        },
+        {
+            "place_id": 950,
+            "place_name": "황장군상인점",
+            "lat": 128.54132,
+            "lng": 35.820404,
+            "visits": 4737
+        },
+        {
+            "place_id": 95,
+            "place_name": "대구공연예술연습공간",
+            "lat": 128.57558,
+            "lng": 35.859283,
+            "visits": 1976
+        },
+        {
+            "place_id": 317,
+            "place_name": "대구백화점프라자점",
+            "lat": 128.60634,
+            "lng": 35.855793,
+            "visits": 33490
+        },
+        {
+            "place_id": 846,
+            "place_name": "칠성할매콩국수본점",
+            "lat": 128.58052,
+            "lng": 35.888744,
+            "visits": 14593
+        },
+        {
+            "place_id": 964,
+            "place_name": "식당이백도씨",
+            "lat": 128.52556,
+            "lng": 35.812134,
+            "visits": 4451
+        },
+        {
+            "place_id": 375,
+            "place_name": "황금시장",
+            "lat": 128.61995,
+            "lng": 35.848408,
+            "visits": 8502
+        },
+        {
+            "place_id": 380,
+            "place_name": "대구중앙청과",
+            "lat": 128.54303,
+            "lng": 35.902607,
+            "visits": 7192
+        },
+        {
+            "place_id": 990,
+            "place_name": "비슬산자연휴양림",
+            "lat": 128.51292,
+            "lng": 35.690018,
+            "visits": 42657
+        },
+        {
+            "place_id": 694,
+            "place_name": "스타벅스대구수성호수R점",
+            "lat": 128.6158,
+            "lng": 35.826088,
+            "visits": 26257
+        },
+        {
+            "place_id": 795,
+            "place_name": "스타벅스대구서부정류장역점",
+            "lat": 128.55687,
+            "lng": 35.837887,
+            "visits": 6032
+        },
+        {
+            "place_id": 201,
+            "place_name": "효진파크",
+            "lat": 128.50314,
+            "lng": 35.743015,
+            "visits": 3267
+        },
+        {
+            "place_id": 377,
+            "place_name": "청구시장",
+            "lat": 128.64409,
+            "lng": 35.864803,
+            "visits": 8204
+        },
+        {
+            "place_id": 658,
+            "place_name": "똘똘이식당",
+            "lat": 128.5711,
+            "lng": 35.863483,
+            "visits": 5747
+        },
+        {
+            "place_id": 700,
+            "place_name": "스타벅스대구칠곡대로DT점",
+            "lat": 128.54797,
+            "lng": 35.92649,
+            "visits": 22036
+        },
+        {
+            "place_id": 283,
+            "place_name": "코스트코홀세일대구점",
+            "lat": 128.61816,
+            "lng": 35.90632,
+            "visits": 342924
+        },
+        {
+            "place_id": 907,
+            "place_name": "곤지곤지침산점",
+            "lat": 128.59404,
+            "lng": 35.888924,
+            "visits": 6306
+        },
+        {
+            "place_id": 68,
+            "place_name": "코오롱야외음악당",
+            "lat": 128.55615,
+            "lng": 35.851086,
+            "visits": 30598
+        },
+        {
+            "place_id": 504,
+            "place_name": "버거킹대구만촌점",
+            "lat": 128.64871,
+            "lng": 35.85704,
+            "visits": 10748
+        },
+        {
+            "place_id": 355,
+            "place_name": "월배시장",
+            "lat": 128.5274,
+            "lng": 35.814087,
+            "visits": 25037
+        },
+        {
+            "place_id": 576,
+            "place_name": "로렐트리",
+            "lat": 128.65474,
+            "lng": 35.879757,
+            "visits": 6315
+        },
+        {
+            "place_id": 951,
+            "place_name": "갈비만본점",
+            "lat": 128.46153,
+            "lng": 35.693256,
+            "visits": 4727
+        },
+        {
+            "place_id": 264,
+            "place_name": "헬로방방월성점",
+            "lat": 128.5241,
+            "lng": 35.819904,
+            "visits": 2340
+        },
+        {
+            "place_id": 110,
+            "place_name": "수성못페스티벌",
+            "lat": 128.6209,
+            "lng": 35.82755,
+            "visits": 1968
+        },
+        {
+            "place_id": 582,
+            "place_name": "고미텐",
+            "lat": 128.64052,
+            "lng": 35.859436,
+            "visits": 4956
+        },
+        {
+            "place_id": 400,
+            "place_name": "역전시장",
+            "lat": 128.62073,
+            "lng": 35.874744,
+            "visits": 2859
+        },
+        {
+            "place_id": 342,
+            "place_name": "서문시장2지구종합상가",
+            "lat": 128.57953,
+            "lng": 35.86881,
+            "visits": 62140
+        },
+        {
+            "place_id": 439,
+            "place_name": "육신사",
+            "lat": 128.4166,
+            "lng": 35.911346,
+            "visits": 5702
+        },
+        {
+            "place_id": 832,
+            "place_name": "서민갈비",
+            "lat": 128.61731,
+            "lng": 35.830677,
+            "visits": 31784
+        },
+        {
+            "place_id": 284,
+            "place_name": "코스트코홀세일대구혁신도시점",
+            "lat": 128.73071,
+            "lng": 35.876965,
+            "visits": 311158
+        },
+        {
+            "place_id": 172,
+            "place_name": "죽곡대나무숲",
+            "lat": 128.47,
+            "lng": 35.85088,
+            "visits": 1903
+        },
+        {
+            "place_id": 548,
+            "place_name": "앞산주택",
+            "lat": 128.57765,
+            "lng": 35.833652,
+            "visits": 20836
+        },
+        {
+            "place_id": 643,
+            "place_name": "기와집",
+            "lat": 128.55334,
+            "lng": 35.93815,
+            "visits": 6963
+        },
+        {
+            "place_id": 101,
+            "place_name": "한울림소극장",
+            "lat": 128.58195,
+            "lng": 35.856213,
+            "visits": 830
+        },
+        {
+            "place_id": 753,
+            "place_name": "슬로우라이프",
+            "lat": 128.62444,
+            "lng": 35.86445,
+            "visits": 9040
+        },
+        {
+            "place_id": 293,
+            "place_name": "롯데마트대구율하점",
+            "lat": 128.69333,
+            "lng": 35.868397,
+            "visits": 74778
+        }
+    ]
+}

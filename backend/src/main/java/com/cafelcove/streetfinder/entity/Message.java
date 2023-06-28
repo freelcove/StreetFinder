@@ -11,8 +11,9 @@ public class Message {
 
     private MessageType type;
     private String content;
-    private String userId;
-    private String username;
+    private String id;
+    private String name;
+    private String color;
 
     public enum MessageType {
 

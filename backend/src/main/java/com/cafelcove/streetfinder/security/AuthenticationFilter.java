@@ -19,6 +19,16 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
 
+    /**
+     * Checks the request for the presence of a JWT in the Authorization header.
+     * If a JWT is present and is valid, the details of the authenticated user (as contained in the JWT) are added to the
+     * Spring SecurityContext to indicate that the user is authenticated.
+     * If the JWT is not valid, the SecurityContext is cleared and an Unauthorized response is sent.
+     *
+     * @param request HTTP request
+     * @param response HTTP response
+     * @param filterChain Filter chain
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -29,10 +39,10 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
             if (jwtUtil.validateToken(token)) {
                 var claims = jwtUtil.getClaims(token);
-                String userId = claims.get("id", String.class);
+                String id = claims.get("id", String.class);
                 String role = claims.get("role", String.class);
                 GrantedAuthority authority = new SimpleGrantedAuthority(role);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userId,
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(id,
                         null, Collections.singleton(authority));
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else {

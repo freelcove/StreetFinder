@@ -10,14 +10,22 @@ import { MultiplayerGameContext } from '../context/MultiplayerGameContext';
 import Panorama from '../components/Panorama';
 import Map from '../components/Map';
 import { calculateDistance } from '@/app/utils/calculateDistance';
+import Confetti from 'react-dom-confetti';
 
+
+// Define constants
+const PLAYING = 'PLAYING';
+const WIN = 'WIN';
+const WRONG = 'WRONG';
+const WIN_TIMEOUT = 15000;
+const WRONG_TIMEOUT = 3000;
 
 export default function GameComponent() {
     const { data: session } = useSession();
     const [gameState, setGameState] = useState('');
     const [userState, setUserState] = useState('PLAYING');
-    const username = session?.user?.name || '';
-    const userId = session?.user?.id || '';
+    const name = session?.user?.name || '';
+    const id = session?.user?.id || '';
     const [connected, setConnected] = useState<boolean>(false);
 
     const stompClient = useRef<Client | null>(null);
@@ -29,10 +37,48 @@ export default function GameComponent() {
     const [distance, setDistance] = useState<number | null>(null);
 
     const [isUserListVisible, setIsUserListVisible] = useState(false);
+    const [confetti, setConfetti] = useState(false);
+
+    // The config for the confetti
+    const confettiConfig = {
+        angle: 90,
+        spread: 360,
+        startVelocity: 40,
+        elementCount: 70,
+        dragFriction: 0.12,
+        duration: 3000,
+        stagger: 3,
+        width: "10px",
+        height: "10px",
+        perspective: "500px",
+        colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
+    };
+
+    // When the win state is activated
+    useEffect(() => {
+        if (userState === WIN) {
+            setConfetti(true);
+            const timer = setTimeout(() => setConfetti(false), WIN_TIMEOUT);
+            return () => clearTimeout(timer);
+        }
+    }, [userState]);
 
     const toggleUserList = () => {
         setIsUserListVisible(!isUserListVisible);
     };
+
+    // Message handling logic
+    const handleMessages = useCallback((message: IMessage) => {
+        try {
+            const messageData = JSON.parse(message.body);
+            if (messageData.gameState) setGameState(messageData.gameState);
+            if (messageData.users) setUsers(messageData.users);
+            if (messageData.coordinates) setCoordinates(messageData.coordinates);
+        } catch (error) {
+            console.error("Error parsing message:", error);
+        }
+    }, []);
+
 
     useEffect(() => {
         const token = (session as any)?.accessToken;
@@ -53,36 +99,13 @@ export default function GameComponent() {
             onConnect: () => {
                 setConnected(true);
                 console.log("Connected to thet websocket!");
-                stompClient.current?.subscribe('/topic/game', (message) => {
-                    console.log('Broadcasted Message:', message.body);
-                    try {
-                        const messageData = JSON.parse(message.body);
-                        if (messageData.gameState) setGameState(messageData.gameState);
-                        if (messageData.users) setUsers(messageData.users);
-                        if (messageData.coordinates) setCoordinates(messageData.coordinates);
-
-                    } catch (error) {
-                        console.error("Error parsing message:", error);
-                    }
-                });
-                stompClient.current?.subscribe(`/user/${userId}/state`, (message) => {
-                    console.log('Sent to you:', message.body);
-                    try {
-                        const messageData = JSON.parse(message.body);
-                        if (messageData.gameState) setGameState(messageData.gameState);
-                        if (messageData.users) setUsers(messageData.users);
-                        if (messageData.coordinates) setCoordinates(messageData.coordinates);
-
-
-                    } catch (error) {
-                        console.error("Error parsing message:", error);
-                    }
-                });
+                stompClient.current?.subscribe('/topic/game', handleMessages);
+                stompClient.current?.subscribe(`/user/${id}/state`, handleMessages);
 
 
                 stompClient.current?.publish({
                     destination: '/app/game.start',
-                    body: JSON.stringify({ userId: userId, username: username }),
+                    body: JSON.stringify({ id: id, name: name }),
 
                 });
             },
@@ -100,16 +123,22 @@ export default function GameComponent() {
                 setConnected(false);
             }
         }
-    }, [backendUrl,session,userId,username]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     useEffect(() => {
         const handleWin = () => {
             stompClient.current?.publish({
                 destination: '/app/game.win',
-                body: JSON.stringify({ username: username }),
+                body: JSON.stringify({ name: name }),
             });
-    
+            setUserState(WIN);
+            const timer = setTimeout(() => {
+                setUserState(PLAYING);
+            }, WIN_TIMEOUT);
+            return () => clearTimeout(timer);
         };
+
         if (userCoordinates && coordinates) {
             const dist = calculateDistance(
                 userCoordinates.lat,
@@ -117,23 +146,27 @@ export default function GameComponent() {
                 coordinates.lat,
                 coordinates.lng
             );
-            if (dist < 1) {
+            if (dist < 1.5) {
                 handleWin();
-            }
-            else {
-                setUserState("HOLD");
+            } else {
+                setUserState(WRONG);
                 const timer = setTimeout(() => {
-                    setUserState("PLAYING");
-                }, 5000);
+                    setUserState(PLAYING);
+                }, WRONG_TIMEOUT);
                 return () => clearTimeout(timer);
             }
         }
-    }, [userCoordinates, coordinates, username])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userCoordinates])
 
 
     return (
         <MultiplayerGameContext.Provider value={{ stompClient, gameState, users, connected, coordinates, userCoordinates, setUserCoordinates, userState, setUserState }}>
             <div className="relative w-full h-full flex overflow-hidden z-0">
+                <div className="absolute top-0 left-0 w-full h-full z-30 pointer-events-none flex items-center justify-center">
+                    <Confetti active={confetti} config={confettiConfig} />
+                </div>
+
                 {coordinates && (
                     <>
                         <div className="w-3/4 flex-grow">
@@ -143,7 +176,7 @@ export default function GameComponent() {
                             <div className="h-1/2 flex-grow overflow-auto">
                                 <MultiplayerChat />
                             </div>
-                            <div className="w-full h-1/2">
+                            <div className={`w-full h-1/2 border-[3px] ${userState === "WIN" ? "border-green-500" : ""}${userState === "WRONG" ? "border-red-500" : ""}`}>
                                 <Map />
                             </div>
                         </div>

@@ -5,13 +5,14 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "@/prisma/prisma"
 import jwt from "jsonwebtoken";
 import { Adapter } from "next-auth/adapters";
+import { generateRandomColor } from "@/app/utils/colors";
 
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
 if (!JWT_SECRET) {
     throw new Error('JWT_SECRET is not defined');
-  }
+}
 
 const handler = NextAuth({
     secret: process.env.NEXTAUTH_SECRET,
@@ -28,7 +29,7 @@ const handler = NextAuth({
     ],
     pages: {
         signIn: '/auth/signin', // Tell NextAuth.js to use your custom sign-in page
-      },
+    },
     events: {
         async signIn(message) {
             if (message?.user?.id) {
@@ -38,14 +39,16 @@ const handler = NextAuth({
                     },
                 });
 
-                if (user && !user.name) {
-                    const username = user.email?.split('@')[0];
+                if (user) {
+                    const name = user.email?.split('@')[0];
+                    const color = generateRandomColor();
                     await prisma!.user.update({
                         where: {
                             id: user.id,
                         },
                         data: {
-                            name: username,
+                            name: name,
+                            color: color,
                         },
                     });
                 }
@@ -56,29 +59,35 @@ const handler = NextAuth({
         strategy: "jwt"
     },
     callbacks: {
-        async jwt({ token, user, account }) {
+        async jwt({ token, trigger, user, account, session }) {
             if (account && user) { // This block runs when the user logs in
-              const jwtPayload = {
-                id: user.id,
-                username: user.name,
-                email: user.email,
-                role: 'ROLE_USER',
-              };
-              const jwtToken = jwt.sign(jwtPayload, JWT_SECRET, {
-                expiresIn: '6h'
-              });
-              return { ...token, ...jwtPayload, accessToken: jwtToken };
+                const jwtPayload = {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    color: user.color,
+                    role: 'ROLE_USER',
+                };
+                const jwtToken = jwt.sign(jwtPayload, JWT_SECRET, {
+                    expiresIn: '6h'
+                });
+                return { ...token, ...jwtPayload, accessToken: jwtToken };
+            }
+
+            if (trigger === "update" && session) {
+                token = { ...token, ...session };
             }
             return token;
-          }
-          
+        }
+
         ,
         async session({ session, token, user }) {
 
             session.user = {
                 ...session.user,
-                id: token.id as string, // Add the user's ID from the JWT to the session
-              };
+                id: token.id as string,
+                color: token.color as string,
+            };
             const currentTime = Math.floor(Date.now() / 1000);
 
             // Decode the accessToken to check its expiration
@@ -88,9 +97,10 @@ const handler = NextAuth({
                 console.log('Refreshing token');
 
                 const jwtPayload = {
-                    id: user?.id || token.id,
-                    username: user?.name || token.username,
-                    email: user?.email || token.email,
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    color: user.color,
                     role: 'ROLE_USER',
                 };
 

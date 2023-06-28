@@ -1,8 +1,8 @@
 package com.cafelcove.streetfinder.controller;
 
-import java.util.ArrayList;
-
-import org.springframework.web.bind.annotation.CrossOrigin;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,27 +14,24 @@ import com.cafelcove.streetfinder.dao.MysqlDAO;
 @RestController
 public class TestController {
 
-    public static class Greeting {
-        private String message;
+    @GetMapping("/coordinates")
+    public Map<String, Double> getCoordinates() {
+        Map<String, Double> coordinates = new HashMap<>();
 
-        public Greeting(String message) {
-            this.message = message;
-        }
+        double lat = generateRandomCoordinate(35.77, 35.98, 7);
+        double lng = generateRandomCoordinate(128.43, 128.77, 7);
+        coordinates.put("lat", lat);
+        coordinates.put("lng", lng);
 
-        public String getMessage() {
-            return message;
-        }
-
-        public void setMessage(String message) {
-            this.message = message;
-        }
+        return coordinates;
     }
 
-    @GetMapping("/hello")
-    public Greeting hello() {
-        return new Greeting("Hello from backend");
+    private double generateRandomCoordinate(double min, double max, int decimalPoint) {
+        Random random = new Random();
+        double value = min + (max - min) * random.nextDouble();
+
+        double scale = Math.pow(10, decimalPoint);
+        return Math.round(value * scale) / scale;
     }
 
-
-    
 }
