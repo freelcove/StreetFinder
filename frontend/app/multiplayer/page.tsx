@@ -61,6 +61,7 @@ export default function MultiplayerPage() {
             setUpdateSuccess(true);
             setModalMessage("Update Successful");
             setIsModalOpen(true);
+
         } else {
             setModalMessage("Failed to update profile. Please try again.");
             setIsModalOpen(true);
@@ -81,7 +82,7 @@ export default function MultiplayerPage() {
                     <div className={`fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 flex justify-center items-center ${isModalOpen ? 'block' : 'hidden'}`}>
                         <div className="bg-black text-white rounded-lg p-5 w-1/5 flex flex-col items-center">
                             <p>{modalMessage}</p>
-                            <button className="mt-4 bg-white text-black px-6 py-1 rounded-full font-bold hover:bg-gray-300 transition-colors duration-200" onClick={() => setIsModalOpen(false)}>Close</button>
+                            <button className="mt-4 bg-white text-black px-6 py-1 rounded-full font-bold hover:bg-gray-300 transition-colors duration-200" onClick={() => window.location.reload()}>Close</button>
 
                         </div>
                     </div>
