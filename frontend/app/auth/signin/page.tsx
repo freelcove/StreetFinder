@@ -8,7 +8,7 @@ export default function SignIn() {
   const router = useRouter();
 
   const handleSignIn = (provider:string) => {
-    signIn(provider, { callbackUrl: `/` });
+    signIn(provider, { callbackUrl: `/multiplayer` });
   };
 
   return (
