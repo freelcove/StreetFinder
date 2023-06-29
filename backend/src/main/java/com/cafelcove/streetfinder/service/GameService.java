@@ -16,6 +16,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -31,6 +32,7 @@ public class GameService {
     private final List<User> users = new CopyOnWriteArrayList<>();
     private GameState gameState = GameState.NOTSET;
     private Map<String, BigDecimal> coordinates;
+    private final Map<String, Integer> userScores = new ConcurrentHashMap<>();
 
     public GameService(SimpMessageSendingOperations messagingTemplate, ObjectMapper objectMapper,
             PlaceRepository placeRepository) {
@@ -89,6 +91,10 @@ public class GameService {
             broadcastChatMessage(Message.MessageType.WIN, "/topic/chat", message.getName());
             broadcastGameState();
 
+            // Increment the score of the user who won
+            userScores.merge(message.getName(), 1, Integer::sum);
+            System.out.println(userScores);
+
             // Transition to next states with delays
             ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
             executorService.schedule(() -> startNewGame(), 15, TimeUnit.SECONDS);
@@ -111,6 +117,8 @@ public class GameService {
             logger.error("broadcast error: ", e);
         }
     }
+
+
 
     private void broadcastGameState() {
         broadcastData("/topic/game", Map.of("gameState", gameState));

@@ -143,7 +143,7 @@ export default function MultiplayerChat() {
           type="text"
           maxLength={MAX_MESSAGE_LENGTH}
           placeholder="Type a message..."
-          className="p-1  rounded flex-grow overflow-auto"
+          className="p-1  rounded flex-grow overflow-auto outline-none"
           value={messageContents}
           onChange={(e) => setMessageContents(e.target.value)}
         />
