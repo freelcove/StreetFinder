@@ -28,7 +28,7 @@ const handler = NextAuth({
         }),
     ],
     pages: {
-        signIn: '/'
+        signIn: '/signin'
     },
     events: {
         async signIn(message) {

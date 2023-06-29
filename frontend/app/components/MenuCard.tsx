@@ -6,7 +6,7 @@ import Link from "next/link";
 import SignIn from "./SignIn";
 
 export const MenuCard: React.FC = () => {
-    const cities = ['대구'];
+    const cities = ['대구', '서울', '부산'];
     const modes = ['Practice', 'Multiplayer'];
     const [currentCity, setCurrentCity] = useState('대구');
     const [currentMode, setCurrentMode] = useState('Multiplayer');
@@ -60,6 +60,7 @@ export const MenuCard: React.FC = () => {
                             Logout
                         </button>
                     </div>
+                    <p className="mt-3 text-xs">(현재 대구 지역만 플레이 가능)</p>
                 </>
             )}
         </div>
