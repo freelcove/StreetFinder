@@ -10,8 +10,12 @@ import Panorama from '../components/Panorama';
 import Map from '../components/Map';
 import { calculateDistance } from '@/app/utils/calculateDistance';
 import Confetti from 'react-dom-confetti';
+import UserList from '../components/UserList';
+import Link from 'next/link';
+import { FiUsers, FiHome } from 'react-icons/fi'
+import { FaExpand, FaTimes } from 'react-icons/fa'
+import GameStatusDisplay from '../components/GameStatusDisplay';
 
-// Define constants
 const PLAYING = 'PLAYING';
 const WIN = 'WIN';
 const WRONG = 'WRONG';
@@ -28,12 +32,15 @@ export default function GameComponent() {
 
     const stompClient = useRef<Client | null>(null);
     const [users, setUsers] = useState([]);
+    const [userScores, setUserScores] = useState<Record<string, number>>({});
 
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [coordinates, setCoordinates] = useState<{ lat: number; lng: number; } | null>(null);
     const [userCoordinates, setUserCoordinates] = useState<{ lat: number; lng: number; } | null>(null);
-
+    const [showUserList, setShowUserList] = useState(false);
     const [confetti, setConfetti] = useState(false);
+
+    const [showLargeMap, setShowLargeMap] = useState(false);
 
     // The config for the confetti
     const confettiConfig = {
@@ -50,8 +57,6 @@ export default function GameComponent() {
         colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
     };
 
- 
-
 
     // Message handling logic
     const handleMessages = useCallback((message: IMessage) => {
@@ -60,6 +65,8 @@ export default function GameComponent() {
             if (messageData.gameState) setGameState(messageData.gameState);
             if (messageData.users) setUsers(messageData.users);
             if (messageData.coordinates) setCoordinates(messageData.coordinates);
+            if (messageData.userScores) setUserScores(messageData.userScores);
+
         } catch (error) {
             console.error("Error parsing message:", error);
         }
@@ -114,11 +121,11 @@ export default function GameComponent() {
 
     useEffect(() => {
         const handleWin = () => {
-            setConfetti(true); // move it here
+            setConfetti(true);
 
             stompClient.current?.publish({
                 destination: '/app/game.win',
-                body: JSON.stringify({ name: name }),
+                body: JSON.stringify({ id: id, name: name }),
             });
             setUserState(WIN);
             const timer = setTimeout(() => {
@@ -136,7 +143,7 @@ export default function GameComponent() {
                 coordinates.lat,
                 coordinates.lng
             );
-            if (dist < 100) {
+            if (dist < 1) {
                 handleWin();
             } else {
                 setUserState(WRONG);
@@ -149,12 +156,19 @@ export default function GameComponent() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [userCoordinates])
 
+    useEffect(() => {
+        setShowLargeMap(false);
+    }, [gameState]);
 
     return (
-        <MultiplayerGameContext.Provider value={{ stompClient, gameState, users, connected, coordinates, userCoordinates, setUserCoordinates, userState, setUserState }}>
+        <MultiplayerGameContext.Provider value={{ stompClient, userScores, gameState, users, connected, coordinates, userCoordinates, setUserCoordinates, userState, setUserState }}>
             <div className="relative w-full h-full flex overflow-hidden z-0">
-                <div className="absolute top-0 left-0 w-full h-full z-30 pointer-events-none flex items-center justify-center">
 
+                <div className={`z-30 fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 flex flex-col justify-center items-center ${showUserList ? 'block' : 'hidden'}`}>
+                    <UserList />
+                    <button className="mt-4 bg-white text-black px-6 py-1 rounded-lg font-bold hover:bg-gray-300 transition-colors duration-200" onClick={() => setShowUserList(false)}>Close</button>
+                </div>
+                <div className="absolute top-0 left-0 w-full h-full z-30 pointer-events-none flex items-center justify-center">
                     <Confetti active={confetti} config={confettiConfig} />
                 </div>
 
@@ -164,13 +178,37 @@ export default function GameComponent() {
                             <Panorama />
                         </div>
                         <div className="w-[30%] flex flex-col">
-                            <div className={`w-full h-1/2 flex-grow overflow-auto
-                            border-[3px] ${userState === "WIN" ? "border-green-500" : ""}${userState === "WRONG" ? "border-red-500" : ""}`}>
+                            <div className="flex justify-between items-center p-2">
+                                <button onClick={() => setShowUserList(true)}><FiUsers size='1.4rem' /></button>
+                                <GameStatusDisplay />
+                                <Link href="/">
+                                    <FiHome size='1.4rem' />
+                                </Link>
+                            </div>
+                            <div className={`flex w-full h-1/2 overflow-auto
+                            border-x-[3px] border-t-[3px] ${userState === "WIN" ? "border-green-500" : ""}${userState === "WRONG" ? "border-red-500" : ""}`}>
                                 <MultiplayerChat />
                             </div>
-                            <div className={`w-full h-1/2 border-x-[3px] border-b-[3px] ${userState === "WIN" ? "border-green-500" : ""}${userState === "WRONG" ? "border-red-500" : ""} ${gameState === 'DISPLAYING_RESULTS' && userState !== 'WIN' ? 'filter grayscale' : ''}`}>
-                                <Map />
+                            <div
+                                className={`
+        ${showLargeMap ? "absolute bottom-0 right-0 w-[100%] h-[100%] z-40" : "w-full h-1/2"}
+        border-[3px]
+        ${userState === "WIN" ? "border-green-500" : ""}
+        ${userState === "WRONG" ? "border-red-500" : ""}
+        ${gameState === 'DISPLAYING_RESULTS' && userState !== 'WIN' ? 'filter grayscale' : ''}
+         duration-0`}>
+                                <div className="relative w-full h-full">
+                                    <Map />
+                                    <button
+                                        className={`z-20 opacity-70 absolute m-2 bg-white bg-opacity-50 text-black px-2 py-1 rounded-md hover:bg-gray-400 transition-colors duration-200 ${showLargeMap ? 'top-2 left-2 text-xl' : 'bottom-2 right-2 text-lg'}`}
+                                        onClick={() => setShowLargeMap(prevState => !prevState)}
+                                        onMouseEnter={() => setShowLargeMap(prevState => !prevState)}
+                                    >
+                                        {showLargeMap ? <FaTimes size='2rem' color='red' /> : <FaExpand size='2rem' />}
+                                    </button>
+                                </div>
                             </div>
+
                         </div>
                     </>
                 )}

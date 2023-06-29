@@ -1,13 +1,13 @@
 
 "use client";
-import * as THREE from 'three';
+import { TextureLoader, Mesh } from 'three';
 import { useRef, useMemo  } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 
 
 function MovingClouds({ isZooming }: { isZooming: boolean }) {
-    const cloudTexture = useLoader(THREE.TextureLoader, '/image/cloud1.png');
-    const cloudRefs = useRef<(THREE.Mesh | null)[]>([]);
+    const cloudTexture = useLoader(TextureLoader, '/image/cloud1.png');
+    const cloudRefs = useRef<(Mesh | null)[]>([]);
 
     useFrame(() => {
         // Move clouds forward in every frame

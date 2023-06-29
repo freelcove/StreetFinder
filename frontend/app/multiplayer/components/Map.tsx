@@ -15,7 +15,6 @@ export default function Map() {
   const userStateRef = useRef<string>(userState);
   const centerCoordinates = { lat: 35.8714354, lng: 128.601445 };
 
-
   // Create a map instance and assign it to mapInstanceRef.
   const initMap = () => {
     if (!window.naver) {
@@ -72,12 +71,12 @@ export default function Map() {
     // Display actual marker and polyline when game state is 'DISPLAYING_RESULTS'
     if (gameState === 'DISPLAYING_RESULTS' && coordinates) {
       actualMarkerRef.current = new window.naver.maps.Marker({
-        position: {lat: coordinates.lat, lng: coordinates.lng},
+        position: { lat: coordinates.lat, lng: coordinates.lng },
         map: mapInstanceRef.current!,
         icon: {
           url: '/image/flag.png',
           scaledSize: new naver.maps.Size(30, 30),
-          anchor:new naver.maps.Point(3, 29.5)
+          anchor: new naver.maps.Point(3, 29.5)
         }
       });
 
@@ -113,7 +112,7 @@ export default function Map() {
         polylineRef.current.setMap(null);
         polylineRef.current.setPath([]);
       }
-      if (mapInstanceRef.current){
+      if (mapInstanceRef.current) {
         mapInstanceRef.current.setCenter(centerCoordinates)
       }
     }
@@ -138,9 +137,36 @@ export default function Map() {
     };
   }, []);
 
+  // Update Map size when enlarged
+  useEffect(() => {
+    const mapElement = mapRef.current;
+
+    const handleResize = () => {
+      if (mapInstanceRef.current) {
+
+        mapInstanceRef.current.autoResize();
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(handleResize);
+
+    if (mapElement) {
+      // Observe size changes
+      resizeObserver.observe(mapElement);
+    }
+
+    return () => {
+      // Clean up
+      if (mapElement) {
+        resizeObserver.unobserve(mapElement);
+      }
+    };
+  }, []);
+
+
   return (
     <div ref={mapRef} className="w-full h-full outline-none" />
   );
-  
+
 };
 

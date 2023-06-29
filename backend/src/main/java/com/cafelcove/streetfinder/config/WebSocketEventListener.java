@@ -17,12 +17,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class WebSocketEventListener {
 
-
     @Autowired
     private GameService gameService;
 
     /**
      * Event listener for websocket connection
+     * 
      * @param event the connected event
      */
     @EventListener
@@ -35,6 +35,7 @@ public class WebSocketEventListener {
 
     /**
      * Event listener for websocket disconnection
+     * 
      * @param event the disconnect event
      */
     @EventListener
@@ -46,10 +47,11 @@ public class WebSocketEventListener {
         }
     }
 
-        private User getUserFromEvent(AbstractSubProtocolEvent event) {
+    private User getUserFromEvent(AbstractSubProtocolEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         if (headerAccessor.getUser() != null) {
-            UsernamePasswordAuthenticationToken userToken = (UsernamePasswordAuthenticationToken) headerAccessor.getUser();
+            UsernamePasswordAuthenticationToken userToken = (UsernamePasswordAuthenticationToken) headerAccessor
+                    .getUser();
             return (User) userToken.getPrincipal();
         }
         return null;

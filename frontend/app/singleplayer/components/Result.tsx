@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useRef } from "react";
-import * as d3 from "d3";
+import { useContext, useEffect, useRef } from "react";
+import { select, max, scaleBand, scaleLinear, axisBottom, axisLeft } from "d3";
 import { SingleplayerGameContext } from "../context/SingleplayerGameContext";
 import Link from "next/link";
 
@@ -13,10 +13,6 @@ export function Result() {
 
   const data: Data[] = playList ?? [];
 
-  const max = Math.max(...(data.map(d => d.visits)));
-  const maxList = max < 10000 ? 10000 : max < 50000 ? 50000 : max < 100000 ? 100000 : max < 200000 ? 200000 : max < 500000 ? 500000 : max < 1000000 ? 1000000 : 2000000;
-  const list = Array.from({ length: 5 }, (_, i) => maxList * ((i + 1) / 5));
-
   const svgRef = useRef(null);
 
   useEffect(() => {
@@ -27,21 +23,19 @@ export function Result() {
   const makeGraph = () => {
     const width = 1000;
     const height = 500;
-    const margin = { top: 200, left: 100, bottom: 40, right: 40 };
+    const margin = { top: 10, left: 100, bottom: 40, right: 100 };
+    const maxData = max(data, (d) => d.visits);
 
-    const svg = d3
-      .select(svgRef.current)
+    const svg = select(svgRef.current)
       .attr("width", width)
       .attr("height", height);
 
-    const x = d3
-      .scaleBand()
+    const x = scaleBand()
       .domain(data!.map((d) => d.name))
       .range([margin.left, width - margin.right]);
 
-    const y = d3
-      .scaleLinear()
-      .domain([0, d3.max(data, (d) => d.visits) as number])
+    const y = scaleLinear()
+      .domain([0, max(data, (d) => d.visits) as number])
       .nice()
       .range([height - margin.bottom, margin.top]);
 
@@ -49,14 +43,14 @@ export function Result() {
       return g
         .attr("transform", `translate(0, ${height})`)
         .attr("transform", `translate(0, ${height - margin.bottom})`)
-        .call(d3.axisBottom(x).tickSizeOuter(0))
-        .attr("font-size", "15");
+        .call(axisBottom(x).tickSizeOuter(0))
+        .attr("font-size", "12");
     };
 
     const yAxis = (g: any) =>
       g
         .attr("transform", `translate(${margin.left}, 0)`)
-        .call(d3.axisLeft(y).tickValues(list).tickSize(-width))
+        .call(axisLeft(y).ticks(5))
         .call((g: any) => g.select(".domain").remove())
         .attr("class", "grid");
 
@@ -64,7 +58,7 @@ export function Result() {
     svg.append("g").call(xAxis);
     svg.append("g").call(yAxis);
 
-    // vertical bar chart
+    // Vertical bar chart
     svg
       .append("g")
       .selectAll("rect")
@@ -73,11 +67,15 @@ export function Result() {
       .append("rect")
       // @ts-ignore
       .attr("x", (data) => x(data.name) + x.bandwidth() / 2 - 10)
-      .attr("y", (data) => y(data.visits))
+      .attr("y", y(0))
       .attr("width", 20)
-      .attr("height", (data) => y(0) - y(data.visits))
-      .attr("class", "bar-chart")
-      .attr("fill", (data) => "blue");
+      .attr("height", 0)
+      .attr("fill", (data) => (data.visits === maxData ? "purple" : "orange"))
+      .transition()
+      .duration(800)
+      .delay((d, i) => i * 100) // Delay for sequential animation
+      .attr("y", (data) => y(data.visits))
+      .attr("height", (data) => y(0) - y(data.visits));
 
     svg
       .append("g")
@@ -95,26 +93,10 @@ export function Result() {
       .attr("text-anchor", "middle");
   };
 
-
-  const buttonStyle: React.CSSProperties = {
-    marginLeft: "200px",
-    marginTop: "550px",
-    position: "absolute",
-    border: "solid 1px Aquamarine",
-    background: "Aliceblue",
-  };
-
-  const headStyle: React.CSSProperties = {
-    marginLeft: "450px",
-    marginTop: "25px",
-    position: "absolute",
-    fontSize: "30px",
-    fontFamily: "d2Coding,Tahoma",
-  };
-
   return (
-    <div className="flex flex-col items-center space-y-6">
-      <h1 className="text-3xl font-mono">5월 한달간 방문자 수</h1>
+    <div className="flex flex-col items-center justify-center h-screen space-y-1">
+      <h1 className="text-3xl font-mono">방문자 수</h1>
+      <p className="text-xl font-mono">(2023년 5월 기준)</p>
       <svg ref={svgRef}></svg>
       <Link href="/">
         <button className="mt-4 bg-gray-950 text-white text-sm px-3 py-1 rounded-md font-bold hover:bg-gray-700 transition-colors duration-200">

@@ -28,7 +28,7 @@ const handler = NextAuth({
         }),
     ],
     pages: {
-        signIn: '/auth/signin', // Tell NextAuth.js to use your custom sign-in page
+        signIn: '/'
     },
     events: {
         async signIn(message) {
@@ -40,7 +40,21 @@ const handler = NextAuth({
                 });
 
                 if (user) {
-                    const name = user.email?.split('@')[0];
+                    let name = user.email?.split('@')[0];
+
+                    // Check if username already exists
+                    const existingUser = await prisma!.user.findFirst({
+                        where: {
+                            name: name
+                        }
+                    });
+
+                    if (existingUser) {
+                        // Append a random 4 digit number if username exists
+                        const randomNum = Math.floor(Math.random() * 9000) + 1000;
+                        name = `${name}${randomNum}`;
+                    }
+
                     const color = generateRandomColor();
                     await prisma!.user.update({
                         where: {
@@ -67,6 +81,7 @@ const handler = NextAuth({
                     email: user.email,
                     color: user.color,
                     role: 'ROLE_USER',
+                    timestamp: Math.floor(Date.now() / 1000)
                 };
                 const jwtToken = jwt.sign(jwtPayload, JWT_SECRET, {
                     expiresIn: '6h'
@@ -75,7 +90,18 @@ const handler = NextAuth({
             }
 
             if (trigger === "update" && session) {
-                token = { ...token, ...session };
+                const jwtPayload = {
+                    id: session.id,
+                    name: session.name,
+                    email: session.email,
+                    color: session.color,
+                    role: 'ROLE_USER',
+                    timestamp: Math.floor(Date.now() / 1000)
+                };
+                const jwtToken = jwt.sign(jwtPayload, JWT_SECRET, {
+                    expiresIn: '6h'
+                });
+                token = { ...token, ...jwtPayload, accessToken: jwtToken };
             }
             return token;
         }
@@ -102,9 +128,11 @@ const handler = NextAuth({
                     email: user.email,
                     color: user.color,
                     role: 'ROLE_USER',
+                    timestamp: Math.floor(Date.now() / 1000)
+
                 };
 
-                const refreshedToken = jwt.sign(jwtPayload, JWT_SECRET, { expiresIn: '24h' });
+                const refreshedToken = jwt.sign(jwtPayload, JWT_SECRET, { expiresIn: '6h' });
                 token.accessToken = refreshedToken;
             }
 

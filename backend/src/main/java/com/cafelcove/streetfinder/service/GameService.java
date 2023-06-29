@@ -16,6 +16,7 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
@@ -54,9 +55,20 @@ public class GameService {
     }
 
     public void addUser(User user) {
+        Optional<User> existingUser = users.stream()
+                .filter(u -> u.getId().equals(user.getId()))
+                .findFirst();
+
+        if (existingUser.isPresent()) {
+            // Handle the existing connection. Here we're logging a message and returning
+            // early,
+            // effectively refusing the new connection.
+            logger.warn("User {} already connected. Refusing new connection.", user.getName());
+            return;
+        }
+
         users.add(user);
         broadcastChatMessage(Message.MessageType.CONNECT, "/topic/chat", user.getName());
-
     }
 
     public void removeUser(User user) {
@@ -91,13 +103,18 @@ public class GameService {
             broadcastChatMessage(Message.MessageType.WIN, "/topic/chat", message.getName());
             broadcastGameState();
 
-            // Increment the score of the user who won
-            userScores.merge(message.getName(), 1, Integer::sum);
-            System.out.println(userScores);
-
             // Transition to next states with delays
             ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
             executorService.schedule(() -> startNewGame(), 15, TimeUnit.SECONDS);
+
+            // Increment the score of the user who won
+            userScores.merge(message.getId(), 1, Integer::sum);
+            System.out.println("------------------------------");
+            System.out.println(userScores);
+            System.out.println(users);
+            broadcastUserScores();
+
+
         }
     }
 
@@ -118,7 +135,9 @@ public class GameService {
         }
     }
 
-
+    private void broadcastUserScores() {
+        broadcastData("/topic/game", Map.of("userScores", userScores));
+    }
 
     private void broadcastGameState() {
         broadcastData("/topic/game", Map.of("gameState", gameState));

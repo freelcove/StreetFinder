@@ -1,7 +1,6 @@
 import { createContext } from 'react';
 import { Client } from '@stomp/stompjs';
 
-
 type CoordinatesType = {
   lat: number;
   lng: number;
@@ -24,6 +23,8 @@ interface IMultiplayerGameContext {
   setUserCoordinates: React.Dispatch<React.SetStateAction<CoordinatesType | null>>;
   userState: string;
   setUserState: React.Dispatch<React.SetStateAction<string>>;
+  userScores: Record<string, number>;
+
 }
 
 export const MultiplayerGameContext = createContext<IMultiplayerGameContext>({
@@ -36,4 +37,6 @@ export const MultiplayerGameContext = createContext<IMultiplayerGameContext>({
   setUserCoordinates: () => {},
   userState: '',
   setUserState: () => {},
+  userScores: {},
+
 });

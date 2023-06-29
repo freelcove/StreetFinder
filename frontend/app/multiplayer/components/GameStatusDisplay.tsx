@@ -32,14 +32,14 @@ export default function GameStatusDisplay() {
         } else if (userState === 'WRONG' && gameState !== 'DISPLAYING_RESULTS') {
             return { message: `${countdown}`, color: "#EF4444" };
         }  else {
-            return { message: '', color: "black" };
+            return { message: 'STREET FINDER', color: "black" };
         }
     };
 
     const { message, color } = getStatusMessage();
 
     return (
-        <div className="flex justify-center items-center p-1 rounded mr-2" style={{ color: color }}>
+        <div className="w-full h-full font-bold flex justify-center items-center" style={{ color: color }}>
             {message}
         </div>
     );
