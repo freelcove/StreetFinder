@@ -59,7 +59,6 @@ export default function MultiplayerPage() {
             const data = await response.json();
             await update(data);
             setUpdateSuccess(true);
-            await getSession();
             setModalMessage("Update Successful");
             setIsModalOpen(true);
         } else {

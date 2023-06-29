@@ -22,7 +22,7 @@ function MovingClouds({ isZooming }: { isZooming: boolean }) {
 
     // Create clouds using useMemo for performance optimization
     const clouds = useMemo(() => {
-        const cloudsArray = new Array(15).fill(null).map((_, index) => {
+        const cloudsArray = new Array(20).fill(null).map((_, index) => {
             const scale = Math.random() * 40 + 10;
             const opacity = Math.random()-0.1;
             return (

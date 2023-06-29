@@ -8,7 +8,6 @@ import SignIn from "./auth/signin/page";
 import { useSession } from "next-auth/react";
 import React from "react";
 import { warmupRequest } from "./utils/warmupRequest";
-import ProfileCard from "./components/Profile";
 import { SingleplayerCard } from "./components/SingleplayerCard";
 import { MultiplayerCard } from "./components/MultiplayerCard";
 

@@ -3,6 +3,8 @@ import { useState, useEffect, useRef, useContext, useCallback, memo } from 'reac
 import { IMessage } from '@stomp/stompjs';
 import { useSession } from 'next-auth/react';
 import { MultiplayerGameContext } from '../context/MultiplayerGameContext';
+import GameStatusDisplay from './GameStatusDisplay';
+
 
 interface IChatMessage {
   id: string;
@@ -24,11 +26,11 @@ const MAX_MESSAGE_LENGTH = 80;
 const ChatMessageContent = memo(({ message }: ChatMessageContentProps) => {
   switch (message.type) {
     case 'CONNECT':
-      return <span className="text-green-500">{message.name} joined!</span>;
+      return <span className="text-red-500">{message.name} joined!</span>;
     case 'DISCONNECT':
       return <span className="text-yellow-500">{message.name} left!</span>;
     case 'WIN':
-      return <span className="text-red-500 font-bold">{message.name} won the game!</span>;
+      return <span className="text-green-500 font-bold">{message.name} won the game!</span>;
     case 'CHAT':
       return (
         <>
@@ -135,16 +137,18 @@ export default function MultiplayerChat() {
           </li>
         ))}
       </ul>
-      <form onSubmit={sendMessage} className="flex mt-1">
+      <form onSubmit={sendMessage} className="flex mt-1 border border-gray-300">
         <input
           ref={inputRef}
           type="text"
           maxLength={MAX_MESSAGE_LENGTH}
           placeholder="Type a message..."
-          className="p-1 border border-gray-300 rounded flex-grow overflow-auto"
+          className="p-1  rounded flex-grow overflow-auto"
           value={messageContents}
           onChange={(e) => setMessageContents(e.target.value)}
         />
+        <GameStatusDisplay />
+
       </form>
     </div>
   );
