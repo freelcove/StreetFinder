@@ -96,7 +96,7 @@ export function Result() {
   return (
     <div className="flex flex-col items-center justify-center h-screen space-y-1">
       <h1 className="text-3xl font-mono">방문자 수</h1>
-      <p className="text-xl font-mono">(2023년 5월 기준)</p>
+      <p className="text-xl font-mono mb-5">(2023년 5월 기준)</p>
       <svg ref={svgRef}></svg>
       <Link href="/">
         <button className="mt-4 bg-gray-950 text-white text-sm px-3 py-1 rounded-md font-bold hover:bg-gray-700 transition-colors duration-200">
