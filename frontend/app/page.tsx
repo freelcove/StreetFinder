@@ -8,7 +8,6 @@ import SignIn from "./auth/signin/page";
 import { useSession } from "next-auth/react";
 import React from "react";
 import { warmupRequest } from "./utils/warmupRequest";
-import ProfileCard from "./components/ProfileCard";
 import { SingleplayerCard } from "./components/SingleplayerCard";
 import { MultiplayerCard } from "./components/MultiplayerCard";
 
@@ -90,8 +89,7 @@ export default function Home() {
         </>
       )}
       {homeState === Stage.CHOOSE_MODE && (
-        <div className="grid grid-cols-3 gap-4 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
-          <ProfileCard />
+        <div className="grid grid-cols-2 gap-4 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
           <SingleplayerCard />
           <MultiplayerCard />
         </div>

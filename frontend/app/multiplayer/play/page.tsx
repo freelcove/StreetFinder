@@ -5,20 +5,19 @@ import SockJS from 'sockjs-client';
 import { useSession } from 'next-auth/react';
 import { Client, IMessage } from '@stomp/stompjs';
 import MultiplayerChat from '../components/MultiplayerChat';
-import UserList from '../components/UserList';
 import { MultiplayerGameContext } from '../context/MultiplayerGameContext';
 import Panorama from '../components/Panorama';
 import Map from '../components/Map';
 import { calculateDistance } from '@/app/utils/calculateDistance';
 import Confetti from 'react-dom-confetti';
-
+import { useRouter } from 'next/navigation';
 
 // Define constants
 const PLAYING = 'PLAYING';
 const WIN = 'WIN';
 const WRONG = 'WRONG';
 const WIN_TIMEOUT = 15000;
-const WRONG_TIMEOUT = 3000;
+const WRONG_TIMEOUT = 5000;
 
 export default function GameComponent() {
     const { data: session } = useSession();
@@ -34,23 +33,23 @@ export default function GameComponent() {
     const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
     const [coordinates, setCoordinates] = useState<{ lat: number; lng: number; } | null>(null);
     const [userCoordinates, setUserCoordinates] = useState<{ lat: number; lng: number; } | null>(null);
-    const [distance, setDistance] = useState<number | null>(null);
 
-    const [isUserListVisible, setIsUserListVisible] = useState(false);
     const [confetti, setConfetti] = useState(false);
+
+    const router = useRouter();
 
     // The config for the confetti
     const confettiConfig = {
         angle: 90,
         spread: 360,
         startVelocity: 40,
-        elementCount: 70,
+        elementCount: "100",
         dragFriction: 0.12,
-        duration: 3000,
-        stagger: 3,
-        width: "10px",
-        height: "10px",
-        perspective: "500px",
+        duration: "5010",
+        stagger: "2",
+        width: "20px",
+        height: "20px",
+        perspective: "800px",
         colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
     };
 
@@ -63,9 +62,6 @@ export default function GameComponent() {
         }
     }, [userState]);
 
-    const toggleUserList = () => {
-        setIsUserListVisible(!isUserListVisible);
-    };
 
     // Message handling logic
     const handleMessages = useCallback((message: IMessage) => {
@@ -146,7 +142,7 @@ export default function GameComponent() {
                 coordinates.lat,
                 coordinates.lng
             );
-            if (dist < 1.5) {
+            if (dist < 100) {
                 handleWin();
             } else {
                 setUserState(WRONG);
@@ -169,14 +165,15 @@ export default function GameComponent() {
 
                 {coordinates && (
                     <>
-                        <div className="w-3/4 flex-grow">
+                        <div className="w-[70%] flex-grow">
                             <Panorama />
                         </div>
-                        <div className="w-1/4 flex flex-col">
-                            <div className="h-1/2 flex-grow overflow-auto">
+                        <div className="w-[30%] flex flex-col">
+                            <div className={`w-full h-1/2 flex-grow overflow-auto
+                            border-[3px] ${userState === "WIN" ? "border-green-500" : ""}${userState === "WRONG" ? "border-red-500" : ""}`}>
                                 <MultiplayerChat />
                             </div>
-                            <div className={`w-full h-1/2 border-[3px] ${userState === "WIN" ? "border-green-500" : ""}${userState === "WRONG" ? "border-red-500" : ""}`}>
+                            <div className={`w-full h-1/2 border-x-[3px] border-b-[3px] ${userState === "WIN" ? "border-green-500" : ""}${userState === "WRONG" ? "border-red-500" : ""} ${gameState === 'DISPLAYING_RESULTS' && userState !== 'WIN' ? 'filter grayscale' : ''}`}>
                                 <Map />
                             </div>
                         </div>

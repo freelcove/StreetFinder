@@ -3,6 +3,8 @@ import { useState, useEffect, useRef, useContext, useCallback, memo } from 'reac
 import { IMessage } from '@stomp/stompjs';
 import { useSession } from 'next-auth/react';
 import { MultiplayerGameContext } from '../context/MultiplayerGameContext';
+import GameStatusDisplay from './GameStatusDisplay';
+
 
 interface IChatMessage {
   id: string;
@@ -16,14 +18,19 @@ interface ChatMessageContentProps {
   message: IChatMessage;
 }
 
+const MAX_RENDERED_MESSAGES = 100; // Define the maximum number of messages to be rendered at once
+
+const MAX_MESSAGE_LENGTH = 80;
+
+
 const ChatMessageContent = memo(({ message }: ChatMessageContentProps) => {
   switch (message.type) {
     case 'CONNECT':
-      return <span className="text-green-500">{message.name} joined!</span>;
+      return <span className="text-red-500">{message.name} joined!</span>;
     case 'DISCONNECT':
       return <span className="text-yellow-500">{message.name} left!</span>;
     case 'WIN':
-      return <span className="text-red-500">{message.name} won the game!</span>;
+      return <span className="text-green-500 font-bold">{message.name} won the game!</span>;
     case 'CHAT':
       return (
         <>
@@ -50,6 +57,7 @@ export default function MultiplayerChat() {
 
   const [chatMessages, setChatMessages] = useState<IChatMessage[]>([]);
   const [canSendMessage, setCanSendMessage] = useState(true);
+  const [renderedMessagesCount, setRenderedMessagesCount] = useState(MAX_RENDERED_MESSAGES);
 
   useEffect(() => {
     if (session) {
@@ -115,7 +123,7 @@ export default function MultiplayerChat() {
       setMessageContents('');
 
       setCanSendMessage(false);
-      setTimeout(() => setCanSendMessage(true), 500);
+      setTimeout(() => setCanSendMessage(true), 1000); // Adjust this to set chat limit time.
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messageContents, userName, canSendMessage]);
@@ -123,21 +131,24 @@ export default function MultiplayerChat() {
   return (
     <div className="p-1 w-full h-full flex flex-col bg-white">
       <ul ref={messageAreaRef} className="h-full w-full overflow-y-scroll p-2 rounded">
-        {chatMessages.map((message, i) => (
+        {chatMessages.slice(-renderedMessagesCount).map((message, i) => (
           <li className="break-words w-full" key={i}>
             <ChatMessageContent message={message} />
           </li>
         ))}
       </ul>
-      <form onSubmit={sendMessage} className="flex mt-1">
+      <form onSubmit={sendMessage} className="flex mt-1 border border-gray-300">
         <input
           ref={inputRef}
           type="text"
+          maxLength={MAX_MESSAGE_LENGTH}
           placeholder="Type a message..."
-          className="p-1 border border-gray-300 rounded flex-grow overflow-auto"
+          className="p-1  rounded flex-grow overflow-auto"
           value={messageContents}
           onChange={(e) => setMessageContents(e.target.value)}
         />
+        <GameStatusDisplay />
+
       </form>
     </div>
   );

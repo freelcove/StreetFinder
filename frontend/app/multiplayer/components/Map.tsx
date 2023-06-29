@@ -13,6 +13,8 @@ export default function Map() {
   const { userCoordinates, coordinates, gameState, setUserCoordinates, userState } = useContext(MultiplayerGameContext);
   const gameStateRef = useRef<string>(gameState);
   const userStateRef = useRef<string>(userState);
+  const centerCoordinates = { lat: 35.8714354, lng: 128.601445 };
+
 
   // Create a map instance and assign it to mapInstanceRef.
   const initMap = () => {
@@ -22,7 +24,7 @@ export default function Map() {
     }
 
     const mapOptions = {
-      center: new window.naver.maps.LatLng(35.8714354, 128.601445),
+      center: centerCoordinates,
       zoom: 11,
       mapTypeControl: false,
       scaleControl: false,
@@ -46,7 +48,6 @@ export default function Map() {
     // Listener for map clicks
     window.naver.maps.Event.addListener(mapInstanceRef.current, "click", function (e: any) {
       if (gameStateRef.current === 'IN_PROGRESS' && userStateRef.current === 'PLAYING') {
-        console.log(mapInstanceRef.current)
         if (!userMarkerRef.current) {
           userMarkerRef.current = new window.naver.maps.Marker({
             position: e.coord,
@@ -71,7 +72,7 @@ export default function Map() {
     // Display actual marker and polyline when game state is 'DISPLAYING_RESULTS'
     if (gameState === 'DISPLAYING_RESULTS' && coordinates) {
       actualMarkerRef.current = new window.naver.maps.Marker({
-        position: new window.naver.maps.LatLng(coordinates.lat, coordinates.lng),
+        position: {lat: coordinates.lat, lng: coordinates.lng},
         map: mapInstanceRef.current!,
         icon: {
           url: '/image/flag.png',
@@ -111,7 +112,9 @@ export default function Map() {
       if (polylineRef.current) {
         polylineRef.current.setMap(null);
         polylineRef.current.setPath([]);
-
+      }
+      if (mapInstanceRef.current){
+        mapInstanceRef.current.setCenter(centerCoordinates)
       }
     }
 
@@ -136,7 +139,7 @@ export default function Map() {
   }, []);
 
   return (
-    <div ref={mapRef} className="w-full h-full" />
+    <div ref={mapRef} className="w-full h-full outline-none" />
   );
   
 };

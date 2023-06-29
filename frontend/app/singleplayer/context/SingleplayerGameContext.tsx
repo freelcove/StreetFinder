@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext } from "react";
 
 interface CoordinatesType {
   lat: number;
@@ -10,12 +10,14 @@ interface ISingleplayerGameContext {
   setGameState: React.Dispatch<React.SetStateAction<string>>;
   coordinates: CoordinatesType | null;
   userCoordinates: CoordinatesType | null;
-  setUserCoordinates: React.Dispatch<React.SetStateAction<CoordinatesType | null>>;
-  playList: Array<{ id: number, name: string, visits: number }> | null;
+  setUserCoordinates: React.Dispatch<
+    React.SetStateAction<CoordinatesType | null>
+  >;
+  playList: Array<{ id: number; name: string; visits: number }> | null;
 }
 
 export const SingleplayerGameContext = createContext<ISingleplayerGameContext>({
-  gameState: '',
+  gameState: "",
   setGameState: () => {},
   coordinates: null,
   userCoordinates: null,

@@ -42,6 +42,7 @@ public class WebSocketEventListener {
         User user = getUserFromEvent(event);
         if (user != null) {
             gameService.removeUser(user);
+            System.out.println(user + " disconnected.");
         }
     }
 
