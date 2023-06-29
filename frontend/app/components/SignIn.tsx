@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function SignIn() {
 
   const handleSignIn = (provider: string) => {
-    signIn(provider, { callbackUrl: `/multiplayer` });
+    signIn(provider, { callbackUrl: `/` });
   };
 
   return (
