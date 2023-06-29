@@ -39,14 +39,15 @@ export default function GameComponent() {
     const router = useRouter();
 
     // The config for the confetti
+    // @ts-ignore
     const confettiConfig = {
         angle: 90,
         spread: 360,
         startVelocity: 40,
-        elementCount: "100",
+        elementCount: 100,
         dragFriction: 0.12,
-        duration: "5010",
-        stagger: "2",
+        duration: 5010,
+        stagger: 2,
         width: "20px",
         height: "20px",
         perspective: "800px",
@@ -160,6 +161,7 @@ export default function GameComponent() {
         <MultiplayerGameContext.Provider value={{ stompClient, gameState, users, connected, coordinates, userCoordinates, setUserCoordinates, userState, setUserState }}>
             <div className="relative w-full h-full flex overflow-hidden z-0">
                 <div className="absolute top-0 left-0 w-full h-full z-30 pointer-events-none flex items-center justify-center">
+
                     <Confetti active={confetti} config={confettiConfig} />
                 </div>
 
