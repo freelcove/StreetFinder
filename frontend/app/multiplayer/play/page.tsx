@@ -143,7 +143,7 @@ export default function GameComponent() {
                 coordinates.lat,
                 coordinates.lng
             );
-            if (dist < 100) {
+            if (dist < 1) {
                 handleWin();
             } else {
                 setUserState(WRONG);
