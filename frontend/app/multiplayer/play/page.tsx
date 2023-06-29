@@ -10,7 +10,6 @@ import Panorama from '../components/Panorama';
 import Map from '../components/Map';
 import { calculateDistance } from '@/app/utils/calculateDistance';
 import Confetti from 'react-dom-confetti';
-import { useRouter } from 'next/navigation';
 
 // Define constants
 const PLAYING = 'PLAYING';
@@ -36,10 +35,7 @@ export default function GameComponent() {
 
     const [confetti, setConfetti] = useState(false);
 
-    const router = useRouter();
-
     // The config for the confetti
-    // @ts-ignore
     const confettiConfig = {
         angle: 90,
         spread: 360,
@@ -54,14 +50,7 @@ export default function GameComponent() {
         colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
     };
 
-    // When the win state is activated
-    useEffect(() => {
-        if (userState === WIN) {
-            setConfetti(true);
-            const timer = setTimeout(() => setConfetti(false), WIN_TIMEOUT);
-            return () => clearTimeout(timer);
-        }
-    }, [userState]);
+ 
 
 
     // Message handling logic
@@ -125,6 +114,8 @@ export default function GameComponent() {
 
     useEffect(() => {
         const handleWin = () => {
+            setConfetti(true); // move it here
+
             stompClient.current?.publish({
                 destination: '/app/game.win',
                 body: JSON.stringify({ name: name }),
@@ -132,6 +123,8 @@ export default function GameComponent() {
             setUserState(WIN);
             const timer = setTimeout(() => {
                 setUserState(PLAYING);
+                setConfetti(false);
+
             }, WIN_TIMEOUT);
             return () => clearTimeout(timer);
         };
