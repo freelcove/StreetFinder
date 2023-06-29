@@ -25,7 +25,7 @@ export default function SignIn() {
           className="sm:w-4 sm:h-4 md:w-6 md:h-6" 
         />
       </button>
-      <button 
+      {/* <button 
         className="bg-white shadow-md hover:shadow-lg rounded-md w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 flex items-center justify-center transition-shadow duration-200 ease-in-out" 
         onClick={() => handleSignIn("naver")}
       >
@@ -36,7 +36,7 @@ export default function SignIn() {
           height={20} 
           className="sm:w-4 sm:h-4 md:w-6 md:h-6" 
         />
-      </button>
+      </button> */}
     </div>
   );
 }
