@@ -73,9 +73,11 @@ public class GameService {
 
     public void removeUser(User user) {
         users.remove(user);
+        userScores.remove(user.getId());
         broadcastChatMessage(Message.MessageType.DISCONNECT, "/topic/chat", user.getName());
-
+        broadcastUserScores();
     }
+    
 
     public void startNewGame() {
         logger.info("Starting new game");
@@ -94,6 +96,7 @@ public class GameService {
     public void joinPreviousGame(Message message) {
         broadcastUsers();
         broadcastGameStateAndCoordinatesToUser(message);
+        broadcastUserScores();
     }
 
     public void playerWin(Message message) {
