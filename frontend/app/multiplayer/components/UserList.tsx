@@ -8,7 +8,12 @@ const UserList = () => {
     const { users, userScores } = useContext(MultiplayerGameContext);
 
     // Order users by score
-    const orderedUsers = [...users].sort((a, b) => userScores[b.id] - userScores[a.id]);
+    const orderedUsers = [...users].sort((a, b) => {
+        const scoreA = userScores[a.id] || 0;
+        const scoreB = userScores[b.id] || 0;
+        return scoreB - scoreA;
+    });
+
     return (
         <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-y-auto max-h-[80vh] md:max-w-2xl">
             <div>
@@ -24,5 +29,6 @@ const UserList = () => {
         </div>
     );
 };
+
 
 export default UserList;
