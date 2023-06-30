@@ -41,8 +41,8 @@ export default function MultiplayerPage() {
             }
 
             // Validate name length and character type
-            if (name.length < 4 || name.length > 20 || !/^[a-z0-9\uAC00-\uD7A3\u1100-\u11FF]+$/i.test(name)) {
-                setModalMessage("Invalid name. Must be 4-20 characters long, and contain only numbers, letters, and Korean characters.");
+            if (name.length < 2 || name.length > 20 || !/^[a-z0-9\uAC00-\uD7A3\u1100-\u11FF]+$/i.test(name)) {
+                setModalMessage("Invalid name. Must be 2-20 characters long, and contain only numbers, letters, and Korean characters.");
                 setIsModalOpen(true);
                 return;
             }
