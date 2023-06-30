@@ -3,15 +3,13 @@ import { useState, useEffect, useRef, useContext, useCallback, memo } from 'reac
 import { IMessage } from '@stomp/stompjs';
 import { useSession } from 'next-auth/react';
 import { MultiplayerGameContext } from '../context/MultiplayerGameContext';
-import GameStatusDisplay from './GameStatusDisplay';
-
 
 interface IChatMessage {
   id: string;
   name: string;
   color: string;
   content: string;
-  type: 'CHAT' | 'CONNECT' | 'DISCONNECT' | 'WIN';
+  type: 'CHAT' | 'CONNECT' | 'DISCONNECT' | 'WIN' | 'SCORE';
 }
 
 interface ChatMessageContentProps {
@@ -143,12 +141,10 @@ export default function MultiplayerChat() {
           type="text"
           maxLength={MAX_MESSAGE_LENGTH}
           placeholder="Type a message..."
-          className="p-1  rounded flex-grow overflow-auto"
+          className="p-1  rounded flex-grow overflow-auto outline-none"
           value={messageContents}
           onChange={(e) => setMessageContents(e.target.value)}
         />
-        <GameStatusDisplay />
-
       </form>
     </div>
   );

@@ -2,30 +2,23 @@
 
 import SkyDivingCanvas from "@/app/components/SkyDivingCanvas";
 import { useState, useCallback, useRef, useEffect } from "react";
-import Link from "next/link";
 import Image from "next/image";
-import SignIn from "./auth/signin/page";
-import { useSession } from "next-auth/react";
-import React from "react";
+import { FaGithub } from "react-icons/fa";
 import { warmupRequest } from "./utils/warmupRequest";
-import { SingleplayerCard } from "./components/SingleplayerCard";
-import { MultiplayerCard } from "./components/MultiplayerCard";
+import { MenuCard } from "./components/MenuCard";
+import Link from "next/link";
 
 export default function Home() {
   enum Stage {
     LANDING,
     CHOOSE_MODE,
   }
-  const { data: session } = useSession();
 
-  const [map, setMap] = useState<naver.maps.Map | null>(null);
   const [isZooming, setIsZooming] = useState(false);
   const [homeState, setHomeState] = useState(Stage.LANDING);
   const [isLoading, setIsLoading] = useState(true);
 
   const mapRef = useRef<HTMLDivElement>(null);
-
-  const isLogged = session?.user ? true : false;
 
   const initMap = () => {
     const mapOptions = {
@@ -39,18 +32,15 @@ export default function Home() {
     let newMap = null;
     if (mapRef.current !== null) {
       newMap = new window.naver.maps.Map(mapRef.current, mapOptions);
-      setMap(newMap);
+      window.naver.maps.Event.addListener(newMap, 'tilesloaded', function () {
+        setIsLoading(false);
+      });
     }
   };
 
   useEffect(() => {
     initMap();
     warmupRequest();
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000); // Set the timeout duration based on your loading time
-
-    return () => clearTimeout(timer);
   }, []);
 
   const handleTitleClick = useCallback(() => {
@@ -89,11 +79,16 @@ export default function Home() {
         </>
       )}
       {homeState === Stage.CHOOSE_MODE && (
-        <div className="grid grid-cols-2 gap-4 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
-          <SingleplayerCard />
-          <MultiplayerCard />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
+          <MenuCard />
         </div>
       )}
+      <Link href="https://github.com/freelcove/StreetFinder">
+        <p className="absolute left-5 bottom-5 flex gap-2 font-bold items-center">
+          <FaGithub size={20} />
+          <span>GitHub</span>
+        </p>
+      </Link>
     </div>
   );
 }

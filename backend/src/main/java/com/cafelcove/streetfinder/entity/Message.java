@@ -22,7 +22,8 @@ public class Message {
         LEAVE,
         CONNECT,
         DISCONNECT,
-        WIN
+        WIN,
+        SCORE
     }
 
 }

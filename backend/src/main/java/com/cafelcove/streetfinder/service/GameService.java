@@ -16,6 +16,8 @@ import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -31,6 +33,7 @@ public class GameService {
     private final List<User> users = new CopyOnWriteArrayList<>();
     private GameState gameState = GameState.NOTSET;
     private Map<String, BigDecimal> coordinates;
+    private final Map<String, Integer> userScores = new ConcurrentHashMap<>();
 
     public GameService(SimpMessageSendingOperations messagingTemplate, ObjectMapper objectMapper,
             PlaceRepository placeRepository) {
@@ -52,16 +55,29 @@ public class GameService {
     }
 
     public void addUser(User user) {
+        Optional<User> existingUser = users.stream()
+                .filter(u -> u.getId().equals(user.getId()))
+                .findFirst();
+
+        if (existingUser.isPresent()) {
+            // Handle the existing connection. Here we're logging a message and returning
+            // early,
+            // effectively refusing the new connection.
+            logger.warn("User {} already connected. Refusing new connection.", user.getName());
+            return;
+        }
+
         users.add(user);
         broadcastChatMessage(Message.MessageType.CONNECT, "/topic/chat", user.getName());
-
     }
 
     public void removeUser(User user) {
         users.remove(user);
+        userScores.remove(user.getId());
         broadcastChatMessage(Message.MessageType.DISCONNECT, "/topic/chat", user.getName());
-
+        broadcastUserScores();
     }
+    
 
     public void startNewGame() {
         logger.info("Starting new game");
@@ -80,6 +96,7 @@ public class GameService {
     public void joinPreviousGame(Message message) {
         broadcastUsers();
         broadcastGameStateAndCoordinatesToUser(message);
+        broadcastUserScores();
     }
 
     public void playerWin(Message message) {
@@ -92,6 +109,15 @@ public class GameService {
             // Transition to next states with delays
             ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
             executorService.schedule(() -> startNewGame(), 15, TimeUnit.SECONDS);
+
+            // Increment the score of the user who won
+            userScores.merge(message.getId(), 1, Integer::sum);
+            System.out.println("------------------------------");
+            System.out.println(userScores);
+            System.out.println(users);
+            broadcastUserScores();
+
+
         }
     }
 
@@ -110,6 +136,10 @@ public class GameService {
         } catch (Exception e) {
             logger.error("broadcast error: ", e);
         }
+    }
+
+    private void broadcastUserScores() {
+        broadcastData("/topic/game", Map.of("userScores", userScores));
     }
 
     private void broadcastGameState() {
