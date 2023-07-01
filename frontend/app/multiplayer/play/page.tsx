@@ -162,7 +162,7 @@ export default function GameComponent() {
 
     return (
         <MultiplayerGameContext.Provider value={{ stompClient, userScores, gameState, users, connected, coordinates, userCoordinates, setUserCoordinates, userState, setUserState }}>
-            <div className="relative w-full h-full flex overflow-hidden z-0">
+            <div className="relative w-full h-full flex flex-col sm:flex-row overflow-hidden z-0">
 
                 <div className={`z-30 fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 flex flex-col justify-center items-center ${showUserList ? 'block' : 'hidden'}`}>
                     <UserList />
@@ -174,10 +174,10 @@ export default function GameComponent() {
 
                 {coordinates && (
                     <>
-                        <div className="w-[70%] flex-grow">
+                        <div className="h-[30%] sm:h-auto sm:w-[70%] flex-grow">
                             <Panorama />
                         </div>
-                        <div className="w-[30%] flex flex-col">
+                        <div className="h-[70%] sm:h-auto sm:w-[30%] flex flex-col">
                             <div className="flex justify-between items-center p-2">
                                 <button onClick={() => setShowUserList(true)}><FiUsers size='1.4rem' /></button>
                                 <GameStatusDisplay />
