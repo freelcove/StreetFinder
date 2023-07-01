@@ -202,7 +202,6 @@ export default function GameComponent() {
                                     <button
                                         className={`z-20 opacity-70 absolute m-2 bg-white bg-opacity-50 text-black px-2 py-1 rounded-md hover:bg-gray-400 transition-colors duration-200 ${showLargeMap ? 'top-2 left-2 text-xl' : 'bottom-2 right-2 text-lg'}`}
                                         onClick={() => setShowLargeMap(prevState => !prevState)}
-                                        onMouseEnter={() => setShowLargeMap(prevState => !prevState)}
                                     >
                                         {showLargeMap ? <FaTimes size='2rem' color='red' /> : <FaExpand size='2rem' />}
                                     </button>
