@@ -18,6 +18,10 @@ const handler = NextAuth({
     secret: process.env.NEXTAUTH_SECRET,
     adapter: PrismaAdapter(prisma!) as Adapter,
     providers: [
+        NaverProvider({
+            clientId: process.env.NAVER_CLIENT_ID!,
+            clientSecret: process.env.NAVER_CLIENT_SECRET!
+        }),
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID!,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET!

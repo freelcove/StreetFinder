@@ -24,7 +24,7 @@ public class CorsConfig implements WebMvcConfigurer {
         // The server can handle all types of HTTP methods and headers from 'allowedOrigin'.
         // Credentials like cookies or HTTP authentication are allowed as well.
         registry.addMapping("/**")
-                .allowedOrigins("*")
+                .allowedOrigins(allowedOrigin)
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true);
