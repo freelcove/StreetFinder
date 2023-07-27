@@ -16,7 +16,7 @@ public class SecurityConfig {
     private static final String[] WHITE_LIST = {
             "/warmup",
             "/ws/**",
-            
+            "*"
     };
 
     @Bean
@@ -27,9 +27,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+        .cors().and()
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("*").permitAll()
+                        .requestMatchers(WHITE_LIST).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(AuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
