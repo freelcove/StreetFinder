@@ -30,7 +30,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // Setting the allowed origin patterns to ensure only specified origins can connect to our WebSocket.
         // Enabling SockJS fallback options
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns(allowedOrigin)
+                .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
 
